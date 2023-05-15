@@ -1,13 +1,13 @@
 {
   "version": "0.1.0",
-  "description": "An example Snap written in TypeScript.",
-  "proposedName": "TypeScript Example Snap",
+  "description": "Get Push Notifications directly in your wallet!",
+  "proposedName": "Push Protocol Snap",
   "repository": {
     "type": "git",
     "url": "https://github.com/MetaMask/template-snap-monorepo.git"
   },
   "source": {
-    "shasum": "Ivuu1s3er12O8fFglHxSZfIVXD1BjoEOVIPBlBv1XDg=",
+    "shasum": "HKmSXNSkKVkKt5csxOylf7nFK65cBCNFPR0lPwa1dzc=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
