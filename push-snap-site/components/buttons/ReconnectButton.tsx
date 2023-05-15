@@ -17,8 +17,24 @@ export default function ReconnectButton() {
     });
   };
 
+  const installSnap=async()=>{
+    await connectSnap();
+    const res = await window.ethereum?.request({
+      method: "wallet_invokeSnap",
+      params: {
+        snapId: defaultSnapOrigin,
+        request: { method: 'init' },
+      },
+    });
+
+    if(res){
+      //open a new tab
+      window.open('https://app.push.org/channels', '_blank');
+    }
+  }
+
   return (
-    <button className="flex bg-white border text-black font-bold text-sm w-max p-2 rounded-lg" onClick={()=>connectSnap()}>
+    <button className="flex bg-white border text-black font-bold text-sm w-max p-2 rounded-lg" onClick={()=>installSnap()}>
       <Image src={MetaMask} alt='MetaMask Logo' height="20" width="20"/>
       <p className='pl-2'>
         Connect

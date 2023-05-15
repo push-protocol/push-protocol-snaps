@@ -12,7 +12,7 @@ export default function ConfirmButton() {
       method: "wallet_invokeSnap",
       params: {
         snapId: defaultSnapOrigin,
-        request: { method: "hello", params: { address: address } },
+        request: { method: 'hello', params: { address: address } },
       },
     });
   };
@@ -22,12 +22,15 @@ export default function ConfirmButton() {
       `Confirm your Address ${address}, \n this will be added to MetaMask for sending notifications`,
   });
 
+  function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   const confirmAddition=async()=>{
     signMessage();
     if(isSuccess){
-    sendHello(String(address));}
-    if(isError){
-      console.log('error')
+      await sleep(5000);
+      await sendHello(String(address));
     }
   }
 
