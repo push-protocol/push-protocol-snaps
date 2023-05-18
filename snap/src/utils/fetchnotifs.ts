@@ -23,9 +23,6 @@ export const getNotifications=async(address:string)=>{
         feedepoch = Number(feedepoch).toFixed(0);
         if(feedepoch > parseInt(currentepoch)-60) {               
           let msg = fetchedNotifications[i].payload.data.app+' : '+fetchedNotifications[i].payload.data.amsg;
-          if(msg.length >50){
-            msg = msg.substring(0, 47);
-          }
           notiffeeds.push(msg);
         }
       }
