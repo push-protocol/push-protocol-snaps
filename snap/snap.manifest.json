@@ -7,12 +7,12 @@
     "url": "https://github.com/ethereum-push-notification-service/push-protocol-snaps"
   },
   "source": {
-    "shasum": "YX6EGnSwpn8+MsELMVVRrqfpYhk8cEAOhNi0rD63PDI=",
+    "shasum": "8Am1yGAQLJvtLcXRWPHh8ZeQWw5hQu3Vou9gbL1pE9g=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
         "iconPath": "images/icon.svg",
-        "packageName": "snap",
+        "packageName": "push-protocol-snap",
         "registry": "https://registry.npmjs.org/"
       }
     }
