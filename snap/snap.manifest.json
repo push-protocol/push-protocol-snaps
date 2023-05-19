@@ -1,10 +1,10 @@
 {
   "version": "0.1.0",
-  "description": "Get Push Notifications directly in your wallet!",
+  "description": "Get Push Notifications directly in your MetaMask wallet!",
   "proposedName": "Push Protocol Snap",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/template-snap-monorepo.git"
+    "url": "https://github.com/ethereum-push-notification-service/push-protocol-snaps"
   },
   "source": {
     "shasum": "YX6EGnSwpn8+MsELMVVRrqfpYhk8cEAOhNi0rD63PDI=",

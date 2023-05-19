@@ -1,11 +1,10 @@
 {
-  "name": "snap",
+  "name": "push-protocol-snap",
   "version": "0.1.0",
-  "private": true,
-  "description": "The 'Hello, world!' of MetaMask Snaps, now written in TypeScript.",
+  "description": "Get Push Notifications directly in your MetaMask wallet!",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/template-snap-monorepo.git"
+    "url": "https://github.com/ethereum-push-notification-service/push-protocol-snaps"
   },
   "license": "(MIT-0 OR Apache-2.0)",
   "main": "src/index.ts",
@@ -33,7 +32,7 @@
     "@metamask/eslint-config-jest": "^10.0.0",
     "@metamask/eslint-config-nodejs": "^10.0.0",
     "@metamask/eslint-config-typescript": "^10.0.0",
-    "@metamask/snaps-cli": "^0.30.0",
+    "@metamask/snaps-cli": "^0.32.2",
     "@metamask/snaps-types": "^0.30.0",
     "@metamask/snaps-ui": "^0.30.0",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
