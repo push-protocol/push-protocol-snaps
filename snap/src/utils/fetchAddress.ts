@@ -12,6 +12,7 @@ export const addAddress = async (address:string) => {
     if(persistedData == null){
         const data = {
             addresses: [address],
+            popuptoggle: true,
         };
         await snap.request({
             method: 'snap_manageState',
@@ -19,12 +20,14 @@ export const addAddress = async (address:string) => {
         });
     }else{
         const addrlist = persistedData.addresses;
+        const popuptoggle = persistedData.popuptoggle;
         if(addrlist!.includes(address)){
             return;
         }else{
             addrlist!.push(address);
             const data = {
                 addresses: addrlist,
+                popuptoggle: popuptoggle,
             };
             await snap.request({
                 method: 'snap_manageState',
@@ -40,6 +43,7 @@ export const confirmAddress = async () => {
         params: { operation: 'get' },
     });
     const data = persistedData.addresses;
+    const popup = persistedData.popuptoggle;
     let msg='';
     for(let i = 0; i < data!.length; i++){
         msg = msg + '🔹' + data![i] + '\n';
@@ -52,7 +56,8 @@ export const confirmAddress = async () => {
             heading('Address added'),
             text('Following addresses will receive notifications:'),
             divider(),
-            text(`${msg}`)
+            text(`${msg}`),
+            text(`popup toggle: ${popup}`)
           ]),
         },
       });

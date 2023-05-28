@@ -38752,9 +38752,10 @@
       });
       exports.onRpcRequest = exports.onCronjob = void 0;
       var _snapsUi = require("@metamask/snaps-ui");
-      var _fetchnotifs = require("./utils/fetchnotifs");
       var _fetchAddress = require("./utils/fetchAddress");
+      var _fetchnotifs = require("./utils/fetchnotifs");
       var _popupHelper = require("./utils/popupHelper");
+      var _toggleHelper = require("./utils/toggleHelper");
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
@@ -38785,10 +38786,30 @@
                 method: "snap_dialog",
                 params: {
                   type: "alert",
-                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Welcome to Push Notification Snap!"), (0, _snapsUi.divider)(), (0, _snapsUi.text)('🔔 Start getting notifications by opting into channels'), (0, _snapsUi.text)('🔔 Get live wallet Activities on ETH,POLYGON,BNB,OP,ARB Chains')])
+                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Welcome to Push Notification Snap!"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("🔔 Start getting notifications by opting into channels"), (0, _snapsUi.text)("🔔 Get live wallet Activities on ETH,POLYGON,BNB,OP,ARB Chains")])
                 }
               });
               return true;
+            }
+          case "togglepopup":
+            {
+              await (0, _toggleHelper.popupToggle)();
+              let persistedData = await snap.request({
+                method: "snap_manageState",
+                params: {
+                  operation: "get"
+                }
+              });
+              let popuptoggle = persistedData.popuptoggle;
+              let msg = popuptoggle ? "🔔 Popup Notifications Enabled" : "🔕 Popup Notifications Disabled";
+              await snap.request({
+                method: "snap_dialog",
+                params: {
+                  type: "alert",
+                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Popup Toggle"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`), (0, _snapsUi.divider)(), (0, _snapsUi.text)("🔔 You can change this setting anytime from the Dapp")])
+                }
+              });
+              break;
             }
           default:
             throw new Error("Method not found.");
@@ -38803,14 +38824,23 @@
             {
               const notifs = await (0, _fetchnotifs.fetchAllAddrNotifs)();
               const msgs = (0, _popupHelper.popupHelper)(notifs);
-              if (msgs) {
-                snap.request({
-                  method: "snap_dialog",
-                  params: {
-                    type: "alert",
-                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("You have a new notifications!"), (0, _snapsUi.divider)(), ...msgs.map(msg => (0, _snapsUi.text)(msg))])
-                  }
-                });
+              let persistedData = await snap.request({
+                method: "snap_manageState",
+                params: {
+                  operation: "get"
+                }
+              });
+              let popuptoggle = persistedData.popuptoggle;
+              if (popuptoggle) {
+                if (msgs) {
+                  snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "alert",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("You have a new notifications!"), (0, _snapsUi.divider)(), ...msgs.map(msg => (0, _snapsUi.text)(msg))])
+                    }
+                  });
+                }
               }
               if (msgs) {
                 let maxlength = msgs.length > 11 ? 11 : msgs.length;
@@ -38838,6 +38868,7 @@
       "./utils/fetchAddress": 248,
       "./utils/fetchnotifs": 249,
       "./utils/popupHelper": 250,
+      "./utils/toggleHelper": 251,
       "@metamask/snaps-ui": 127
     }],
     248: [function (require, module, exports) {
@@ -38860,7 +38891,8 @@
         });
         if (persistedData == null) {
           const data = {
-            addresses: [address]
+            addresses: [address],
+            popuptoggle: true
           };
           await snap.request({
             method: 'snap_manageState',
@@ -38871,12 +38903,14 @@
           });
         } else {
           const addrlist = persistedData.addresses;
+          const popuptoggle = persistedData.popuptoggle;
           if (addrlist.includes(address)) {
             return;
           } else {
             addrlist.push(address);
             const data = {
-              addresses: addrlist
+              addresses: addrlist,
+              popuptoggle: popuptoggle
             };
             await snap.request({
               method: 'snap_manageState',
@@ -38897,6 +38931,7 @@
           }
         });
         const data = persistedData.addresses;
+        const popup = persistedData.popuptoggle;
         let msg = '';
         for (let i = 0; i < data.length; i++) {
           msg = msg + '🔹' + data[i] + '\n';
@@ -38905,7 +38940,7 @@
           method: 'snap_dialog',
           params: {
             type: 'alert',
-            content: (0, _snapsUi.panel)([(0, _snapsUi.heading)('Address added'), (0, _snapsUi.text)('Following addresses will receive notifications:'), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`)])
+            content: (0, _snapsUi.panel)([(0, _snapsUi.heading)('Address added'), (0, _snapsUi.text)('Following addresses will receive notifications:'), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`), (0, _snapsUi.text)(`popup toggle: ${popup}`)])
           }
         });
       };
@@ -39033,6 +39068,35 @@
         }
       };
       exports.popupHelper = popupHelper;
+    }, {}],
+    251: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.popupToggle = void 0;
+      const popupToggle = async () => {
+        let persistedData = await snap.request({
+          method: 'snap_manageState',
+          params: {
+            operation: 'get'
+          }
+        });
+        let popuptoggle = !persistedData.popuptoggle;
+        const data = {
+          addresses: persistedData.addresses,
+          popuptoggle: popuptoggle
+        };
+        await snap.request({
+          method: 'snap_manageState',
+          params: {
+            operation: 'update',
+            newState: data
+          }
+        });
+      };
+      exports.popupToggle = popupToggle;
     }, {}]
   }, {}, [247])(247);
 });

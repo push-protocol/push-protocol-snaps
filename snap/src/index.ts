@@ -1,15 +1,9 @@
-import { OnRpcRequestHandler, OnCronjobHandler } from "@metamask/snaps-types";
+import { OnCronjobHandler, OnRpcRequestHandler } from "@metamask/snaps-types";
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
-import { filterNotifications } from "./utils/fetchnotifs";
-import { getNotifications } from "./utils/fetchnotifs";
-import { ethers } from "ethers";
+import { addAddress, clearAddress, confirmAddress, removeAddress } from "./utils/fetchAddress";
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
-import { addAddress } from "./utils/fetchAddress";
-import { confirmAddress } from "./utils/fetchAddress";
-import { clearAddress } from "./utils/fetchAddress";
-import { removeAddress } from "./utils/fetchAddress";
 import { popupHelper } from "./utils/popupHelper";
-import { randomBytes } from "ethers/lib/utils";
+import { popupToggle } from "./utils/toggleHelper";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -41,12 +35,43 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           content: panel([
             heading("Welcome to Push Notification Snap!"),
             divider(),
-            text('🔔 Start getting notifications by opting into channels'),
-            text('🔔 Get live wallet Activities on ETH,POLYGON,BNB,OP,ARB Chains')
+            text("🔔 Start getting notifications by opting into channels"),
+            text(
+              "🔔 Get live wallet Activities on ETH,POLYGON,BNB,OP,ARB Chains"
+            ),
           ]),
         },
       });
       return true;
+    }
+    case "togglepopup": {
+      await popupToggle();
+
+      let persistedData = await snap.request({
+        method: "snap_manageState",
+        params: { operation: "get" },
+      });
+
+      let popuptoggle = persistedData.popuptoggle;
+
+      let msg = popuptoggle
+        ? "🔔 Popup Notifications Enabled"
+        : "🔕 Popup Notifications Disabled";
+
+      await snap.request({
+        method: "snap_dialog",
+        params: {
+          type: "alert",
+          content: panel([
+            heading("Popup Toggle"),
+            divider(),
+            text(`${msg}`),
+            divider(),
+            text("🔔 You can change this setting anytime from the Dapp"),
+          ]),
+        },
+      });
+      break;
     }
     default:
       throw new Error("Method not found.");
@@ -58,22 +83,32 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
     case "fireCronjob": {
       const notifs = await fetchAllAddrNotifs();
       const msgs = popupHelper(notifs);
-      if (msgs) {
-        snap.request({
-          method: "snap_dialog",
-          params: {
-            type: "alert",
-            content: panel([
-              heading("You have a new notifications!"),
-              divider(),
-              ...msgs.map((msg) => text(msg)),
-            ]),
-          },
-        });
+
+      let persistedData = await snap.request({
+        method: "snap_manageState",
+        params: { operation: "get" },
+      });
+
+      let popuptoggle = persistedData.popuptoggle;
+
+      if (popuptoggle) {
+        if (msgs) {
+          snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("You have a new notifications!"),
+                divider(),
+                ...msgs.map((msg) => text(msg)),
+              ]),
+            },
+          });
+        }
       }
 
       if (msgs) {
-        let maxlength = msgs.length>11?11:msgs.length;
+        let maxlength = msgs.length > 11 ? 11 : msgs.length;
         for (let i = 0; i < maxlength; i++) {
           let msg = msgs[i];
           msg = String(msg);
@@ -86,9 +121,9 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             },
           });
           await sleep(5000);
+        }
       }
     }
-  }
     default:
       throw new Error("Method not found.");
   }
