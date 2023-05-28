@@ -7340,7 +7340,7 @@
         };
       })(typeof module === 'undefined' || module, this);
     }, {
-      "buffer": 150
+      "buffer": 153
     }],
     31: [function (require, module, exports) {
       "use strict";
@@ -10713,7 +10713,7 @@
       "@ethersproject/pbkdf2": 63,
       "@ethersproject/properties": 65,
       "@ethersproject/strings": 103,
-      "aes-js": 145
+      "aes-js": 148
     }],
     53: [function (require, module, exports) {
       "use strict";
@@ -11298,8 +11298,8 @@
       "@ethersproject/properties": 65,
       "@ethersproject/random": 87,
       "@ethersproject/transactions": 106,
-      "aes-js": 145,
-      "scrypt-js": 194
+      "aes-js": 148,
+      "scrypt-js": 197
     }],
     56: [function (require, module, exports) {
       "use strict";
@@ -11383,7 +11383,7 @@
       exports.keccak256 = keccak256;
     }, {
       "@ethersproject/bytes": 32,
-      "js-sha3": 190
+      "js-sha3": 193
     }],
     58: [function (require, module, exports) {
       "use strict";
@@ -15307,7 +15307,7 @@
       "@ethersproject/sha2": 93,
       "@ethersproject/strings": 103,
       "@ethersproject/web": 113,
-      "bech32": 147
+      "bech32": 150
     }],
     70: [function (require, module, exports) {
       "use strict";
@@ -20248,7 +20248,7 @@
       "./types": 94,
       "@ethersproject/bytes": 32,
       "@ethersproject/logger": 59,
-      "hash.js": 175
+      "hash.js": 178
     }],
     93: [function (require, module, exports) {
       "use strict";
@@ -20332,7 +20332,7 @@
       var EC = elliptic_1.default.ec;
       exports.EC = EC;
     }, {
-      "elliptic": 155
+      "elliptic": 158
     }],
     97: [function (require, module, exports) {
       "use strict";
@@ -23702,16 +23702,18 @@
       function createBuilder(type, struct, keys = []) {
         return (...args) => {
           if (args.length === 1 && (0, utils_1.isPlainObject)(args[0])) {
-            const node = Object.assign(Object.assign({}, args[0]), {
+            const node = {
+              ...args[0],
               type
-            });
+            };
             (0, utils_1.assertStruct)(node, struct, `Invalid ${type} component`);
             return node;
           }
           const node = keys.reduce((partialNode, key, index) => {
-            return Object.assign(Object.assign({}, partialNode), {
+            return {
+              ...partialNode,
               [key]: args[index]
-            });
+            };
           }, {
             type
           });
@@ -23727,7 +23729,7 @@
       exports.text = createBuilder(nodes_1.NodeType.Text, nodes_1.TextStruct, ['value']);
     }, {
       "./nodes": 128,
-      "@metamask/utils": 137
+      "@metamask/utils": 138
     }],
     127: [function (require, module, exports) {
       "use strict";
@@ -23811,7 +23813,7 @@
       }));
       exports.ComponentStruct = (0, superstruct_1.union)([exports.CopyableStruct, exports.DividerStruct, exports.HeadingStruct, exports.PanelStruct, exports.SpinnerStruct, exports.TextStruct]);
     }, {
-      "superstruct": 240
+      "superstruct": 243
     }],
     129: [function (require, module, exports) {
       "use strict";
@@ -23833,8 +23835,8 @@
       exports.assertIsComponent = assertIsComponent;
     }, {
       "./nodes": 128,
-      "@metamask/utils": 137,
-      "superstruct": 240
+      "@metamask/utils": 138,
+      "superstruct": 243
     }],
     130: [function (require, module, exports) {
       "use strict";
@@ -23897,7 +23899,7 @@
       }
       exports.assertExhaustive = assertExhaustive;
     }, {
-      "superstruct": 240
+      "superstruct": 243
     }],
     131: [function (require, module, exports) {
       "use strict";
@@ -23930,7 +23932,7 @@
       exports.base64 = base64;
     }, {
       "./assert": 130,
-      "superstruct": 240
+      "superstruct": 243
     }],
     132: [function (require, module, exports) {
       (function () {
@@ -24111,8 +24113,8 @@
       }).call(this, require("buffer").Buffer);
     }, {
       "./assert": 130,
-      "./hex": 136,
-      "buffer": 151
+      "./hex": 137,
+      "buffer": 154
     }],
     133: [function (require, module, exports) {
       "use strict";
@@ -24128,7 +24130,7 @@
       }), 44, 44);
     }, {
       "./base64": 131,
-      "superstruct": 240
+      "superstruct": 243
     }],
     134: [function (require, module, exports) {
       "use strict";
@@ -24202,8 +24204,8 @@
     }, {
       "./assert": 130,
       "./bytes": 132,
-      "./hex": 136,
-      "superstruct": 240
+      "./hex": 137,
+      "superstruct": 243
     }],
     135: [function (require, module, exports) {
       "use strict";
@@ -24302,6 +24304,13 @@
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
+    }, {}],
+    137: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
       exports.remove0x = exports.add0x = exports.assertIsStrictHexString = exports.assertIsHexString = exports.isStrictHexString = exports.isHexString = exports.StrictHexStruct = exports.HexStruct = void 0;
       const superstruct_1 = require("superstruct");
       const assert_1 = require("./assert");
@@ -24342,9 +24351,9 @@
       exports.remove0x = remove0x;
     }, {
       "./assert": 130,
-      "superstruct": 240
+      "superstruct": 243
     }],
-    137: [function (require, module, exports) {
+    138: [function (require, module, exports) {
       "use strict";
 
       var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
@@ -24375,13 +24384,16 @@
       __exportStar(require("./checksum"), exports);
       __exportStar(require("./coercers"), exports);
       __exportStar(require("./collections"), exports);
+      __exportStar(require("./encryption-types"), exports);
       __exportStar(require("./hex"), exports);
       __exportStar(require("./json"), exports);
+      __exportStar(require("./keyring"), exports);
       __exportStar(require("./logging"), exports);
       __exportStar(require("./misc"), exports);
       __exportStar(require("./number"), exports);
       __exportStar(require("./opaque"), exports);
       __exportStar(require("./time"), exports);
+      __exportStar(require("./transaction-types"), exports);
       __exportStar(require("./versions"), exports);
     }, {
       "./assert": 130,
@@ -24390,36 +24402,63 @@
       "./checksum": 133,
       "./coercers": 134,
       "./collections": 135,
-      "./hex": 136,
-      "./json": 138,
-      "./logging": 139,
-      "./misc": 140,
-      "./number": 141,
-      "./opaque": 142,
-      "./time": 143,
-      "./versions": 144
+      "./encryption-types": 136,
+      "./hex": 137,
+      "./json": 139,
+      "./keyring": 140,
+      "./logging": 141,
+      "./misc": 142,
+      "./number": 143,
+      "./opaque": 144,
+      "./time": 145,
+      "./transaction-types": 146,
+      "./versions": 147
     }],
-    138: [function (require, module, exports) {
+    139: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
-      exports.validateJsonAndGetSize = exports.getJsonRpcIdValidator = exports.assertIsJsonRpcError = exports.isJsonRpcError = exports.assertIsJsonRpcFailure = exports.isJsonRpcFailure = exports.assertIsJsonRpcSuccess = exports.isJsonRpcSuccess = exports.assertIsJsonRpcResponse = exports.isJsonRpcResponse = exports.assertIsPendingJsonRpcResponse = exports.isPendingJsonRpcResponse = exports.JsonRpcResponseStruct = exports.JsonRpcFailureStruct = exports.JsonRpcSuccessStruct = exports.PendingJsonRpcResponseStruct = exports.assertIsJsonRpcRequest = exports.isJsonRpcRequest = exports.assertIsJsonRpcNotification = exports.isJsonRpcNotification = exports.JsonRpcNotificationStruct = exports.JsonRpcRequestStruct = exports.JsonRpcParamsStruct = exports.JsonRpcErrorStruct = exports.JsonRpcIdStruct = exports.JsonRpcVersionStruct = exports.jsonrpc2 = exports.isValidJson = exports.JsonStruct = void 0;
+      exports.getJsonRpcIdValidator = exports.assertIsJsonRpcError = exports.isJsonRpcError = exports.assertIsJsonRpcFailure = exports.isJsonRpcFailure = exports.assertIsJsonRpcSuccess = exports.isJsonRpcSuccess = exports.assertIsJsonRpcResponse = exports.isJsonRpcResponse = exports.assertIsPendingJsonRpcResponse = exports.isPendingJsonRpcResponse = exports.JsonRpcResponseStruct = exports.JsonRpcFailureStruct = exports.JsonRpcSuccessStruct = exports.PendingJsonRpcResponseStruct = exports.assertIsJsonRpcRequest = exports.isJsonRpcRequest = exports.assertIsJsonRpcNotification = exports.isJsonRpcNotification = exports.JsonRpcNotificationStruct = exports.JsonRpcRequestStruct = exports.JsonRpcParamsStruct = exports.JsonRpcErrorStruct = exports.JsonRpcIdStruct = exports.JsonRpcVersionStruct = exports.jsonrpc2 = exports.getJsonSize = exports.isValidJson = exports.JsonStruct = exports.UnsafeJsonStruct = void 0;
       const superstruct_1 = require("superstruct");
       const assert_1 = require("./assert");
-      const misc_1 = require("./misc");
-      exports.JsonStruct = (0, superstruct_1.define)('Json', value => {
-        const [isValid] = validateJsonAndGetSize(value, true);
-        if (!isValid) {
-          return 'Expected a valid JSON-serializable value';
+      const finiteNumber = () => (0, superstruct_1.define)('finite number', value => {
+        return (0, superstruct_1.is)(value, (0, superstruct_1.number)()) && Number.isFinite(value);
+      });
+      exports.UnsafeJsonStruct = (0, superstruct_1.union)([(0, superstruct_1.literal)(null), (0, superstruct_1.boolean)(), finiteNumber(), (0, superstruct_1.string)(), (0, superstruct_1.array)((0, superstruct_1.lazy)(() => exports.UnsafeJsonStruct)), (0, superstruct_1.record)((0, superstruct_1.string)(), (0, superstruct_1.lazy)(() => exports.UnsafeJsonStruct))]);
+      exports.JsonStruct = (0, superstruct_1.define)('Json', (value, context) => {
+        function checkStruct(innerValue, struct) {
+          const iterator = struct.validator(innerValue, context);
+          const errors = [...iterator];
+          if (errors.length > 0) {
+            return errors;
+          }
+          return true;
         }
-        return true;
+        try {
+          const unsafeResult = checkStruct(value, exports.UnsafeJsonStruct);
+          if (unsafeResult !== true) {
+            return unsafeResult;
+          }
+          return checkStruct(JSON.parse(JSON.stringify(value)), exports.UnsafeJsonStruct);
+        } catch (error) {
+          if (error instanceof RangeError) {
+            return 'Circular reference detected';
+          }
+          return false;
+        }
       });
       function isValidJson(value) {
         return (0, superstruct_1.is)(value, exports.JsonStruct);
       }
       exports.isValidJson = isValidJson;
+      function getJsonSize(value) {
+        (0, assert_1.assertStruct)(value, exports.JsonStruct, 'Invalid JSON value');
+        const json = JSON.stringify(value);
+        return new TextEncoder().encode(json).byteLength;
+      }
+      exports.getJsonSize = getJsonSize;
       exports.jsonrpc2 = '2.0';
       exports.JsonRpcVersionStruct = (0, superstruct_1.literal)(exports.jsonrpc2);
       exports.JsonRpcIdStruct = (0, superstruct_1.nullable)((0, superstruct_1.union)([(0, superstruct_1.number)(), (0, superstruct_1.string)()]));
@@ -24526,73 +24565,18 @@
         return isValidJsonRpcId;
       }
       exports.getJsonRpcIdValidator = getJsonRpcIdValidator;
-      function validateJsonAndGetSize(jsObject, skipSizingProcess = false) {
-        const seenObjects = new Set();
-        function getJsonSerializableInfo(value, skipSizing) {
-          if (value === undefined) {
-            return [false, 0];
-          } else if (value === null) {
-            return [true, skipSizing ? 0 : misc_1.JsonSize.Null];
-          }
-          const typeOfValue = typeof value;
-          try {
-            if (typeOfValue === 'function') {
-              return [false, 0];
-            } else if (typeOfValue === 'string' || value instanceof String) {
-              return [true, skipSizing ? 0 : (0, misc_1.calculateStringSize)(value) + misc_1.JsonSize.Quote * 2];
-            } else if (typeOfValue === 'boolean' || value instanceof Boolean) {
-              if (skipSizing) {
-                return [true, 0];
-              }
-              return [true, value == true ? misc_1.JsonSize.True : misc_1.JsonSize.False];
-            } else if (typeOfValue === 'number' || value instanceof Number) {
-              if (skipSizing) {
-                return [true, 0];
-              }
-              return [true, (0, misc_1.calculateNumberSize)(value)];
-            } else if (value instanceof Date) {
-              if (skipSizing) {
-                return [true, 0];
-              }
-              return [true, isNaN(value.getDate()) ? misc_1.JsonSize.Null : misc_1.JsonSize.Date + misc_1.JsonSize.Quote * 2];
-            }
-          } catch (_) {
-            return [false, 0];
-          }
-          if (!(0, misc_1.isPlainObject)(value) && !Array.isArray(value)) {
-            return [false, 0];
-          }
-          if (seenObjects.has(value)) {
-            return [false, 0];
-          }
-          seenObjects.add(value);
-          try {
-            return [true, Object.entries(value).reduce((sum, [key, nestedValue], idx, arr) => {
-              let [valid, size] = getJsonSerializableInfo(nestedValue, skipSizing);
-              if (!valid) {
-                throw new Error('JSON validation did not pass. Validation process stopped.');
-              }
-              seenObjects.delete(value);
-              if (skipSizing) {
-                return 0;
-              }
-              const keySize = Array.isArray(value) ? 0 : key.length + misc_1.JsonSize.Comma + misc_1.JsonSize.Colon * 2;
-              const separator = idx < arr.length - 1 ? misc_1.JsonSize.Comma : 0;
-              return sum + keySize + size + separator;
-            }, skipSizing ? 0 : misc_1.JsonSize.Wrapper * 2)];
-          } catch (_) {
-            return [false, 0];
-          }
-        }
-        return getJsonSerializableInfo(jsObject, skipSizingProcess);
-      }
-      exports.validateJsonAndGetSize = validateJsonAndGetSize;
     }, {
       "./assert": 130,
-      "./misc": 140,
-      "superstruct": 240
+      "superstruct": 243
     }],
-    139: [function (require, module, exports) {
+    140: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+    }, {}],
+    141: [function (require, module, exports) {
       "use strict";
 
       var __importDefault = this && this.__importDefault || function (mod) {
@@ -24615,9 +24599,9 @@
       }
       exports.createModuleLogger = createModuleLogger;
     }, {
-      "debug": 153
+      "debug": 156
     }],
-    140: [function (require, module, exports) {
+    142: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -24685,7 +24669,7 @@
       }
       exports.calculateNumberSize = calculateNumberSize;
     }, {}],
-    141: [function (require, module, exports) {
+    143: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -24721,16 +24705,16 @@
       exports.hexToBigInt = hexToBigInt;
     }, {
       "./assert": 130,
-      "./hex": 136
+      "./hex": 137
     }],
-    142: [function (require, module, exports) {
+    144: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
     }, {}],
-    143: [function (require, module, exports) {
+    145: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -24764,7 +24748,14 @@
       }
       exports.timeSince = timeSince;
     }, {}],
-    144: [function (require, module, exports) {
+    146: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+    }, {}],
+    147: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -24818,10 +24809,10 @@
       exports.satisfiesVersionRange = satisfiesVersionRange;
     }, {
       "./assert": 130,
-      "semver": 222,
-      "superstruct": 240
+      "semver": 225,
+      "superstruct": 243
     }],
-    145: [function (require, module, exports) {
+    148: [function (require, module, exports) {
       "use strict";
 
       (function (root) {
@@ -25379,7 +25370,7 @@
         }
       })(this);
     }, {}],
-    146: [function (require, module, exports) {
+    149: [function (require, module, exports) {
       'use strict';
 
       exports.byteLength = byteLength;
@@ -25471,7 +25462,7 @@
         return parts.join('');
       }
     }, {}],
-    147: [function (require, module, exports) {
+    150: [function (require, module, exports) {
       'use strict';
 
       var ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
@@ -25613,7 +25604,7 @@
         fromWords: fromWords
       };
     }, {}],
-    148: [function (require, module, exports) {
+    151: [function (require, module, exports) {
       (function (module, exports) {
         'use strict';
 
@@ -28284,9 +28275,9 @@
         };
       })(typeof module === 'undefined' || module, this);
     }, {
-      "buffer": 150
+      "buffer": 153
     }],
-    149: [function (require, module, exports) {
+    152: [function (require, module, exports) {
       var r;
       module.exports = function rand(len) {
         if (!r) r = new Rand(null);
@@ -28333,10 +28324,10 @@
         } catch (e) {}
       }
     }, {
-      "crypto": 150
+      "crypto": 153
     }],
-    150: [function (require, module, exports) {}, {}],
-    151: [function (require, module, exports) {
+    153: [function (require, module, exports) {}, {}],
+    154: [function (require, module, exports) {
       (function () {
         (function () {
           'use strict';
@@ -29651,11 +29642,11 @@
         }).call(this);
       }).call(this, require("buffer").Buffer);
     }, {
-      "base64-js": 146,
-      "buffer": 151,
-      "ieee754": 188
+      "base64-js": 149,
+      "buffer": 154,
+      "ieee754": 191
     }],
-    152: [function (require, module, exports) {
+    155: [function (require, module, exports) {
       var s = 1000;
       var m = s * 60;
       var h = m * 60;
@@ -29763,7 +29754,7 @@
         return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
       }
     }, {}],
-    153: [function (require, module, exports) {
+    156: [function (require, module, exports) {
       (function (process) {
         (function () {
           exports.formatArgs = formatArgs;
@@ -29849,10 +29840,10 @@
         }).call(this);
       }).call(this, require('_process'));
     }, {
-      "./common": 154,
-      "_process": 193
+      "./common": 157,
+      "_process": 196
     }],
-    154: [function (require, module, exports) {
+    157: [function (require, module, exports) {
       function setup(env) {
         createDebug.debug = createDebug;
         createDebug.default = createDebug;
@@ -30008,9 +29999,9 @@
       }
       module.exports = setup;
     }, {
-      "ms": 152
+      "ms": 155
     }],
-    155: [function (require, module, exports) {
+    158: [function (require, module, exports) {
       'use strict';
 
       var elliptic = exports;
@@ -30022,15 +30013,15 @@
       elliptic.ec = require('./elliptic/ec');
       elliptic.eddsa = require('./elliptic/eddsa');
     }, {
-      "../package.json": 170,
-      "./elliptic/curve": 158,
-      "./elliptic/curves": 161,
-      "./elliptic/ec": 162,
-      "./elliptic/eddsa": 165,
-      "./elliptic/utils": 169,
-      "brorand": 149
+      "../package.json": 173,
+      "./elliptic/curve": 161,
+      "./elliptic/curves": 164,
+      "./elliptic/ec": 165,
+      "./elliptic/eddsa": 168,
+      "./elliptic/utils": 172,
+      "brorand": 152
     }],
-    156: [function (require, module, exports) {
+    159: [function (require, module, exports) {
       'use strict';
 
       var BN = require('bn.js');
@@ -30277,10 +30268,10 @@
         return r;
       };
     }, {
-      "../utils": 169,
-      "bn.js": 148
+      "../utils": 172,
+      "bn.js": 151
     }],
-    157: [function (require, module, exports) {
+    160: [function (require, module, exports) {
       'use strict';
 
       var utils = require('../utils');
@@ -30534,12 +30525,12 @@
       Point.prototype.toP = Point.prototype.normalize;
       Point.prototype.mixedAdd = Point.prototype.add;
     }, {
-      "../utils": 169,
-      "./base": 156,
-      "bn.js": 148,
-      "inherits": 189
+      "../utils": 172,
+      "./base": 159,
+      "bn.js": 151,
+      "inherits": 192
     }],
-    158: [function (require, module, exports) {
+    161: [function (require, module, exports) {
       'use strict';
 
       var curve = exports;
@@ -30548,12 +30539,12 @@
       curve.mont = require('./mont');
       curve.edwards = require('./edwards');
     }, {
-      "./base": 156,
-      "./edwards": 157,
-      "./mont": 159,
-      "./short": 160
+      "./base": 159,
+      "./edwards": 160,
+      "./mont": 162,
+      "./short": 163
     }],
-    159: [function (require, module, exports) {
+    162: [function (require, module, exports) {
       'use strict';
 
       var BN = require('bn.js');
@@ -30673,12 +30664,12 @@
         return this.x.fromRed();
       };
     }, {
-      "../utils": 169,
-      "./base": 156,
-      "bn.js": 148,
-      "inherits": 189
+      "../utils": 172,
+      "./base": 159,
+      "bn.js": 151,
+      "inherits": 192
     }],
-    160: [function (require, module, exports) {
+    163: [function (require, module, exports) {
       'use strict';
 
       var utils = require('../utils');
@@ -31310,12 +31301,12 @@
         return this.z.cmpn(0) === 0;
       };
     }, {
-      "../utils": 169,
-      "./base": 156,
-      "bn.js": 148,
-      "inherits": 189
+      "../utils": 172,
+      "./base": 159,
+      "bn.js": 151,
+      "inherits": 192
     }],
-    161: [function (require, module, exports) {
+    164: [function (require, module, exports) {
       'use strict';
 
       var curves = exports;
@@ -31453,12 +31444,12 @@
         g: ['79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798', '483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8', pre]
       });
     }, {
-      "./curve": 158,
-      "./precomputed/secp256k1": 168,
-      "./utils": 169,
-      "hash.js": 175
+      "./curve": 161,
+      "./precomputed/secp256k1": 171,
+      "./utils": 172,
+      "hash.js": 178
     }],
-    162: [function (require, module, exports) {
+    165: [function (require, module, exports) {
       'use strict';
 
       var BN = require('bn.js');
@@ -31615,15 +31606,15 @@
         throw new Error('Unable to find valid recovery factor');
       };
     }, {
-      "../curves": 161,
-      "../utils": 169,
-      "./key": 163,
-      "./signature": 164,
-      "bn.js": 148,
-      "brorand": 149,
-      "hmac-drbg": 187
+      "../curves": 164,
+      "../utils": 172,
+      "./key": 166,
+      "./signature": 167,
+      "bn.js": 151,
+      "brorand": 152,
+      "hmac-drbg": 190
     }],
-    163: [function (require, module, exports) {
+    166: [function (require, module, exports) {
       'use strict';
 
       var BN = require('bn.js');
@@ -31714,10 +31705,10 @@
         return '<Key priv: ' + (this.priv && this.priv.toString(16, 2)) + ' pub: ' + (this.pub && this.pub.inspect()) + ' >';
       };
     }, {
-      "../utils": 169,
-      "bn.js": 148
+      "../utils": 172,
+      "bn.js": 151
     }],
-    164: [function (require, module, exports) {
+    167: [function (require, module, exports) {
       'use strict';
 
       var BN = require('bn.js');
@@ -31853,10 +31844,10 @@
         return utils.encode(res, enc);
       };
     }, {
-      "../utils": 169,
-      "bn.js": 148
+      "../utils": 172,
+      "bn.js": 151
     }],
-    165: [function (require, module, exports) {
+    168: [function (require, module, exports) {
       'use strict';
 
       var hash = require('hash.js');
@@ -31939,13 +31930,13 @@
         return val instanceof this.pointClass;
       };
     }, {
-      "../curves": 161,
-      "../utils": 169,
-      "./key": 166,
-      "./signature": 167,
-      "hash.js": 175
+      "../curves": 164,
+      "../utils": 172,
+      "./key": 169,
+      "./signature": 170,
+      "hash.js": 178
     }],
-    166: [function (require, module, exports) {
+    169: [function (require, module, exports) {
       'use strict';
 
       var utils = require('../utils');
@@ -32014,9 +32005,9 @@
       };
       module.exports = KeyPair;
     }, {
-      "../utils": 169
+      "../utils": 172
     }],
-    167: [function (require, module, exports) {
+    170: [function (require, module, exports) {
       'use strict';
 
       var BN = require('bn.js');
@@ -32059,10 +32050,10 @@
       };
       module.exports = Signature;
     }, {
-      "../utils": 169,
-      "bn.js": 148
+      "../utils": 172,
+      "bn.js": 151
     }],
-    168: [function (require, module, exports) {
+    171: [function (require, module, exports) {
       module.exports = {
         doubles: {
           step: 4,
@@ -32074,7 +32065,7 @@
         }
       };
     }, {}],
-    169: [function (require, module, exports) {
+    172: [function (require, module, exports) {
       'use strict';
 
       var utils = exports;
@@ -32158,11 +32149,11 @@
       }
       utils.intFromLE = intFromLE;
     }, {
-      "bn.js": 148,
-      "minimalistic-assert": 191,
-      "minimalistic-crypto-utils": 192
+      "bn.js": 151,
+      "minimalistic-assert": 194,
+      "minimalistic-crypto-utils": 195
     }],
-    170: [function (require, module, exports) {
+    173: [function (require, module, exports) {
       module.exports = {
         "name": "elliptic",
         "version": "6.5.4",
@@ -32213,7 +32204,7 @@
         }
       };
     }, {}],
-    171: [function (require, module, exports) {
+    174: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -32222,7 +32213,7 @@
       exports.version = void 0;
       exports.version = "ethers/5.7.2";
     }, {}],
-    172: [function (require, module, exports) {
+    175: [function (require, module, exports) {
       "use strict";
 
       var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
@@ -32351,8 +32342,8 @@
       var logger = new logger_1.Logger(_version_1.version);
       exports.logger = logger;
     }, {
-      "./_version": 171,
-      "./utils": 174,
+      "./_version": 174,
+      "./utils": 177,
       "@ethersproject/abstract-signer": 20,
       "@ethersproject/bignumber": 29,
       "@ethersproject/constants": 36,
@@ -32362,7 +32353,7 @@
       "@ethersproject/wallet": 110,
       "@ethersproject/wordlists": 115
     }],
-    173: [function (require, module, exports) {
+    176: [function (require, module, exports) {
       "use strict";
 
       var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
@@ -32508,9 +32499,9 @@
         }
       });
     }, {
-      "./ethers": 172
+      "./ethers": 175
     }],
-    174: [function (require, module, exports) {
+    177: [function (require, module, exports) {
       "use strict";
 
       var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
@@ -33175,7 +33166,7 @@
       "@ethersproject/wallet": 110,
       "@ethersproject/web": 113
     }],
-    175: [function (require, module, exports) {
+    178: [function (require, module, exports) {
       var hash = exports;
       hash.utils = require('./hash/utils');
       hash.common = require('./hash/common');
@@ -33189,13 +33180,13 @@
       hash.sha512 = hash.sha.sha512;
       hash.ripemd160 = hash.ripemd.ripemd160;
     }, {
-      "./hash/common": 176,
-      "./hash/hmac": 177,
-      "./hash/ripemd": 178,
-      "./hash/sha": 179,
-      "./hash/utils": 186
+      "./hash/common": 179,
+      "./hash/hmac": 180,
+      "./hash/ripemd": 181,
+      "./hash/sha": 182,
+      "./hash/utils": 189
     }],
-    176: [function (require, module, exports) {
+    179: [function (require, module, exports) {
       'use strict';
 
       var utils = require('./utils');
@@ -33263,10 +33254,10 @@
         return res;
       };
     }, {
-      "./utils": 186,
-      "minimalistic-assert": 191
+      "./utils": 189,
+      "minimalistic-assert": 194
     }],
-    177: [function (require, module, exports) {
+    180: [function (require, module, exports) {
       'use strict';
 
       var utils = require('./utils');
@@ -33299,10 +33290,10 @@
         return this.outer.digest(enc);
       };
     }, {
-      "./utils": 186,
-      "minimalistic-assert": 191
+      "./utils": 189,
+      "minimalistic-assert": 194
     }],
-    178: [function (require, module, exports) {
+    181: [function (require, module, exports) {
       'use strict';
 
       var utils = require('./utils');
@@ -33373,10 +33364,10 @@
       var s = [11, 14, 15, 12, 5, 8, 7, 9, 11, 13, 14, 15, 6, 7, 9, 8, 7, 6, 8, 13, 11, 9, 7, 15, 7, 12, 15, 9, 11, 7, 13, 12, 11, 13, 6, 7, 14, 9, 13, 15, 14, 8, 13, 6, 5, 12, 7, 5, 11, 12, 14, 15, 14, 15, 9, 8, 9, 14, 5, 6, 8, 6, 5, 12, 9, 15, 5, 11, 6, 8, 13, 12, 5, 12, 13, 14, 11, 8, 5, 6];
       var sh = [8, 9, 9, 11, 13, 15, 15, 5, 7, 7, 8, 11, 14, 14, 12, 6, 9, 13, 15, 7, 12, 8, 9, 11, 7, 7, 12, 7, 6, 15, 13, 11, 9, 7, 15, 11, 8, 6, 6, 14, 12, 13, 5, 14, 13, 13, 7, 5, 15, 5, 8, 11, 14, 14, 6, 14, 6, 9, 12, 9, 12, 5, 15, 8, 8, 5, 12, 9, 12, 5, 14, 6, 8, 13, 6, 5, 15, 13, 11, 11];
     }, {
-      "./common": 176,
-      "./utils": 186
+      "./common": 179,
+      "./utils": 189
     }],
-    179: [function (require, module, exports) {
+    182: [function (require, module, exports) {
       'use strict';
 
       exports.sha1 = require('./sha/1');
@@ -33385,13 +33376,13 @@
       exports.sha384 = require('./sha/384');
       exports.sha512 = require('./sha/512');
     }, {
-      "./sha/1": 180,
-      "./sha/224": 181,
-      "./sha/256": 182,
-      "./sha/384": 183,
-      "./sha/512": 184
+      "./sha/1": 183,
+      "./sha/224": 184,
+      "./sha/256": 185,
+      "./sha/384": 186,
+      "./sha/512": 187
     }],
-    180: [function (require, module, exports) {
+    183: [function (require, module, exports) {
       'use strict';
 
       var utils = require('../utils');
@@ -33443,11 +33434,11 @@
         if (enc === 'hex') return utils.toHex32(this.h, 'big');else return utils.split32(this.h, 'big');
       };
     }, {
-      "../common": 176,
-      "../utils": 186,
-      "./common": 185
+      "../common": 179,
+      "../utils": 189,
+      "./common": 188
     }],
-    181: [function (require, module, exports) {
+    184: [function (require, module, exports) {
       'use strict';
 
       var utils = require('../utils');
@@ -33467,10 +33458,10 @@
         if (enc === 'hex') return utils.toHex32(this.h.slice(0, 7), 'big');else return utils.split32(this.h.slice(0, 7), 'big');
       };
     }, {
-      "../utils": 186,
-      "./256": 182
+      "../utils": 189,
+      "./256": 185
     }],
-    182: [function (require, module, exports) {
+    185: [function (require, module, exports) {
       'use strict';
 
       var utils = require('../utils');
@@ -33539,12 +33530,12 @@
         if (enc === 'hex') return utils.toHex32(this.h, 'big');else return utils.split32(this.h, 'big');
       };
     }, {
-      "../common": 176,
-      "../utils": 186,
-      "./common": 185,
-      "minimalistic-assert": 191
+      "../common": 179,
+      "../utils": 189,
+      "./common": 188,
+      "minimalistic-assert": 194
     }],
-    183: [function (require, module, exports) {
+    186: [function (require, module, exports) {
       'use strict';
 
       var utils = require('../utils');
@@ -33564,10 +33555,10 @@
         if (enc === 'hex') return utils.toHex32(this.h.slice(0, 12), 'big');else return utils.split32(this.h.slice(0, 12), 'big');
       };
     }, {
-      "../utils": 186,
-      "./512": 184
+      "../utils": 189,
+      "./512": 187
     }],
-    184: [function (require, module, exports) {
+    187: [function (require, module, exports) {
       'use strict';
 
       var utils = require('../utils');
@@ -33768,11 +33759,11 @@
         return r;
       }
     }, {
-      "../common": 176,
-      "../utils": 186,
-      "minimalistic-assert": 191
+      "../common": 179,
+      "../utils": 189,
+      "minimalistic-assert": 194
     }],
-    185: [function (require, module, exports) {
+    188: [function (require, module, exports) {
       'use strict';
 
       var utils = require('../utils');
@@ -33812,9 +33803,9 @@
       }
       exports.g1_256 = g1_256;
     }, {
-      "../utils": 186
+      "../utils": 189
     }],
-    186: [function (require, module, exports) {
+    189: [function (require, module, exports) {
       'use strict';
 
       var assert = require('minimalistic-assert');
@@ -34028,10 +34019,10 @@
       }
       exports.shr64_lo = shr64_lo;
     }, {
-      "inherits": 189,
-      "minimalistic-assert": 191
+      "inherits": 192,
+      "minimalistic-assert": 194
     }],
-    187: [function (require, module, exports) {
+    190: [function (require, module, exports) {
       'use strict';
 
       var hash = require('hash.js');
@@ -34112,11 +34103,11 @@
         return utils.encode(res, enc);
       };
     }, {
-      "hash.js": 175,
-      "minimalistic-assert": 191,
-      "minimalistic-crypto-utils": 192
+      "hash.js": 178,
+      "minimalistic-assert": 194,
+      "minimalistic-crypto-utils": 195
     }],
-    188: [function (require, module, exports) {
+    191: [function (require, module, exports) {
       exports.read = function (buffer, offset, isLE, mLen, nBytes) {
         var e, m;
         var eLen = nBytes * 8 - mLen - 1;
@@ -34191,7 +34182,7 @@
         buffer[offset + i - d] |= s * 128;
       };
     }, {}],
-    189: [function (require, module, exports) {
+    192: [function (require, module, exports) {
       if (typeof Object.create === 'function') {
         module.exports = function inherits(ctor, superCtor) {
           if (superCtor) {
@@ -34218,7 +34209,7 @@
         };
       }
     }, {}],
-    190: [function (require, module, exports) {
+    193: [function (require, module, exports) {
       (function (process, global) {
         (function () {
           (function () {
@@ -34871,9 +34862,9 @@
         }).call(this);
       }).call(this, require('_process'), typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-      "_process": 193
+      "_process": 196
     }],
-    191: [function (require, module, exports) {
+    194: [function (require, module, exports) {
       module.exports = assert;
       function assert(val, msg) {
         if (!val) throw new Error(msg || 'Assertion failed');
@@ -34882,7 +34873,7 @@
         if (l != r) throw new Error(msg || 'Assertion failed: ' + l + ' != ' + r);
       };
     }, {}],
-    192: [function (require, module, exports) {
+    195: [function (require, module, exports) {
       'use strict';
 
       var utils = exports;
@@ -34923,7 +34914,7 @@
         if (enc === 'hex') return toHex(arr);else return arr;
       };
     }, {}],
-    193: [function (require, module, exports) {
+    196: [function (require, module, exports) {
       var process = module.exports = {};
       var cachedSetTimeout;
       var cachedClearTimeout;
@@ -35080,7 +35071,7 @@
         return 0;
       };
     }, {}],
-    194: [function (require, module, exports) {
+    197: [function (require, module, exports) {
       (function (setImmediate) {
         (function () {
           "use strict";
@@ -35476,9 +35467,9 @@
         }).call(this);
       }).call(this, require("timers").setImmediate);
     }, {
-      "timers": 241
+      "timers": 244
     }],
-    195: [function (require, module, exports) {
+    198: [function (require, module, exports) {
       const ANY = Symbol('SemVer ANY');
       class Comparator {
         static get ANY() {
@@ -35588,14 +35579,14 @@
       const SemVer = require('./semver');
       const Range = require('./range');
     }, {
-      "../functions/cmp": 199,
-      "../internal/debug": 224,
-      "../internal/parse-options": 226,
-      "../internal/re": 227,
-      "./range": 196,
-      "./semver": 197
+      "../functions/cmp": 202,
+      "../internal/debug": 227,
+      "../internal/parse-options": 229,
+      "../internal/re": 230,
+      "./range": 199,
+      "./semver": 200
     }],
-    196: [function (require, module, exports) {
+    199: [function (require, module, exports) {
       class Range {
         constructor(range, options) {
           options = parseOptions(options);
@@ -35956,15 +35947,15 @@
         return true;
       };
     }, {
-      "../internal/constants": 223,
-      "../internal/debug": 224,
-      "../internal/parse-options": 226,
-      "../internal/re": 227,
-      "./comparator": 195,
-      "./semver": 197,
-      "lru-cache": 228
+      "../internal/constants": 226,
+      "../internal/debug": 227,
+      "../internal/parse-options": 229,
+      "../internal/re": 230,
+      "./comparator": 198,
+      "./semver": 200,
+      "lru-cache": 231
     }],
-    197: [function (require, module, exports) {
+    200: [function (require, module, exports) {
       const debug = require('../internal/debug');
       const {
         MAX_LENGTH,
@@ -36205,13 +36196,13 @@
       }
       module.exports = SemVer;
     }, {
-      "../internal/constants": 223,
-      "../internal/debug": 224,
-      "../internal/identifiers": 225,
-      "../internal/parse-options": 226,
-      "../internal/re": 227
+      "../internal/constants": 226,
+      "../internal/debug": 227,
+      "../internal/identifiers": 228,
+      "../internal/parse-options": 229,
+      "../internal/re": 230
     }],
-    198: [function (require, module, exports) {
+    201: [function (require, module, exports) {
       const parse = require('./parse');
       const clean = (version, options) => {
         const s = parse(version.trim().replace(/^[=v]+/, ''), options);
@@ -36219,9 +36210,9 @@
       };
       module.exports = clean;
     }, {
-      "./parse": 214
+      "./parse": 217
     }],
-    199: [function (require, module, exports) {
+    202: [function (require, module, exports) {
       const eq = require('./eq');
       const neq = require('./neq');
       const gt = require('./gt');
@@ -36266,14 +36257,14 @@
       };
       module.exports = cmp;
     }, {
-      "./eq": 205,
-      "./gt": 206,
-      "./gte": 207,
-      "./lt": 209,
-      "./lte": 210,
-      "./neq": 213
+      "./eq": 208,
+      "./gt": 209,
+      "./gte": 210,
+      "./lt": 212,
+      "./lte": 213,
+      "./neq": 216
     }],
-    200: [function (require, module, exports) {
+    203: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const parse = require('./parse');
       const {
@@ -36311,11 +36302,11 @@
       };
       module.exports = coerce;
     }, {
-      "../classes/semver": 197,
-      "../internal/re": 227,
-      "./parse": 214
+      "../classes/semver": 200,
+      "../internal/re": 230,
+      "./parse": 217
     }],
-    201: [function (require, module, exports) {
+    204: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const compareBuild = (a, b, loose) => {
         const versionA = new SemVer(a, loose);
@@ -36324,23 +36315,23 @@
       };
       module.exports = compareBuild;
     }, {
-      "../classes/semver": 197
+      "../classes/semver": 200
     }],
-    202: [function (require, module, exports) {
+    205: [function (require, module, exports) {
       const compare = require('./compare');
       const compareLoose = (a, b) => compare(a, b, true);
       module.exports = compareLoose;
     }, {
-      "./compare": 203
+      "./compare": 206
     }],
-    203: [function (require, module, exports) {
+    206: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const compare = (a, b, loose) => new SemVer(a, loose).compare(new SemVer(b, loose));
       module.exports = compare;
     }, {
-      "../classes/semver": 197
+      "../classes/semver": 200
     }],
-    204: [function (require, module, exports) {
+    207: [function (require, module, exports) {
       const parse = require('./parse.js');
       const diff = (version1, version2) => {
         const v1 = parse(version1, null, true);
@@ -36376,30 +36367,30 @@
       };
       module.exports = diff;
     }, {
-      "./parse.js": 214
+      "./parse.js": 217
     }],
-    205: [function (require, module, exports) {
+    208: [function (require, module, exports) {
       const compare = require('./compare');
       const eq = (a, b, loose) => compare(a, b, loose) === 0;
       module.exports = eq;
     }, {
-      "./compare": 203
+      "./compare": 206
     }],
-    206: [function (require, module, exports) {
+    209: [function (require, module, exports) {
       const compare = require('./compare');
       const gt = (a, b, loose) => compare(a, b, loose) > 0;
       module.exports = gt;
     }, {
-      "./compare": 203
+      "./compare": 206
     }],
-    207: [function (require, module, exports) {
+    210: [function (require, module, exports) {
       const compare = require('./compare');
       const gte = (a, b, loose) => compare(a, b, loose) >= 0;
       module.exports = gte;
     }, {
-      "./compare": 203
+      "./compare": 206
     }],
-    208: [function (require, module, exports) {
+    211: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const inc = (version, release, options, identifier, identifierBase) => {
         if (typeof options === 'string') {
@@ -36415,44 +36406,44 @@
       };
       module.exports = inc;
     }, {
-      "../classes/semver": 197
+      "../classes/semver": 200
     }],
-    209: [function (require, module, exports) {
+    212: [function (require, module, exports) {
       const compare = require('./compare');
       const lt = (a, b, loose) => compare(a, b, loose) < 0;
       module.exports = lt;
     }, {
-      "./compare": 203
+      "./compare": 206
     }],
-    210: [function (require, module, exports) {
+    213: [function (require, module, exports) {
       const compare = require('./compare');
       const lte = (a, b, loose) => compare(a, b, loose) <= 0;
       module.exports = lte;
     }, {
-      "./compare": 203
+      "./compare": 206
     }],
-    211: [function (require, module, exports) {
+    214: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const major = (a, loose) => new SemVer(a, loose).major;
       module.exports = major;
     }, {
-      "../classes/semver": 197
+      "../classes/semver": 200
     }],
-    212: [function (require, module, exports) {
+    215: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const minor = (a, loose) => new SemVer(a, loose).minor;
       module.exports = minor;
     }, {
-      "../classes/semver": 197
+      "../classes/semver": 200
     }],
-    213: [function (require, module, exports) {
+    216: [function (require, module, exports) {
       const compare = require('./compare');
       const neq = (a, b, loose) => compare(a, b, loose) !== 0;
       module.exports = neq;
     }, {
-      "./compare": 203
+      "./compare": 206
     }],
-    214: [function (require, module, exports) {
+    217: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const parse = (version, options, throwErrors = false) => {
         if (version instanceof SemVer) {
@@ -36469,16 +36460,16 @@
       };
       module.exports = parse;
     }, {
-      "../classes/semver": 197
+      "../classes/semver": 200
     }],
-    215: [function (require, module, exports) {
+    218: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const patch = (a, loose) => new SemVer(a, loose).patch;
       module.exports = patch;
     }, {
-      "../classes/semver": 197
+      "../classes/semver": 200
     }],
-    216: [function (require, module, exports) {
+    219: [function (require, module, exports) {
       const parse = require('./parse');
       const prerelease = (version, options) => {
         const parsed = parse(version, options);
@@ -36486,23 +36477,23 @@
       };
       module.exports = prerelease;
     }, {
-      "./parse": 214
+      "./parse": 217
     }],
-    217: [function (require, module, exports) {
+    220: [function (require, module, exports) {
       const compare = require('./compare');
       const rcompare = (a, b, loose) => compare(b, a, loose);
       module.exports = rcompare;
     }, {
-      "./compare": 203
+      "./compare": 206
     }],
-    218: [function (require, module, exports) {
+    221: [function (require, module, exports) {
       const compareBuild = require('./compare-build');
       const rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose));
       module.exports = rsort;
     }, {
-      "./compare-build": 201
+      "./compare-build": 204
     }],
-    219: [function (require, module, exports) {
+    222: [function (require, module, exports) {
       const Range = require('../classes/range');
       const satisfies = (version, range, options) => {
         try {
@@ -36514,16 +36505,16 @@
       };
       module.exports = satisfies;
     }, {
-      "../classes/range": 196
+      "../classes/range": 199
     }],
-    220: [function (require, module, exports) {
+    223: [function (require, module, exports) {
       const compareBuild = require('./compare-build');
       const sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose));
       module.exports = sort;
     }, {
-      "./compare-build": 201
+      "./compare-build": 204
     }],
-    221: [function (require, module, exports) {
+    224: [function (require, module, exports) {
       const parse = require('./parse');
       const valid = (version, options) => {
         const v = parse(version, options);
@@ -36531,9 +36522,9 @@
       };
       module.exports = valid;
     }, {
-      "./parse": 214
+      "./parse": 217
     }],
-    222: [function (require, module, exports) {
+    225: [function (require, module, exports) {
       const internalRe = require('./internal/re');
       const constants = require('./internal/constants');
       const SemVer = require('./classes/semver');
@@ -36623,49 +36614,49 @@
         rcompareIdentifiers: identifiers.rcompareIdentifiers
       };
     }, {
-      "./classes/comparator": 195,
-      "./classes/range": 196,
-      "./classes/semver": 197,
-      "./functions/clean": 198,
-      "./functions/cmp": 199,
-      "./functions/coerce": 200,
-      "./functions/compare": 203,
-      "./functions/compare-build": 201,
-      "./functions/compare-loose": 202,
-      "./functions/diff": 204,
-      "./functions/eq": 205,
-      "./functions/gt": 206,
-      "./functions/gte": 207,
-      "./functions/inc": 208,
-      "./functions/lt": 209,
-      "./functions/lte": 210,
-      "./functions/major": 211,
-      "./functions/minor": 212,
-      "./functions/neq": 213,
-      "./functions/parse": 214,
-      "./functions/patch": 215,
-      "./functions/prerelease": 216,
-      "./functions/rcompare": 217,
-      "./functions/rsort": 218,
-      "./functions/satisfies": 219,
-      "./functions/sort": 220,
-      "./functions/valid": 221,
-      "./internal/constants": 223,
-      "./internal/identifiers": 225,
-      "./internal/re": 227,
-      "./ranges/gtr": 229,
-      "./ranges/intersects": 230,
-      "./ranges/ltr": 231,
-      "./ranges/max-satisfying": 232,
-      "./ranges/min-satisfying": 233,
-      "./ranges/min-version": 234,
-      "./ranges/outside": 235,
-      "./ranges/simplify": 236,
-      "./ranges/subset": 237,
-      "./ranges/to-comparators": 238,
-      "./ranges/valid": 239
+      "./classes/comparator": 198,
+      "./classes/range": 199,
+      "./classes/semver": 200,
+      "./functions/clean": 201,
+      "./functions/cmp": 202,
+      "./functions/coerce": 203,
+      "./functions/compare": 206,
+      "./functions/compare-build": 204,
+      "./functions/compare-loose": 205,
+      "./functions/diff": 207,
+      "./functions/eq": 208,
+      "./functions/gt": 209,
+      "./functions/gte": 210,
+      "./functions/inc": 211,
+      "./functions/lt": 212,
+      "./functions/lte": 213,
+      "./functions/major": 214,
+      "./functions/minor": 215,
+      "./functions/neq": 216,
+      "./functions/parse": 217,
+      "./functions/patch": 218,
+      "./functions/prerelease": 219,
+      "./functions/rcompare": 220,
+      "./functions/rsort": 221,
+      "./functions/satisfies": 222,
+      "./functions/sort": 223,
+      "./functions/valid": 224,
+      "./internal/constants": 226,
+      "./internal/identifiers": 228,
+      "./internal/re": 230,
+      "./ranges/gtr": 232,
+      "./ranges/intersects": 233,
+      "./ranges/ltr": 234,
+      "./ranges/max-satisfying": 235,
+      "./ranges/min-satisfying": 236,
+      "./ranges/min-version": 237,
+      "./ranges/outside": 238,
+      "./ranges/simplify": 239,
+      "./ranges/subset": 240,
+      "./ranges/to-comparators": 241,
+      "./ranges/valid": 242
     }],
-    223: [function (require, module, exports) {
+    226: [function (require, module, exports) {
       const SEMVER_SPEC_VERSION = '2.0.0';
       const MAX_LENGTH = 256;
       const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
@@ -36681,7 +36672,7 @@
         FLAG_LOOSE: 0b010
       };
     }, {}],
-    224: [function (require, module, exports) {
+    227: [function (require, module, exports) {
       (function (process) {
         (function () {
           const debug = typeof process === 'object' && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG) ? (...args) => console.error('SEMVER', ...args) : () => {};
@@ -36689,9 +36680,9 @@
         }).call(this);
       }).call(this, require('_process'));
     }, {
-      "_process": 193
+      "_process": 196
     }],
-    225: [function (require, module, exports) {
+    228: [function (require, module, exports) {
       const numeric = /^[0-9]+$/;
       const compareIdentifiers = (a, b) => {
         const anum = numeric.test(a);
@@ -36708,7 +36699,7 @@
         rcompareIdentifiers
       };
     }, {}],
-    226: [function (require, module, exports) {
+    229: [function (require, module, exports) {
       const looseOption = Object.freeze({
         loose: true
       });
@@ -36724,7 +36715,7 @@
       };
       module.exports = parseOptions;
     }, {}],
-    227: [function (require, module, exports) {
+    230: [function (require, module, exports) {
       const {
         MAX_SAFE_COMPONENT_LENGTH
       } = require('./constants');
@@ -36785,10 +36776,10 @@
       createToken('GTE0', '^\\s*>=\\s*0\\.0\\.0\\s*$');
       createToken('GTE0PRE', '^\\s*>=\\s*0\\.0\\.0-0\\s*$');
     }, {
-      "./constants": 223,
-      "./debug": 224
+      "./constants": 226,
+      "./debug": 227
     }],
-    228: [function (require, module, exports) {
+    231: [function (require, module, exports) {
       'use strict';
 
       const Yallist = require('yallist');
@@ -37035,16 +37026,16 @@
       };
       module.exports = LRUCache;
     }, {
-      "yallist": 243
+      "yallist": 246
     }],
-    229: [function (require, module, exports) {
+    232: [function (require, module, exports) {
       const outside = require('./outside');
       const gtr = (version, range, options) => outside(version, range, '>', options);
       module.exports = gtr;
     }, {
-      "./outside": 235
+      "./outside": 238
     }],
-    230: [function (require, module, exports) {
+    233: [function (require, module, exports) {
       const Range = require('../classes/range');
       const intersects = (r1, r2, options) => {
         r1 = new Range(r1, options);
@@ -37053,16 +37044,16 @@
       };
       module.exports = intersects;
     }, {
-      "../classes/range": 196
+      "../classes/range": 199
     }],
-    231: [function (require, module, exports) {
+    234: [function (require, module, exports) {
       const outside = require('./outside');
       const ltr = (version, range, options) => outside(version, range, '<', options);
       module.exports = ltr;
     }, {
-      "./outside": 235
+      "./outside": 238
     }],
-    232: [function (require, module, exports) {
+    235: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const Range = require('../classes/range');
       const maxSatisfying = (versions, range, options) => {
@@ -37086,10 +37077,10 @@
       };
       module.exports = maxSatisfying;
     }, {
-      "../classes/range": 196,
-      "../classes/semver": 197
+      "../classes/range": 199,
+      "../classes/semver": 200
     }],
-    233: [function (require, module, exports) {
+    236: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const Range = require('../classes/range');
       const minSatisfying = (versions, range, options) => {
@@ -37113,10 +37104,10 @@
       };
       module.exports = minSatisfying;
     }, {
-      "../classes/range": 196,
-      "../classes/semver": 197
+      "../classes/range": 199,
+      "../classes/semver": 200
     }],
-    234: [function (require, module, exports) {
+    237: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const Range = require('../classes/range');
       const gt = require('../functions/gt');
@@ -37168,11 +37159,11 @@
       };
       module.exports = minVersion;
     }, {
-      "../classes/range": 196,
-      "../classes/semver": 197,
-      "../functions/gt": 206
+      "../classes/range": 199,
+      "../classes/semver": 200,
+      "../functions/gt": 209
     }],
-    235: [function (require, module, exports) {
+    238: [function (require, module, exports) {
       const SemVer = require('../classes/semver');
       const Comparator = require('../classes/comparator');
       const {
@@ -37238,16 +37229,16 @@
       };
       module.exports = outside;
     }, {
-      "../classes/comparator": 195,
-      "../classes/range": 196,
-      "../classes/semver": 197,
-      "../functions/gt": 206,
-      "../functions/gte": 207,
-      "../functions/lt": 209,
-      "../functions/lte": 210,
-      "../functions/satisfies": 219
+      "../classes/comparator": 198,
+      "../classes/range": 199,
+      "../classes/semver": 200,
+      "../functions/gt": 209,
+      "../functions/gte": 210,
+      "../functions/lt": 212,
+      "../functions/lte": 213,
+      "../functions/satisfies": 222
     }],
-    236: [function (require, module, exports) {
+    239: [function (require, module, exports) {
       const satisfies = require('../functions/satisfies.js');
       const compare = require('../functions/compare.js');
       module.exports = (versions, range, options) => {
@@ -37292,10 +37283,10 @@
         return simplified.length < original.length ? simplified : range;
       };
     }, {
-      "../functions/compare.js": 203,
-      "../functions/satisfies.js": 219
+      "../functions/compare.js": 206,
+      "../functions/satisfies.js": 222
     }],
-    237: [function (require, module, exports) {
+    240: [function (require, module, exports) {
       const Range = require('../classes/range.js');
       const Comparator = require('../classes/comparator.js');
       const {
@@ -37454,19 +37445,19 @@
       };
       module.exports = subset;
     }, {
-      "../classes/comparator.js": 195,
-      "../classes/range.js": 196,
-      "../functions/compare.js": 203,
-      "../functions/satisfies.js": 219
+      "../classes/comparator.js": 198,
+      "../classes/range.js": 199,
+      "../functions/compare.js": 206,
+      "../functions/satisfies.js": 222
     }],
-    238: [function (require, module, exports) {
+    241: [function (require, module, exports) {
       const Range = require('../classes/range');
       const toComparators = (range, options) => new Range(range, options).set.map(comp => comp.map(c => c.value).join(' ').trim().split(' '));
       module.exports = toComparators;
     }, {
-      "../classes/range": 196
+      "../classes/range": 199
     }],
-    239: [function (require, module, exports) {
+    242: [function (require, module, exports) {
       const Range = require('../classes/range');
       const validRange = (range, options) => {
         try {
@@ -37477,9 +37468,9 @@
       };
       module.exports = validRange;
     }, {
-      "../classes/range": 196
+      "../classes/range": 199
     }],
-    240: [function (require, module, exports) {
+    243: [function (require, module, exports) {
       (function (global, factory) {
         typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) : typeof define === 'function' && define.amd ? define(['exports'], factory) : (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Superstruct = {}));
       })(this, function (exports) {
@@ -38308,7 +38299,7 @@
         exports.validate = validate;
       });
     }, {}],
-    241: [function (require, module, exports) {
+    244: [function (require, module, exports) {
       (function (setImmediate, clearImmediate) {
         (function () {
           var nextTick = require('process/browser.js').nextTick;
@@ -38372,10 +38363,10 @@
         }).call(this);
       }).call(this, require("timers").setImmediate, require("timers").clearImmediate);
     }, {
-      "process/browser.js": 193,
-      "timers": 241
+      "process/browser.js": 196,
+      "timers": 244
     }],
-    242: [function (require, module, exports) {
+    245: [function (require, module, exports) {
       'use strict';
 
       module.exports = function (Yallist) {
@@ -38386,7 +38377,7 @@
         };
       };
     }, {}],
-    243: [function (require, module, exports) {
+    246: [function (require, module, exports) {
       'use strict';
 
       module.exports = Yallist;
@@ -38751,9 +38742,9 @@
         require('./iterator.js')(Yallist);
       } catch (er) {}
     }, {
-      "./iterator.js": 242
+      "./iterator.js": 245
     }],
-    244: [function (require, module, exports) {
+    247: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -38813,13 +38804,29 @@
               const notifs = await (0, _fetchnotifs.fetchAllAddrNotifs)();
               const msgs = (0, _popupHelper.popupHelper)(notifs);
               if (msgs) {
-                await snap.request({
+                snap.request({
                   method: "snap_dialog",
                   params: {
                     type: "alert",
                     content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("You have a new notifications!"), (0, _snapsUi.divider)(), ...msgs.map(msg => (0, _snapsUi.text)(msg))])
                   }
                 });
+              }
+              if (msgs) {
+                let maxlength = msgs.length > 11 ? 11 : msgs.length;
+                for (let i = 0; i < maxlength; i++) {
+                  let msg = msgs[i];
+                  msg = String(msg);
+                  msg = msg.slice(0, 47);
+                  await snap.request({
+                    method: "snap_notify",
+                    params: {
+                      type: "inApp",
+                      message: msg
+                    }
+                  });
+                  await sleep(5000);
+                }
               }
             }
           default:
@@ -38828,12 +38835,12 @@
       };
       exports.onCronjob = onCronjob;
     }, {
-      "./utils/fetchAddress": 245,
-      "./utils/fetchnotifs": 246,
-      "./utils/popupHelper": 247,
+      "./utils/fetchAddress": 248,
+      "./utils/fetchnotifs": 249,
+      "./utils/popupHelper": 250,
       "@metamask/snaps-ui": 127
     }],
-    245: [function (require, module, exports) {
+    248: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -38953,9 +38960,9 @@
       exports.fetchAddress = fetchAddress;
     }, {
       "@metamask/snaps-ui": 127,
-      "ethers": 173
+      "ethers": 176
     }],
-    246: [function (require, module, exports) {
+    249: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -39006,9 +39013,9 @@
       };
       exports.fetchAllAddrNotifs = fetchAllAddrNotifs;
     }, {
-      "./fetchAddress": 245
+      "./fetchAddress": 248
     }],
-    247: [function (require, module, exports) {
+    250: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -39027,5 +39034,5 @@
       };
       exports.popupHelper = popupHelper;
     }, {}]
-  }, {}, [244])(244);
+  }, {}, [247])(247);
 });

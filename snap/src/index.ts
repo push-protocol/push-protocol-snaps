@@ -59,7 +59,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       const notifs = await fetchAllAddrNotifs();
       const msgs = popupHelper(notifs);
       if (msgs) {
-        await snap.request({
+        snap.request({
           method: "snap_dialog",
           params: {
             type: "alert",
@@ -71,7 +71,24 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
           },
         });
       }
+
+      if (msgs) {
+        let maxlength = msgs.length>11?11:msgs.length;
+        for (let i = 0; i < maxlength; i++) {
+          let msg = msgs[i];
+          msg = String(msg);
+          msg = msg.slice(0, 47);
+          await snap.request({
+            method: "snap_notify",
+            params: {
+              type: "inApp",
+              message: msg,
+            },
+          });
+          await sleep(5000);
+      }
     }
+  }
     default:
       throw new Error("Method not found.");
   }
