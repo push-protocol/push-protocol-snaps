@@ -1,9 +1,10 @@
 import { OnCronjobHandler, OnRpcRequestHandler } from "@metamask/snaps-types";
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
-import { addAddress, clearAddress, confirmAddress, removeAddress } from "./utils/fetchAddress";
+import { addAddress, confirmAddress } from "./utils/fetchAddress";
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
 import { popupToggle } from "./utils/toggleHelper";
+import { fetchPushChats } from "./utils/fetchPushChats";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -17,14 +18,6 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     case "hello": {
       await addAddress(request.params.address || "0x0");
       await confirmAddress();
-      break;
-    }
-    case "clear": {
-      clearAddress();
-      break;
-    }
-    case "remove": {
-      removeAddress(request.params.address || "0x0");
       break;
     }
     case "init": {
@@ -82,7 +75,13 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
   switch (request.method) {
     case "fireCronjob": {
       const notifs = await fetchAllAddrNotifs();
-      const msgs = popupHelper(notifs);
+      let msgs = popupHelper(notifs);
+
+      let chat = await fetchPushChats(); 
+
+      if(chat){
+        msgs.push(chat);
+      }
 
       let persistedData = await snap.request({
         method: "snap_manageState",
@@ -92,7 +91,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       let popuptoggle = persistedData.popuptoggle;
 
       if (popuptoggle) {
-        if (msgs) {
+        if (msgs.length > 0) {
           snap.request({
             method: "snap_dialog",
             params: {
@@ -107,7 +106,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         }
       }
 
-      if (msgs) {
+      if (msgs.length > 0) {
         let maxlength = msgs.length > 11 ? 11 : msgs.length;
         for (let i = 0; i < maxlength; i++) {
           let msg = msgs[i];

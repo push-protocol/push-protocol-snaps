@@ -57,41 +57,11 @@ export const confirmAddress = async () => {
             text('Following addresses will receive notifications:'),
             divider(),
             text(`${msg}`),
-            text(`popup toggle: ${popup}`)
           ]),
         },
       });
 
 };
-
-export const clearAddress = async () => {
-    const data = {
-        addresses: [],
-    };
-    await snap.request({
-        method: 'snap_manageState',
-        params: { operation: 'update', newState:data },
-    });
-}
-
-export const removeAddress = async (address:string) => {
-    const persistedData = await snap.request({
-        method: 'snap_manageState',
-        params: { operation: 'get' },
-    });
-    const data = persistedData!.addresses;
-    if(data!.includes(address)){
-        const index = data!.indexOf(address);
-        data!.splice(index,1);
-        const newdata = {
-            addresses: data,
-        };
-        await snap.request({
-            method: 'snap_manageState',
-            params: { operation: 'update', newState:newdata },
-        });
-    }
-}
 
 export const fetchAddress = async () => {
     const persistedData = await snap.request({
