@@ -1,6 +1,6 @@
 {
   "name": "push-notifier",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Get Push Notifications directly in your MetaMask wallet!",
   "repository": {
     "type": "git",
