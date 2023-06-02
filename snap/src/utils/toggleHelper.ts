@@ -1,10 +1,10 @@
-export const popupToggle= async () => {
+export const popupToggle= async (time:string) => {
     let persistedData = await snap.request({
         method: 'snap_manageState',
         params: { operation: 'get' },
     });
 
-    let popuptoggle = !persistedData.popuptoggle;
+    let popuptoggle = time;
 
     const data = {
         addresses: persistedData.addresses,

@@ -38,29 +38,40 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       return true;
     }
     case "togglepopup": {
-      await popupToggle();
-
-      let persistedData = await snap.request({
-        method: "snap_manageState",
-        params: { operation: "get" },
+      const time = await snap.request({
+        method: "snap_dialog",
+        params: {
+          type: "prompt",
+          content: panel([
+            heading("Snooze Notifications"),
+            text("Enter the time in hours to snooze pop-up notifications"),
+          ]),
+          placeholder: "Enter time in hours",
+        },
       });
 
-      let popuptoggle = persistedData.popuptoggle;
-
-      let msg = popuptoggle
-        ? "🔔 Popup Notifications Enabled"
-        : "🔕 Popup Notifications Disabled";
+      if (time == null) {
+        await popupToggle(
+          String((Date.now() / 1000 + Number(1) * 3600).toFixed(0))
+        );
+      } else {
+        await popupToggle(
+          String((Date.now() / 1000 + Number(time) * 3600).toFixed(0))
+        );
+      }
 
       await snap.request({
         method: "snap_dialog",
         params: {
           type: "alert",
           content: panel([
-            heading("Popup Toggle"),
+            heading("Notifications Snoozed"),
             divider(),
-            text(`${msg}`),
-            divider(),
-            text("🔔 You can change this setting anytime from the Dapp"),
+            text(
+              "You will not receive pop-up notifications for the next " +
+                time +
+                " hours"
+            ),
           ]),
         },
       });
@@ -77,9 +88,9 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       const notifs = await fetchAllAddrNotifs();
       let msgs = popupHelper(notifs);
 
-      let chat = await fetchPushChats(); 
+      let chat = await fetchPushChats();
 
-      if(chat){
+      if (chat) {
         msgs.push(chat);
       }
 
@@ -90,12 +101,12 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
 
       let popuptoggle = persistedData.popuptoggle;
 
-      if (popuptoggle) {
+      if (Number(String(popuptoggle)) < Date.now() / 1000) {
         if (msgs.length > 0) {
-          snap.request({
+          const res = await snap.request({
             method: "snap_dialog",
             params: {
-              type: "alert",
+              type: "confirmation",
               content: panel([
                 heading("You have a new notifications!"),
                 divider(),
@@ -103,6 +114,47 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
               ]),
             },
           });
+          if (res === false) {
+            const time = await snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "prompt",
+                content: panel([
+                  heading("Snooze Notifications"),
+                  text(
+                    "Enter the time in hours to snooze pop-up notifications"
+                  ),
+                ]),
+                placeholder: "Enter time in hours",
+              },
+            });
+
+            if (time == null) {
+              await popupToggle(
+                String((Date.now() / 1000 + Number(1) * 3600).toFixed(0))
+              );
+            } else {
+              await popupToggle(
+                String((Date.now() / 1000 + Number(time) * 3600).toFixed(0))
+              );
+            }
+
+            await snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "alert",
+                content: panel([
+                  heading("Notifications Snoozed"),
+                  divider(),
+                  text(
+                    "You will not receive pop-up notifications for the next " +
+                      time +
+                      " hours"
+                  ),
+                ]),
+              },
+            });
+          }
         }
       }
 

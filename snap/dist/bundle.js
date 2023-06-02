@@ -38784,20 +38784,24 @@
             }
           case "togglepopup":
             {
-              await (0, _toggleHelper.popupToggle)();
-              let persistedData = await snap.request({
-                method: "snap_manageState",
+              const time = await snap.request({
+                method: "snap_dialog",
                 params: {
-                  operation: "get"
+                  type: "prompt",
+                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Notifications"), (0, _snapsUi.text)("Enter the time in hours to snooze pop-up notifications")]),
+                  placeholder: "Enter time in hours"
                 }
               });
-              let popuptoggle = persistedData.popuptoggle;
-              let msg = popuptoggle ? "🔔 Popup Notifications Enabled" : "🔕 Popup Notifications Disabled";
+              if (time == null) {
+                await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(1) * 3600).toFixed(0)));
+              } else {
+                await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(time) * 3600).toFixed(0)));
+              }
               await snap.request({
                 method: "snap_dialog",
                 params: {
                   type: "alert",
-                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Popup Toggle"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`), (0, _snapsUi.divider)(), (0, _snapsUi.text)("🔔 You can change this setting anytime from the Dapp")])
+                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notifications Snoozed"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("You will not receive pop-up notifications for the next " + time + " hours")])
                 }
               });
               break;
@@ -38826,15 +38830,37 @@
                 }
               });
               let popuptoggle = persistedData.popuptoggle;
-              if (popuptoggle) {
+              if (Number(String(popuptoggle)) < Date.now() / 1000) {
                 if (msgs.length > 0) {
-                  snap.request({
+                  const res = await snap.request({
                     method: "snap_dialog",
                     params: {
-                      type: "alert",
+                      type: "confirmation",
                       content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("You have a new notifications!"), (0, _snapsUi.divider)(), ...msgs.map(msg => (0, _snapsUi.text)(msg))])
                     }
                   });
+                  if (res === false) {
+                    const time = await snap.request({
+                      method: "snap_dialog",
+                      params: {
+                        type: "prompt",
+                        content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Notifications"), (0, _snapsUi.text)("Enter the time in hours to snooze pop-up notifications")]),
+                        placeholder: "Enter time in hours"
+                      }
+                    });
+                    if (time == null) {
+                      await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(1) * 3600).toFixed(0)));
+                    } else {
+                      await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(time) * 3600).toFixed(0)));
+                    }
+                    await snap.request({
+                      method: "snap_dialog",
+                      params: {
+                        type: "alert",
+                        content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notifications Snoozed"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("You will not receive pop-up notifications for the next " + time + " hours")])
+                      }
+                    });
+                  }
                 }
               }
               if (msgs.length > 0) {
@@ -38888,7 +38914,7 @@
         if (persistedData == null) {
           const data = {
             addresses: [address],
-            popuptoggle: true
+            popuptoggle: Date.now()
           };
           await snap.request({
             method: 'snap_manageState',
@@ -39074,14 +39100,14 @@
         value: true
       });
       exports.popupToggle = void 0;
-      const popupToggle = async () => {
+      const popupToggle = async time => {
         let persistedData = await snap.request({
           method: 'snap_manageState',
           params: {
             operation: 'get'
           }
         });
-        let popuptoggle = !persistedData.popuptoggle;
+        let popuptoggle = time;
         const data = {
           addresses: persistedData.addresses,
           popuptoggle: popuptoggle

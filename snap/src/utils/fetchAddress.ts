@@ -12,7 +12,7 @@ export const addAddress = async (address:string) => {
     if(persistedData == null){
         const data = {
             addresses: [address],
-            popuptoggle: true,
+            popuptoggle: Date.now(),
         };
         await snap.request({
             method: 'snap_manageState',
