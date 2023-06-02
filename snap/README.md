@@ -9,7 +9,7 @@ A MetaMask Snap for delivering channel notifications and chat notifications righ
 Clone the project
 
 ```bash
-  git clone https://link-to-project
+  git clone https://github.com/ethereum-push-notification-service/push-protocol-snaps
 ```
 
 Go to the snap directory
