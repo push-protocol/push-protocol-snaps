@@ -38788,22 +38788,32 @@
                 method: "snap_dialog",
                 params: {
                   type: "prompt",
-                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Notifications"), (0, _snapsUi.text)("Enter the time in hours to snooze pop-up notifications"), (0, _snapsUi.text)('Enter 0 to remove snooze')]),
+                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Notifications"), (0, _snapsUi.text)("Enter the time in hours to snooze pop-up notifications")]),
                   placeholder: "Enter time in hours"
                 }
               });
               if (time == null) {
-                await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(1) * 3600).toFixed(0)));
+                await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(0) * 3600).toFixed(0)));
               } else {
                 await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(time) * 3600).toFixed(0)));
               }
-              await snap.request({
-                method: "snap_dialog",
-                params: {
-                  type: "alert",
-                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notifications Snoozed"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("You will not receive pop-up notifications for the next " + time + " hours")])
-                }
-              });
+              if (time != null) {
+                await snap.request({
+                  method: "snap_dialog",
+                  params: {
+                    type: "alert",
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notifications Snoozed"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("You will not receive pop-up notifications for the next " + time + " hours")])
+                  }
+                });
+              } else {
+                await snap.request({
+                  method: "snap_dialog",
+                  params: {
+                    type: "alert",
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notifications Snoozed Off"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Notification Snooze turned off")])
+                  }
+                });
+              }
               break;
             }
           default:
@@ -38849,17 +38859,27 @@
                       }
                     });
                     if (time == null) {
-                      await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(1) * 3600).toFixed(0)));
+                      await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(0) * 3600).toFixed(0)));
                     } else {
                       await (0, _toggleHelper.popupToggle)(String((Date.now() / 1000 + Number(time) * 3600).toFixed(0)));
                     }
-                    await snap.request({
-                      method: "snap_dialog",
-                      params: {
-                        type: "alert",
-                        content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notifications Snoozed"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("You will not receive pop-up notifications for the next " + time + " hours")])
-                      }
-                    });
+                    if (time != null) {
+                      await snap.request({
+                        method: "snap_dialog",
+                        params: {
+                          type: "alert",
+                          content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notifications Snoozed"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("You will not receive pop-up notifications for the next " + time + " hours")])
+                        }
+                      });
+                    } else {
+                      await snap.request({
+                        method: "snap_dialog",
+                        params: {
+                          type: "alert",
+                          content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notifications Snoozed Off"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Notification Snooze turned off")])
+                        }
+                      });
+                    }
                   }
                 }
               }
