@@ -45,6 +45,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           content: panel([
             heading("Snooze Notifications"),
             text("Enter the time in hours to snooze pop-up notifications"),
+            text('Enter 0 to remove snooze')
           ]),
           placeholder: "Enter time in hours",
         },

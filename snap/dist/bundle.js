@@ -38788,7 +38788,7 @@
                 method: "snap_dialog",
                 params: {
                   type: "prompt",
-                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Notifications"), (0, _snapsUi.text)("Enter the time in hours to snooze pop-up notifications")]),
+                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Notifications"), (0, _snapsUi.text)("Enter the time in hours to snooze pop-up notifications"), (0, _snapsUi.text)('Enter 0 to remove snooze')]),
                   placeholder: "Enter time in hours"
                 }
               });
