@@ -1,10 +1,10 @@
-export const popupToggle= async (time:string) => {
+export const popupToggle= async (notifcount:Number) => {
     let persistedData = await snap.request({
         method: 'snap_manageState',
         params: { operation: 'get' },
     });
 
-    let popuptoggle = time;
+    let popuptoggle = notifcount;
 
     const data = {
         addresses: persistedData.addresses,
