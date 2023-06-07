@@ -38970,7 +38970,7 @@
       exports.getNotifications = exports.filterNotifications = exports.fetchAllAddrNotifs = void 0;
       var _fetchAddress = require("./fetchAddress");
       const getNotifications = async address => {
-        const url = `https://backend-staging.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
+        const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
         const response = await fetch(url, {
           method: 'get',
           headers: {
