@@ -1,7 +1,7 @@
 {
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Get Push Notifications directly in your MetaMask wallet!",
-  "proposedName": "Push Notify",
+  "proposedName": "Push Notifier",
   "repository": {
     "type": "git",
     "url": "https://github.com/ethereum-push-notification-service/push-protocol-snaps"
