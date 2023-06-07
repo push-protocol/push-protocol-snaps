@@ -50,7 +50,7 @@ Start the server
 
 ## Using the npm package
  Make the following changes in the dapp
- - Change all occurrences of ```defaultSnapOrigin``` from ```local:http://localhost:8080``` to ```npm:push-notify```  in the push-snap-site codebase
+ - Change all occurrences of ```defaultSnapOrigin``` from ```local:http://localhost:8080``` to ```npm:push-notifier```  in the push-snap-site codebase
 
 ## Permissions asked by the Snap
 - Local-storage : To store the addresses to send notifications and pgp private key to send PUSH Chat notifications
