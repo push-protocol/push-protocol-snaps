@@ -38756,7 +38756,6 @@
       var _fetchnotifs = require("./utils/fetchnotifs");
       var _popupHelper = require("./utils/popupHelper");
       var _toggleHelper = require("./utils/toggleHelper");
-      var _fetchPushChats = require("./utils/fetchPushChats");
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
@@ -38777,7 +38776,7 @@
                 method: "snap_dialog",
                 params: {
                   type: "alert",
-                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Welcome to Push Notification Snap!"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("🔔 Start getting notifications by opting into channels"), (0, _snapsUi.text)("🔔 Get live wallet Activities on ETH,POLYGON,BNB,OP,ARB Chains")])
+                  content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Welcome to Push Notification Snap!"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("🔔 Start getting notifications by opting into channels")])
                 }
               });
               return true;
@@ -38807,10 +38806,6 @@
             {
               const notifs = await (0, _fetchnotifs.fetchAllAddrNotifs)();
               let msgs = (0, _popupHelper.popupHelper)(notifs);
-              let chat = await (0, _fetchPushChats.fetchPushChats)();
-              if (chat) {
-                msgs.push(chat);
-              }
               let persistedData = await snap.request({
                 method: "snap_manageState",
                 params: {
@@ -38872,10 +38867,9 @@
       exports.onCronjob = onCronjob;
     }, {
       "./utils/fetchAddress": 248,
-      "./utils/fetchPushChats": 249,
-      "./utils/fetchnotifs": 250,
-      "./utils/popupHelper": 251,
-      "./utils/toggleHelper": 252,
+      "./utils/fetchnotifs": 249,
+      "./utils/popupHelper": 250,
+      "./utils/toggleHelper": 251,
       "@metamask/snaps-ui": 127
     }],
     248: [function (require, module, exports) {
@@ -38973,45 +38967,6 @@
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
-      exports.fetchPushChats = void 0;
-      const fetchPushChats = async () => {
-        const persistedData = await snap.request({
-          method: "snap_manageState",
-          params: {
-            operation: "get"
-          }
-        });
-        const address = persistedData.addresses[0];
-        let chatdetails = await fetch(`https://backend-staging.epns.io/apis/v1/chat/users/eip155:${address}/chats?page=1&limit=10`);
-        chatdetails = await chatdetails.json();
-        chatdetails = chatdetails.chats[0];
-        let threadhash = chatdetails.threadhash;
-        let res = await fetch(`https://backend-staging.epns.io/apis/v1/ipfs/${threadhash}`);
-        let latestChat = await res.json();
-        let chat = "";
-        if (latestChat) {
-          let currtime = Math.floor(Date.now() / 1000);
-          let latestChatTime = latestChat.timestamp;
-          let chattimeepoch = latestChatTime / 1000;
-          let diff = currtime - chattimeepoch;
-          let sender = latestChat.fromDID;
-          sender = sender.split(":")[1];
-          if (diff < 60) {
-            if (String(sender).toLowerCase() != String(address).toLowerCase()) {
-              chat = `💬 New message from ${sender.slice(0, 7)}`;
-            }
-          }
-        }
-        return chat;
-      };
-      exports.fetchPushChats = fetchPushChats;
-    }, {}],
-    250: [function (require, module, exports) {
-      "use strict";
-
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
       exports.getNotifications = exports.filterNotifications = exports.fetchAllAddrNotifs = void 0;
       var _fetchAddress = require("./fetchAddress");
       const getNotifications = async address => {
@@ -39059,7 +39014,7 @@
     }, {
       "./fetchAddress": 248
     }],
-    251: [function (require, module, exports) {
+    250: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -39078,7 +39033,7 @@
       };
       exports.popupHelper = popupHelper;
     }, {}],
-    252: [function (require, module, exports) {
+    251: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {

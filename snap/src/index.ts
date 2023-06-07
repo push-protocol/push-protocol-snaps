@@ -29,9 +29,6 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             heading("Welcome to Push Notification Snap!"),
             divider(),
             text("🔔 Start getting notifications by opting into channels"),
-            text(
-              "🔔 Get live wallet Activities on ETH,POLYGON,BNB,OP,ARB Chains"
-            ),
           ]),
         },
       });
@@ -63,13 +60,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
     case "fireCronjob": {
       const notifs = await fetchAllAddrNotifs();
       let msgs = popupHelper(notifs);
-
-      let chat = await fetchPushChats();
-
-      if (chat) {
-        msgs.push(chat);
-      }
-
+      
       let persistedData = await snap.request({
         method: "snap_manageState",
         params: { operation: "get" },
