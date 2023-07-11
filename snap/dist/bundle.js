@@ -39009,15 +39009,22 @@
       exports.getNotifications = exports.filterNotifications = exports.fetchAllAddrNotifs = void 0;
       var _fetchAddress = require("./fetchAddress");
       const getNotifications = async address => {
-        const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
-        const response = await fetch(url, {
-          method: 'get',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        const data = await response.json();
-        return data;
+        try {
+          const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:` + address + `/feeds`;
+          const response = await fetch(url, {
+            method: "get",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          });
+          const data = await response.json();
+          return data;
+        } catch (err) {
+          console.log(err);
+          return {
+            feeds: []
+          };
+        }
       };
       exports.getNotifications = getNotifications;
       const filterNotifications = async address => {
@@ -39031,7 +39038,7 @@
             let feedepoch = fetchedNotifications[i].payload.data.epoch;
             feedepoch = Number(feedepoch).toFixed(0);
             if (feedepoch > parseInt(currentepoch) - 60) {
-              let msg = fetchedNotifications[i].payload.data.app + ' : ' + fetchedNotifications[i].payload.data.amsg;
+              let msg = fetchedNotifications[i].payload.data.app + " : " + fetchedNotifications[i].payload.data.amsg;
               notiffeeds.push(msg);
             }
           }
