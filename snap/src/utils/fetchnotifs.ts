@@ -34,9 +34,9 @@ export const getNotifications=async(address:string)=>{
 export const fetchAllAddrNotifs = async () => {
     const addresses = await fetchAddress();
     let notifs:String[] = [];
-    for(let i = 0; i < addresses.length; i++){
-      let temp = await filterNotifications(addresses[i]);
-      notifs = notifs.concat(temp);
-    }
+    if(addresses.length == 0) return notifs;
+    const promises = addresses.map(address => filterNotifications(address));
+    const results = await Promise.all(promises);
+    notifs = results.reduce((acc, curr) => acc.concat(curr), []);
     return notifs;
 };
