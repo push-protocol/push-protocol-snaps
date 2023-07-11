@@ -58,7 +58,6 @@ export const confirmAddress = async () => {
   });
   if (persistedData != null) {
     const data = persistedData.addresses;
-    const popup = persistedData.popuptoggle;
     let msg = "";
     for (let i = 0; i < data!.length; i++) {
       msg = msg + "🔹" + data![i] + "\n";

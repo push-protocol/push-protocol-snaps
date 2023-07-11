@@ -24,12 +24,12 @@ export const filterNotifications = async (address: string) => {
   let fetchedNotifications = await getNotifications(address);
   fetchedNotifications = fetchedNotifications?.feeds;
   let notiffeeds: String[] = [];
-  const currentepoch: string = Math.floor(Date.now() / 1000).toString();
+  const currentepoch: number = Math.floor(Date.now() / 1000)
   if (fetchedNotifications.length > 0) {
     for (let i = 0; i < fetchedNotifications.length; i++) {
       let feedepoch = fetchedNotifications[i].payload.data.epoch;
       feedepoch = Number(feedepoch).toFixed(0);
-      if (feedepoch > parseInt(currentepoch) - 60) {
+      if (feedepoch > (currentepoch - 60) {
         let msg =
           fetchedNotifications[i].payload.data.app +
           " : " +
