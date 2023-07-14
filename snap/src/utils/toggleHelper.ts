@@ -1,8 +1,7 @@
+import { SnapStorageCheck } from "../helper/snapstoragecheck";
+
 export const popupToggle= async (notifcount:number) => {
-    let persistedData = await snap.request({
-        method: 'snap_manageState',
-        params: { operation: 'get' },
-    });
+    let persistedData = await SnapStorageCheck();
 
     let popuptoggle = notifcount;
 

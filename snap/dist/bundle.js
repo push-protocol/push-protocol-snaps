@@ -38750,12 +38750,45 @@
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
+      exports.SnapStorageCheck = exports.SnapStorageAddressCheck = void 0;
+      const SnapStorageCheck = async () => {
+        const defaultstate = {
+          addresses: [],
+          popuptoggle: 0
+        };
+        let persistedData = await snap.request({
+          method: "snap_manageState",
+          params: {
+            operation: "get"
+          }
+        });
+        return persistedData || defaultstate;
+      };
+      exports.SnapStorageCheck = SnapStorageCheck;
+      const SnapStorageAddressCheck = async address => {
+        const data = await SnapStorageCheck();
+        let addresslist = data.addresses;
+        if (addresslist.includes(address)) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+      exports.SnapStorageAddressCheck = SnapStorageAddressCheck;
+    }, {}],
+    248: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
       exports.onRpcRequest = exports.onCronjob = void 0;
       var _snapsUi = require("@metamask/snaps-ui");
       var _fetchAddress = require("./utils/fetchAddress");
       var _fetchnotifs = require("./utils/fetchnotifs");
       var _popupHelper = require("./utils/popupHelper");
       var _toggleHelper = require("./utils/toggleHelper");
+      var _snapstoragecheck = require("./helper/snapstoragecheck");
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
@@ -38767,8 +38800,82 @@
           switch (request.method) {
             case "pushproto_addaddress":
               {
-                await (0, _fetchAddress.addAddress)(request.params.address);
-                await (0, _fetchAddress.confirmAddress)();
+                if (request.params != null && request.params.address != null) {
+                  let addresscheck = await (0, _snapstoragecheck.SnapStorageAddressCheck)(request.params.address);
+                  if (addresscheck == false) {
+                    const res = await snap.request({
+                      method: "snap_dialog",
+                      params: {
+                        type: "confirmation",
+                        content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Address Addition"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Do you want to add this address to the snap ?"), (0, _snapsUi.text)(`${request.params.address}`)])
+                      }
+                    });
+                    if (res) {
+                      await (0, _fetchAddress.addAddress)(request.params.address);
+                      await (0, _fetchAddress.confirmAddress)();
+                    } else {
+                      await snap.request({
+                        method: "snap_dialog",
+                        params: {
+                          type: "confirmation",
+                          content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Error"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${request.params.address}`), (0, _snapsUi.text)("Address not added to the snap")])
+                        }
+                      });
+                    }
+                  } else {
+                    await snap.request({
+                      method: "snap_dialog",
+                      params: {
+                        type: "alert",
+                        content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Error"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Address already added to the snap")])
+                      }
+                    });
+                  }
+                } else {
+                  await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "alert",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Error"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Error reading input, please try again")])
+                    }
+                  });
+                }
+                break;
+              }
+            case "pushproto_removeaddress":
+              {
+                if (request.params != null && request.params.address != null) {
+                  let addresscheck = await (0, _snapstoragecheck.SnapStorageAddressCheck)(request.params.address);
+                  if (addresscheck == true) {
+                    const res = await snap.request({
+                      method: "snap_dialog",
+                      params: {
+                        type: "confirmation",
+                        content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Address Removal"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Do you want to remove this address"), (0, _snapsUi.text)(`${request.params.address}`)])
+                      }
+                    });
+                    if (res) {
+                      await (0, _fetchAddress.removeAddress)(request.params.address);
+                      await (0, _fetchAddress.confirmAddress)();
+                    }
+                  } else {
+                    await snap.request({
+                      method: "snap_dialog",
+                      params: {
+                        type: "alert",
+                        content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Error"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Cannot remove address, it does not exist in the snap")])
+                      }
+                    });
+                  }
+                } else {
+                  await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "alert",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Error"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Error reading input, please try again")])
+                    }
+                  });
+                }
                 break;
               }
             case "pushproto_welcome":
@@ -38817,12 +38924,7 @@
             {
               const notifs = await (0, _fetchnotifs.fetchAllAddrNotifs)();
               let msgs = (0, _popupHelper.popupHelper)(notifs);
-              let persistedData = await snap.request({
-                method: "snap_manageState",
-                params: {
-                  operation: "get"
-                }
-              });
+              let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
               let popuptoggle = msgs.length;
               if (persistedData != null) {
                 popuptoggle += Number(persistedData.popuptoggle);
@@ -38880,20 +38982,22 @@
       };
       exports.onCronjob = onCronjob;
     }, {
-      "./utils/fetchAddress": 248,
-      "./utils/fetchnotifs": 249,
-      "./utils/popupHelper": 250,
-      "./utils/toggleHelper": 251,
+      "./helper/snapstoragecheck": 247,
+      "./utils/fetchAddress": 249,
+      "./utils/fetchnotifs": 250,
+      "./utils/popupHelper": 251,
+      "./utils/toggleHelper": 252,
       "@metamask/snaps-ui": 127
     }],
-    248: [function (require, module, exports) {
+    249: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
-      exports.fetchAddress = exports.confirmAddress = exports.addAddress = void 0;
+      exports.removeAddress = exports.fetchAddress = exports.confirmAddress = exports.addAddress = void 0;
       var _snapsUi = require("@metamask/snaps-ui");
+      var _snapstoragecheck = require("../helper/snapstoragecheck");
       const {
         ethers
       } = require("ethers");
@@ -38960,15 +39064,25 @@
           const data = persistedData.addresses;
           let msg = "";
           for (let i = 0; i < data.length; i++) {
-            msg = msg + "🔹" + data[i] + "\n";
+            msg = msg + "🔹" + data[i] + "\n\n";
           }
-          return snap.request({
-            method: "snap_dialog",
-            params: {
-              type: "alert",
-              content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Address added"), (0, _snapsUi.text)("Following addresses will receive notifications:"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`)])
-            }
-          });
+          if (msg.length > 0) {
+            return snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "alert",
+                content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Address added"), (0, _snapsUi.text)("Following addresses will receive notifications:"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`)])
+              }
+            });
+          } else {
+            await snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "alert",
+                content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("No Active Addresses"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Start adding addresses to receive notifications")])
+              }
+            });
+          }
         } else {
           return snap.request({
             method: "snap_dialog",
@@ -38980,6 +39094,30 @@
         }
       };
       exports.confirmAddress = confirmAddress;
+      const removeAddress = async address => {
+        const persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+        let addresslist = persistedData.addresses;
+        let popuptoggle = persistedData.popuptoggle;
+        if (addresslist.includes(address)) {
+          for (var i = addresslist.length - 1; i >= 0; i--) {
+            if (addresslist[i] === address) {
+              addresslist.splice(i, 1);
+            }
+          }
+        }
+        const newData = {
+          addresses: addresslist,
+          popuptoggle: popuptoggle
+        };
+        await snap.request({
+          method: "snap_manageState",
+          params: {
+            operation: "update",
+            newState: newData
+          }
+        });
+      };
+      exports.removeAddress = removeAddress;
       const fetchAddress = async () => {
         const persistedData = await snap.request({
           method: "snap_manageState",
@@ -38996,10 +39134,11 @@
       };
       exports.fetchAddress = fetchAddress;
     }, {
+      "../helper/snapstoragecheck": 247,
       "@metamask/snaps-ui": 127,
       "ethers": 176
     }],
-    249: [function (require, module, exports) {
+    250: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -39007,17 +39146,25 @@
       });
       exports.getNotifications = exports.filterNotifications = exports.fetchAllAddrNotifs = void 0;
       var _fetchAddress = require("./fetchAddress");
+      var _ethers = require("ethers");
       const getNotifications = async address => {
         try {
-          const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:` + address + `/feeds`;
-          const response = await fetch(url, {
-            method: "get",
-            headers: {
-              "Content-Type": "application/json"
-            }
-          });
-          const data = await response.json();
-          return data;
+          let addressValidation = _ethers.ethers.utils.isAddress(address);
+          if (addressValidation) {
+            const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
+            const response = await fetch(url, {
+              method: "get",
+              headers: {
+                "Content-Type": "application/json"
+              }
+            });
+            const data = await response.json();
+            return data;
+          } else {
+            return {
+              feeds: []
+            };
+          }
         } catch (err) {
           console.log(err);
           return {
@@ -39057,9 +39204,10 @@
       };
       exports.fetchAllAddrNotifs = fetchAllAddrNotifs;
     }, {
-      "./fetchAddress": 248
+      "./fetchAddress": 249,
+      "ethers": 176
     }],
-    250: [function (require, module, exports) {
+    251: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -39078,20 +39226,16 @@
       };
       exports.popupHelper = popupHelper;
     }, {}],
-    251: [function (require, module, exports) {
+    252: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
       exports.popupToggle = void 0;
+      var _snapstoragecheck = require("../helper/snapstoragecheck");
       const popupToggle = async notifcount => {
-        let persistedData = await snap.request({
-          method: 'snap_manageState',
-          params: {
-            operation: 'get'
-          }
-        });
+        let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
         let popuptoggle = notifcount;
         const data = {
           addresses: persistedData.addresses,
@@ -39106,6 +39250,8 @@
         });
       };
       exports.popupToggle = popupToggle;
-    }, {}]
-  }, {}, [247])(247);
+    }, {
+      "../helper/snapstoragecheck": 247
+    }]
+  }, {}, [248])(248);
 });

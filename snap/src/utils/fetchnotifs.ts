@@ -1,19 +1,23 @@
 import { fetchAddress } from "./fetchAddress";
+import { ethers } from "ethers";
 
 export const getNotifications = async (address: string) => {
   try {
-    const url =
-      `https://backend-prod.epns.io/apis/v1/users/eip155:5:` +
-      address +
-      `/feeds`;
-    const response = await fetch(url, {
-      method: "get",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    return data;
+    let addressValidation = ethers.utils.isAddress(address);
+
+    if (addressValidation) {
+      const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
+      const response = await fetch(url, {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      return data;
+    } else {
+      return { feeds: [] };
+    }
   } catch (err) {
     console.log(err);
     return { feeds: [] };
@@ -24,12 +28,12 @@ export const filterNotifications = async (address: string) => {
   let fetchedNotifications = await getNotifications(address);
   fetchedNotifications = fetchedNotifications?.feeds;
   let notiffeeds: String[] = [];
-  const currentepoch: number = Math.floor(Date.now() / 1000)
+  const currentepoch: number = Math.floor(Date.now() / 1000);
   if (fetchedNotifications.length > 0) {
     for (let i = 0; i < fetchedNotifications.length; i++) {
       let feedepoch = fetchedNotifications[i].payload.data.epoch;
       feedepoch = Number(feedepoch).toFixed(0);
-      if (feedepoch > (currentepoch - 60)) {
+      if (feedepoch > currentepoch - 60) {
         let msg =
           fetchedNotifications[i].payload.data.app +
           " : " +

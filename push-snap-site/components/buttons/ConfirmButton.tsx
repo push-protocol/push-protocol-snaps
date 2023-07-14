@@ -12,34 +12,50 @@ export default function ConfirmButton() {
       method: "wallet_invokeSnap",
       params: {
         snapId: defaultSnapOrigin,
-        request: { method: 'pushproto_addaddress', params: { address: address } },
+        request: {
+          method: "pushproto_addaddress",
+          params: { address: address },
+        },
       },
     });
   };
 
-  const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
-    message:
-      `Confirm your Address ${address}, \n this will be added to MetaMask for sending notifications`,
-  });
+  const removeAddress = async (address: string) => {
+    await window.ethereum?.request({
+      method: "wallet_invokeSnap",
+      params: {
+        snapId: defaultSnapOrigin,
+        request: {
+          method: "pushproto_removeaddress",
+          params: { address: address },
+        },
+      },
+    });
+  };
 
-  function sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+  const confirmAddition = async () => {
+    await sendHello(String(address));
+  };
 
-  const confirmAddition=async()=>{
-    signMessage();
-    if(isSuccess){
-      await sleep(5000);
-      await sendHello(String(address));
-    }
-  }
+  const confirmDeletion = async () => {
+    await removeAddress(String(address));
+  };
 
   return (
-    <button
-      className="flex bg-white text-black font-bold text-sm w-max p-2 rounded-lg border-2 border-text-secondary ring-1 ring-white"
-      onClick={() => confirmAddition()}
+    <>
+      <button
+        className="flex bg-white text-black font-bold text-sm w-max p-2 rounded-lg border-2 border-text-secondary ring-1 ring-white"
+        onClick={() => confirmAddition()}
+      >
+        Confirm Addition
+      </button>
+
+      <button
+      className="flex bg-white text-black font-bold text-sm w-max p-2 rounded-lg border-2 border-text-secondary ring-1 ring-white mt-3"
+      onClick={() => confirmDeletion()}
     >
-      Confirm
+      Confirm Removal
     </button>
+    </>
   );
 }

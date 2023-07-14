@@ -1,9 +1,14 @@
 import { OnCronjobHandler, OnRpcRequestHandler } from "@metamask/snaps-types";
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
-import { addAddress, confirmAddress } from "./utils/fetchAddress";
+import {
+  addAddress,
+  confirmAddress,
+  removeAddress,
+} from "./utils/fetchAddress";
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
 import { popupToggle } from "./utils/toggleHelper";
+import { SnapStorageAddressCheck, SnapStorageCheck } from "./helper/snapstoragecheck";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -21,8 +26,116 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
   ) {
     switch (request.method) {
       case "pushproto_addaddress": {
-        await addAddress(request.params.address);
-        await confirmAddress();
+        if (request.params != null && request.params.address != null) {
+          let addresscheck = await SnapStorageAddressCheck(
+            request.params.address
+          );
+          if (addresscheck == false) {
+            const res = await snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "confirmation",
+                content: panel([
+                  heading("Address Addition"),
+                  divider(),
+                  text("Do you want to add this address to the snap ?"),
+                  text(`${request.params.address}`),
+                ]),
+              },
+            });
+            if (res) {
+              await addAddress(request.params.address);
+              await confirmAddress();
+            } else {
+              await snap.request({
+                method: "snap_dialog",
+                params: {
+                  type: "confirmation",
+                  content: panel([
+                    heading("Error"),
+                    divider(),
+                    text(`${request.params.address}`),
+                    text("Address not added to the snap"),
+                  ]),
+                },
+              });
+            }
+          } else {
+            await snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "alert",
+                content: panel([
+                  heading("Error"),
+                  divider(),
+                  text("Address already added to the snap"),
+                ]),
+              },
+            });
+          }
+        } else {
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Error"),
+                divider(),
+                text("Error reading input, please try again"),
+              ]),
+            },
+          });
+        }
+        break;
+      }
+      case "pushproto_removeaddress": {
+        if (request.params != null && request.params.address != null) {
+          let addresscheck = await SnapStorageAddressCheck(
+            request.params.address
+          );
+          if (addresscheck == true) {
+            const res = await snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "confirmation",
+                content: panel([
+                  heading("Address Removal"),
+                  divider(),
+                  text("Do you want to remove this address"),
+                  text(`${request.params.address}`),
+                ]),
+              },
+            });
+            if (res) {
+              await removeAddress(request.params.address);
+              await confirmAddress();
+            }
+          } else {
+            await snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "alert",
+                content: panel([
+                  heading("Error"),
+                  divider(),
+                  text("Cannot remove address, it does not exist in the snap"),
+                ]),
+              },
+            });
+          }
+        } else {
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Error"),
+                divider(),
+                text("Error reading input, please try again"),
+              ]),
+            },
+          });
+        }
         break;
       }
       case "pushproto_welcome": {
@@ -78,11 +191,8 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       const notifs = await fetchAllAddrNotifs();
       let msgs = popupHelper(notifs);
 
-      let persistedData = await snap.request({
-        method: "snap_manageState",
-        params: { operation: "get" },
-      });
-      
+      let persistedData = await SnapStorageCheck();
+
       let popuptoggle = msgs.length;
       if (persistedData != null) {
         popuptoggle += Number(persistedData.popuptoggle);

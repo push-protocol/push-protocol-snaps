@@ -1,4 +1,5 @@
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
+import { SnapStorageCheck } from "../helper/snapstoragecheck";
 
 const { ethers } = require("ethers");
 
@@ -60,20 +61,34 @@ export const confirmAddress = async () => {
     const data = persistedData.addresses;
     let msg = "";
     for (let i = 0; i < data!.length; i++) {
-      msg = msg + "🔹" + data![i] + "\n";
+      msg = msg + "🔹" + data![i] + "\n\n";
     }
-    return snap.request({
-      method: "snap_dialog",
-      params: {
-        type: "alert",
-        content: panel([
-          heading("Address added"),
-          text("Following addresses will receive notifications:"),
-          divider(),
-          text(`${msg}`),
-        ]),
-      },
-    });
+    if (msg.length > 0) {
+      return snap.request({
+        method: "snap_dialog",
+        params: {
+          type: "alert",
+          content: panel([
+            heading("Address added"),
+            text("Following addresses will receive notifications:"),
+            divider(),
+            text(`${msg}`),
+          ]),
+        },
+      });
+    } else {
+      await snap.request({
+        method: "snap_dialog",
+        params: {
+          type: "alert",
+          content: panel([
+            heading("No Active Addresses"),
+            divider(),
+            text("Start adding addresses to receive notifications"),
+          ]),
+        },
+      });
+    }
   } else {
     return snap.request({
       method: "snap_dialog",
@@ -83,6 +98,29 @@ export const confirmAddress = async () => {
       },
     });
   }
+};
+
+export const removeAddress = async (address: string) => {
+  const persistedData = await SnapStorageCheck();
+  let addresslist = persistedData.addresses;
+  let popuptoggle = persistedData.popuptoggle;
+  if (addresslist.includes(address)) {
+    for (var i = addresslist.length - 1; i >= 0; i--) {
+      if (addresslist[i] === address) {
+        addresslist.splice(i, 1);
+      }
+    }
+  }
+
+  const newData = {
+    addresses: addresslist,
+    popuptoggle: popuptoggle,
+  };
+
+  await snap.request({
+    method: "snap_manageState",
+    params: { operation: "update", newState: newData },
+  });
 };
 
 export const fetchAddress = async () => {
