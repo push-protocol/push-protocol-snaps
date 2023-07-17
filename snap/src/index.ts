@@ -9,6 +9,7 @@ import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
 import { popupToggle } from "./utils/toggleHelper";
 import { SnapStorageAddressCheck, SnapStorageCheck } from "./helper/snapstoragecheck";
+import { ethers } from "ethers";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -30,7 +31,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           let addresscheck = await SnapStorageAddressCheck(
             request.params.address
           );
-          if (addresscheck == false) {
+          let isValidAddress = ethers.utils.isAddress(request.params.address);
+          if (addresscheck == false && isValidAddress == true) {
             const res = await snap.request({
               method: "snap_dialog",
               params: {
@@ -93,7 +95,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           let addresscheck = await SnapStorageAddressCheck(
             request.params.address
           );
-          if (addresscheck == true) {
+          let isValidAddress = ethers.utils.isAddress(request.params.address);
+          if (addresscheck == true && isValidAddress == true) {
             const res = await snap.request({
               method: "snap_dialog",
               params: {
