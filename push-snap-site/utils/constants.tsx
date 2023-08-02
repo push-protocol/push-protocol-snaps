@@ -22,6 +22,6 @@ export const NOTE = {
 }
 
 export const ADD_ADDRESS = {
-    HEAD_1: "Add Address for Notifications",
-    PARA_1: "Add your address to receive notifications from the snap.",
+    HEAD_1: "Add/Remove Address for Notifications",
+    PARA_1: "",
 }
