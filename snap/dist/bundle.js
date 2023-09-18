@@ -38789,6 +38789,7 @@
       var _popupHelper = require("./utils/popupHelper");
       var _toggleHelper = require("./utils/toggleHelper");
       var _snapstoragecheck = require("./helper/snapstoragecheck");
+      var _ethers = require("ethers");
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
@@ -38802,7 +38803,8 @@
               {
                 if (request.params != null && request.params.address != null) {
                   let addresscheck = await (0, _snapstoragecheck.SnapStorageAddressCheck)(request.params.address);
-                  if (addresscheck == false) {
+                  let isValidAddress = _ethers.ethers.utils.isAddress(request.params.address);
+                  if (addresscheck == false && isValidAddress == true) {
                     const res = await snap.request({
                       method: "snap_dialog",
                       params: {
@@ -38846,7 +38848,8 @@
               {
                 if (request.params != null && request.params.address != null) {
                   let addresscheck = await (0, _snapstoragecheck.SnapStorageAddressCheck)(request.params.address);
-                  if (addresscheck == true) {
+                  let isValidAddress = _ethers.ethers.utils.isAddress(request.params.address);
+                  if (addresscheck == true && isValidAddress == true) {
                     const res = await snap.request({
                       method: "snap_dialog",
                       params: {
@@ -38901,6 +38904,18 @@
                 });
                 break;
               }
+            case "pushproto_getaddresses":
+              {
+                let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+                let addresses = persistedData.addresses;
+                return addresses;
+              }
+            case "pushproto_gettogglestatus":
+              {
+                let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+                let popuptoggle = persistedData.popuptoggle;
+                return popuptoggle;
+              }
             default:
               throw new Error("Method not found.");
           }
@@ -38940,7 +38955,7 @@
                   newState: data
                 }
               });
-              if (Number(popuptoggle) < 25) {
+              if (Number(popuptoggle) < 40) {
                 if (msgs.length > 0) {
                   await snap.request({
                     method: "snap_dialog",
@@ -38951,6 +38966,7 @@
                   });
                 }
               } else {
+                (0, _toggleHelper.popupToggle)(0);
                 await snap.request({
                   method: "snap_dialog",
                   params: {
@@ -38987,7 +39003,8 @@
       "./utils/fetchnotifs": 250,
       "./utils/popupHelper": 251,
       "./utils/toggleHelper": 252,
-      "@metamask/snaps-ui": 127
+      "@metamask/snaps-ui": 127,
+      "ethers": 176
     }],
     249: [function (require, module, exports) {
       "use strict";

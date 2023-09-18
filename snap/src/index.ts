@@ -170,6 +170,16 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         });
         break;
       }
+      case "pushproto_getaddresses": {
+        let persistedData = await SnapStorageCheck();
+        let addresses = persistedData.addresses;
+        return addresses;
+      }
+      case "pushproto_gettogglestatus":{
+        let persistedData = await SnapStorageCheck();
+        let popuptoggle = persistedData.popuptoggle;
+        return popuptoggle;
+      }
       default:
         throw new Error("Method not found.");
     }
@@ -211,7 +221,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         params: { operation: "update", newState: data },
       });
 
-      if (Number(popuptoggle) < 25) {
+      if (Number(popuptoggle) < 40) {
         if (msgs.length > 0) {
           await snap.request({
             method: "snap_dialog",
@@ -226,6 +236,9 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
           });
         }
       } else {
+
+        popupToggle(0);
+
         await snap.request({
           method: "snap_dialog",
           params: {

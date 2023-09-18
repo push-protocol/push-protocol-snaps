@@ -3,13 +3,13 @@ export default function ReconnectButton() {
   const defaultSnapOrigin = `local:http://localhost:8080`;
 
   const Toggle = async () => {
-    await window.ethereum?.request({
+    console.log(await window.ethereum?.request({
       method: "wallet_invokeSnap",
       params: {
         snapId: defaultSnapOrigin,
-        request: { method: 'pushproto_togglepopup' },
+        request: { method: 'pushproto_gettogglestatus' },
       },
-    });
+    }))
   };
 
   return (
