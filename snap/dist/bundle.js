@@ -38902,7 +38902,7 @@
                     method: "snap_dialog",
                     params: {
                       type: "alert",
-                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification Snooze On"), (0, _snapsUi.text)("You will be stop receiving popup notifications now")])
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Pop-ups On"), (0, _snapsUi.text)("Disable Notification Pop-ups from Push Snap")])
                     }
                   });
                 } else {
@@ -38911,7 +38911,7 @@
                     method: "snap_dialog",
                     params: {
                       type: "alert",
-                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification Snooze Off"), (0, _snapsUi.text)("You will be start receiving popup notifications now")])
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Pop-ups Off"), (0, _snapsUi.text)("Enable Notification Pop-ups from Push Snap")])
                     }
                   });
                 }
@@ -38983,7 +38983,7 @@
                   method: "snap_dialog",
                   params: {
                     type: "alert",
-                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification snooze"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`You've been receiving too many notifications. \n The pop-up notifications are now snoozed `), (0, _snapsUi.text)(`You can turn them back on from the dapp`)])
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification snooze"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`We have noticed a high volume of notifications. \n\n You can snooze pop-ups in Snap settings by visiting app.push.org/snap`)])
                   }
                 });
               }
