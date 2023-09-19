@@ -38894,14 +38894,27 @@
               }
             case "pushproto_togglepopup":
               {
-                (0, _toggleHelper.popupToggle)(0);
-                await snap.request({
-                  method: "snap_dialog",
-                  params: {
-                    type: "alert",
-                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification Snooze Off"), (0, _snapsUi.text)("You will be receiving popup notifications now")])
-                  }
-                });
+                let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+                let popuptoggle = persistedData.popuptoggle;
+                if (Number(popuptoggle) <= 40) {
+                  (0, _toggleHelper.popupToggle)(42);
+                  await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "alert",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification Snooze On"), (0, _snapsUi.text)("You will be stop receiving popup notifications now")])
+                    }
+                  });
+                } else {
+                  (0, _toggleHelper.popupToggle)(0);
+                  await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "alert",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification Snooze Off"), (0, _snapsUi.text)("You will be start receiving popup notifications now")])
+                    }
+                  });
+                }
                 break;
               }
             case "pushproto_getaddresses":
@@ -38955,7 +38968,7 @@
                   newState: data
                 }
               });
-              if (Number(popuptoggle) < 40) {
+              if (Number(popuptoggle) <= 40) {
                 if (msgs.length > 0) {
                   await snap.request({
                     method: "snap_dialog",
@@ -38965,8 +38978,7 @@
                     }
                   });
                 }
-              } else {
-                (0, _toggleHelper.popupToggle)(0);
+              } else if (Number(popuptoggle) == 41) {
                 await snap.request({
                   method: "snap_dialog",
                   params: {

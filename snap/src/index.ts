@@ -8,7 +8,10 @@ import {
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
 import { popupToggle } from "./utils/toggleHelper";
-import { SnapStorageAddressCheck, SnapStorageCheck } from "./helper/snapstoragecheck";
+import {
+  SnapStorageAddressCheck,
+  SnapStorageCheck,
+} from "./helper/snapstoragecheck";
 import { ethers } from "ethers";
 
 function sleep(ms: number) {
@@ -156,18 +159,37 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         return true;
       }
       case "pushproto_togglepopup": {
-        popupToggle(0);
+        let persistedData = await SnapStorageCheck();
+        let popuptoggle = persistedData.popuptoggle;
 
-        await snap.request({
-          method: "snap_dialog",
-          params: {
-            type: "alert",
-            content: panel([
-              heading("Notification Snooze Off"),
-              text("You will be receiving popup notifications now"),
-            ]),
-          },
-        });
+        if (Number(popuptoggle) <= 40) {
+          popupToggle(42);
+
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Notification Snooze On"),
+                text("You will be stop receiving popup notifications now"),
+              ]),
+            },
+          });
+        } else {
+          popupToggle(0);
+
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Notification Snooze Off"),
+                text("You will be start receiving popup notifications now"),
+              ]),
+            },
+          });
+        }
+
         break;
       }
       case "pushproto_getaddresses": {
@@ -175,7 +197,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         let addresses = persistedData.addresses;
         return addresses;
       }
-      case "pushproto_gettogglestatus":{
+      case "pushproto_gettogglestatus": {
         let persistedData = await SnapStorageCheck();
         let popuptoggle = persistedData.popuptoggle;
         return popuptoggle;
@@ -221,7 +243,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         params: { operation: "update", newState: data },
       });
 
-      if (Number(popuptoggle) < 40) {
+      if (Number(popuptoggle) <= 40) {
         if (msgs.length > 0) {
           await snap.request({
             method: "snap_dialog",
@@ -235,10 +257,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             },
           });
         }
-      } else {
-
-        popupToggle(0);
-
+      } else if (Number(popuptoggle) == 41) {
         await snap.request({
           method: "snap_dialog",
           params: {
