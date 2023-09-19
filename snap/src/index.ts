@@ -170,8 +170,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             params: {
               type: "alert",
               content: panel([
-                heading("Notification Snooze On"),
-                text("You will be stop receiving popup notifications now"),
+                heading("Snooze Pop-ups On"),
+                text("Disable Notification Pop-ups from Push Snap"),
               ]),
             },
           });
@@ -183,8 +183,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             params: {
               type: "alert",
               content: panel([
-                heading("Notification Snooze Off"),
-                text("You will be start receiving popup notifications now"),
+                heading("Snooze Pop-ups Off"),
+                text("Enable Notification Pop-ups from Push Snap"),
               ]),
             },
           });
@@ -266,9 +266,8 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
               heading("Notification snooze"),
               divider(),
               text(
-                `You've been receiving too many notifications. \n The pop-up notifications are now snoozed `
+                `We have noticed a high volume of notifications. \n\n You can snooze pop-ups in Snap settings by visiting app.push.org/snap`
               ),
-              text(`You can turn them back on from the dapp`),
             ]),
           },
         });

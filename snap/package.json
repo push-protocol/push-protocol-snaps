@@ -1,6 +1,6 @@
 {
-  "name": "push-v1",
-  "version": "0.1.1",
+  "name": "@pushprotocol/snap",
+  "version": "1.0.1",
   "description": "Get Push Notifications directly in your MetaMask wallet!",
   "repository": {
     "type": "git",
