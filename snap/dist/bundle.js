@@ -39100,7 +39100,7 @@
               method: "snap_dialog",
               params: {
                 type: "alert",
-                content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Address added"), (0, _snapsUi.text)("Following addresses will receive notifications:"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`)])
+                content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Address added"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`Congratulations, Your address is now all set to receive notifications. \n\n Opt-in to your favourite channels now.`), (0, _snapsUi.text)("Following addresses will receive notifications:"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`)])
               }
             });
           } else {

@@ -243,7 +243,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         params: { operation: "update", newState: data },
       });
 
-      if (Number(popuptoggle) <= 40) {
+      if ((Number(popuptoggle) <= 40)) {
         if (msgs.length > 0) {
           await snap.request({
             method: "snap_dialog",
