@@ -13,6 +13,7 @@ import {
   SnapStorageCheck,
 } from "./helper/snapstoragecheck";
 import { ethers } from "ethers";
+import { fetchChannels } from "./utils/fetchChannels";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -191,6 +192,38 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         }
 
         break;
+      }
+      case "pushproto_optin": {
+        const res = await fetchChannels("0x28a292f4dC182492F7E23CFda4354bff688f6ea8");
+        const channelName = res.channelName;
+        const unsubscribedAccounts = res.unsubscribedAccounts;
+        if(unsubscribedAccounts.length == 0){
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("CHannel Opt-In"),
+                divider(),
+                text("You are already subscribed to this channel"),
+              ]),
+            },
+          });
+          return false;
+        }else{
+          const res = await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "confirmation",
+              content: panel([
+                heading("Channel Opt-In"),
+                divider(),
+                text(`Do you want to subscribe to ${channelName} ?`),
+              ]),
+            },
+          });
+          return res;
+        }
       }
       case "pushproto_getaddresses": {
         let persistedData = await SnapStorageCheck();
