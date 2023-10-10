@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import MetaMask from '../../../public/metamask.svg'
+import MetaMask from './metamask.svg'
 import Image from 'next/image';
 import * as  PushAPI from '@pushprotocol/restapi';
 import { ENV } from '@pushprotocol/restapi/src/lib/constants';

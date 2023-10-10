@@ -38789,6 +38789,8 @@
       var _popupHelper = require("./utils/popupHelper");
       var _toggleHelper = require("./utils/toggleHelper");
       var _snapstoragecheck = require("./helper/snapstoragecheck");
+      var _ethers = require("ethers");
+      var _fetchChannels = require("./utils/fetchChannels");
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
@@ -38802,7 +38804,8 @@
               {
                 if (request.params != null && request.params.address != null) {
                   let addresscheck = await (0, _snapstoragecheck.SnapStorageAddressCheck)(request.params.address);
-                  if (addresscheck == false) {
+                  let isValidAddress = _ethers.ethers.utils.isAddress(request.params.address);
+                  if (addresscheck == false && isValidAddress == true) {
                     const res = await snap.request({
                       method: "snap_dialog",
                       params: {
@@ -38846,7 +38849,8 @@
               {
                 if (request.params != null && request.params.address != null) {
                   let addresscheck = await (0, _snapstoragecheck.SnapStorageAddressCheck)(request.params.address);
-                  if (addresscheck == true) {
+                  let isValidAddress = _ethers.ethers.utils.isAddress(request.params.address);
+                  if (addresscheck == true && isValidAddress == true) {
                     const res = await snap.request({
                       method: "snap_dialog",
                       params: {
@@ -38900,6 +38904,31 @@
                   }
                 });
                 break;
+              }
+            case "pushproto_optin":
+              {
+                const res = await (0, _fetchChannels.fetchChannels)("0x28a292f4dC182492F7E23CFda4354bff688f6ea8");
+                const channelName = res.channelName;
+                const unsubscribedAccounts = res.unsubscribedAccounts;
+                if (unsubscribedAccounts.length == 0) {
+                  await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "alert",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("CHannel Opt-In"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("You are already subscribed to this channel")])
+                    }
+                  });
+                  return false;
+                } else {
+                  const res = await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "confirmation",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Channel Opt-In"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`Do you want to subscribe to ${channelName} ?`)])
+                    }
+                  });
+                  return res;
+                }
               }
             default:
               throw new Error("Method not found.");
@@ -38984,10 +39013,12 @@
     }, {
       "./helper/snapstoragecheck": 247,
       "./utils/fetchAddress": 249,
-      "./utils/fetchnotifs": 250,
-      "./utils/popupHelper": 251,
-      "./utils/toggleHelper": 252,
-      "@metamask/snaps-ui": 127
+      "./utils/fetchChannels": 250,
+      "./utils/fetchnotifs": 251,
+      "./utils/popupHelper": 252,
+      "./utils/toggleHelper": 253,
+      "@metamask/snaps-ui": 127,
+      "ethers": 176
     }],
     249: [function (require, module, exports) {
       "use strict";
@@ -39144,6 +39175,48 @@
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
+      exports.fetchChannels = void 0;
+      const fetchChannels = async channelAddress => {
+        const url = `https://backend-staging.epns.io/apis/v1/channels/eip155:5:${channelAddress}/subscribers`;
+        const channelNameUrl = `https://backend-staging.epns.io/apis/v1/channels/eip155:5:0x28a292f4dC182492F7E23CFda4354bff688f6ea8`;
+        let response = await fetch(url, {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        let channelNameResponse = await fetch(channelNameUrl, {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        channelNameResponse = await channelNameResponse.json();
+        const channelName = channelNameResponse.name;
+        let res = await ethereum.request({
+          method: "eth_requestAccounts"
+        });
+        response = await response.json();
+        const subscribers = response.subscribers;
+        let unsubscribedAccounts = [];
+        for (let i = 0; i < res.length; i++) {
+          if (!subscribers.includes(res[i])) {
+            unsubscribedAccounts.push(res[i]);
+          }
+        }
+        return {
+          unsubscribedAccounts,
+          channelName
+        };
+      };
+      exports.fetchChannels = fetchChannels;
+    }, {}],
+    251: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
       exports.getNotifications = exports.filterNotifications = exports.fetchAllAddrNotifs = void 0;
       var _fetchAddress = require("./fetchAddress");
       var _ethers = require("ethers");
@@ -39207,7 +39280,7 @@
       "./fetchAddress": 249,
       "ethers": 176
     }],
-    251: [function (require, module, exports) {
+    252: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
@@ -39226,7 +39299,7 @@
       };
       exports.popupHelper = popupHelper;
     }, {}],
-    252: [function (require, module, exports) {
+    253: [function (require, module, exports) {
       "use strict";
 
       Object.defineProperty(exports, "__esModule", {
