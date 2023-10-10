@@ -38895,14 +38895,27 @@
               }
             case "pushproto_togglepopup":
               {
-                (0, _toggleHelper.popupToggle)(0);
-                await snap.request({
-                  method: "snap_dialog",
-                  params: {
-                    type: "alert",
-                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification Snooze Off"), (0, _snapsUi.text)("You will be receiving popup notifications now")])
-                  }
-                });
+                let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+                let popuptoggle = persistedData.popuptoggle;
+                if (Number(popuptoggle) <= 40) {
+                  (0, _toggleHelper.popupToggle)(42);
+                  await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "alert",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Pop-ups On"), (0, _snapsUi.text)("Disable Notification Pop-ups from Push Snap")])
+                    }
+                  });
+                } else {
+                  (0, _toggleHelper.popupToggle)(0);
+                  await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "alert",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Snooze Pop-ups Off"), (0, _snapsUi.text)("Enable Notification Pop-ups from Push Snap")])
+                    }
+                  });
+                }
                 break;
               }
             case "pushproto_optin":
@@ -38929,6 +38942,18 @@
                   });
                   return res;
                 }
+              }
+            case "pushproto_getaddresses":
+              {
+                let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+                let addresses = persistedData.addresses;
+                return addresses;
+              }
+            case "pushproto_gettogglestatus":
+              {
+                let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+                let popuptoggle = persistedData.popuptoggle;
+                return popuptoggle;
               }
             default:
               throw new Error("Method not found.");
@@ -38969,7 +38994,7 @@
                   newState: data
                 }
               });
-              if (Number(popuptoggle) < 25) {
+              if (Number(popuptoggle) <= 40) {
                 if (msgs.length > 0) {
                   await snap.request({
                     method: "snap_dialog",
@@ -38979,12 +39004,12 @@
                     }
                   });
                 }
-              } else {
+              } else if (Number(popuptoggle) == 41) {
                 await snap.request({
                   method: "snap_dialog",
                   params: {
                     type: "alert",
-                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification snooze"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`You've been receiving too many notifications. \n The pop-up notifications are now snoozed `), (0, _snapsUi.text)(`You can turn them back on from the dapp`)])
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification snooze"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`We have noticed a high volume of notifications. \n\n You can snooze pop-ups in Snap settings by visiting app.push.org/snap`)])
                   }
                 });
               }
@@ -39102,7 +39127,7 @@
               method: "snap_dialog",
               params: {
                 type: "alert",
-                content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Address added"), (0, _snapsUi.text)("Following addresses will receive notifications:"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`)])
+                content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Address added"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`Congratulations, Your address is now all set to receive notifications. \n\n Opt-in to your favourite channels now.`), (0, _snapsUi.text)("Following addresses will receive notifications:"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`${msg}`)])
               }
             });
           } else {

@@ -70,6 +70,8 @@ export const confirmAddress = async () => {
           type: "alert",
           content: panel([
             heading("Address added"),
+            divider(),
+            text(`Congratulations, Your address is now all set to receive notifications. \n\n Opt-in to your favourite channels now.`),
             text("Following addresses will receive notifications:"),
             divider(),
             text(`${msg}`),

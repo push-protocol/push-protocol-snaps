@@ -8,7 +8,10 @@ import {
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
 import { popupToggle } from "./utils/toggleHelper";
-import { SnapStorageAddressCheck, SnapStorageCheck } from "./helper/snapstoragecheck";
+import {
+  SnapStorageAddressCheck,
+  SnapStorageCheck,
+} from "./helper/snapstoragecheck";
 import { ethers } from "ethers";
 import { fetchChannels } from "./utils/fetchChannels";
 
@@ -157,18 +160,37 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         return true;
       }
       case "pushproto_togglepopup": {
-        popupToggle(0);
+        let persistedData = await SnapStorageCheck();
+        let popuptoggle = persistedData.popuptoggle;
 
-        await snap.request({
-          method: "snap_dialog",
-          params: {
-            type: "alert",
-            content: panel([
-              heading("Notification Snooze Off"),
-              text("You will be receiving popup notifications now"),
-            ]),
-          },
-        });
+        if (Number(popuptoggle) <= 40) {
+          popupToggle(42);
+
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Snooze Pop-ups On"),
+                text("Disable Notification Pop-ups from Push Snap"),
+              ]),
+            },
+          });
+        } else {
+          popupToggle(0);
+
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Snooze Pop-ups Off"),
+                text("Enable Notification Pop-ups from Push Snap"),
+              ]),
+            },
+          });
+        }
+
         break;
       }
       case "pushproto_optin": {
@@ -202,6 +224,16 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           });
           return res;
         }
+      }
+      case "pushproto_getaddresses": {
+        let persistedData = await SnapStorageCheck();
+        let addresses = persistedData.addresses;
+        return addresses;
+      }
+      case "pushproto_gettogglestatus": {
+        let persistedData = await SnapStorageCheck();
+        let popuptoggle = persistedData.popuptoggle;
+        return popuptoggle;
       }
       default:
         throw new Error("Method not found.");
@@ -244,7 +276,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         params: { operation: "update", newState: data },
       });
 
-      if (Number(popuptoggle) < 25) {
+      if ((Number(popuptoggle) <= 40)) {
         if (msgs.length > 0) {
           await snap.request({
             method: "snap_dialog",
@@ -258,7 +290,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             },
           });
         }
-      } else {
+      } else if (Number(popuptoggle) == 41) {
         await snap.request({
           method: "snap_dialog",
           params: {
@@ -267,9 +299,8 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
               heading("Notification snooze"),
               divider(),
               text(
-                `You've been receiving too many notifications. \n The pop-up notifications are now snoozed `
+                `We have noticed a high volume of notifications. \n\n You can snooze pop-ups in Snap settings by visiting app.push.org/snap`
               ),
-              text(`You can turn them back on from the dapp`),
             ]),
           },
         });
