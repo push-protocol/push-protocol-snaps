@@ -1,5 +1,5 @@
 {
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Get Push Notifications directly in your MetaMask wallet!",
   "proposedName": "Push",
   "repository": {
@@ -7,7 +7,7 @@
     "url": "https://github.com/ethereum-push-notification-service/push-protocol-snaps"
   },
   "source": {
-    "shasum": "WhUh07ao6sX1d0nvFCECWb0V4JNEH6Mnm0JmgC2l3F0=",
+    "shasum": "FeZvu8Iskz5gMc/h3FueAuzleW1HzMk2CHqm0SmYMd4=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
