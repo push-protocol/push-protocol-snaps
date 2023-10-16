@@ -194,7 +194,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         break;
       }
       case "pushproto_optin": {
-        const res = await fetchChannels("0x28a292f4dC182492F7E23CFda4354bff688f6ea8");
+        const res = await fetchChannels(req.params.channeladdress);
         const channelName = res.channelName;
         const unsubscribedAccounts = res.unsubscribedAccounts;
         if(unsubscribedAccounts.length == 0){
@@ -203,7 +203,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             params: {
               type: "alert",
               content: panel([
-                heading("CHannel Opt-In"),
+                heading("Channel Opt-In"),
                 divider(),
                 text("You are already subscribed to this channel"),
               ]),

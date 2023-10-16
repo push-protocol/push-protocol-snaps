@@ -38920,7 +38920,7 @@
               }
             case "pushproto_optin":
               {
-                const res = await (0, _fetchChannels.fetchChannels)("0x28a292f4dC182492F7E23CFda4354bff688f6ea8");
+                const res = await (0, _fetchChannels.fetchChannels)(req.params.channeladdress);
                 const channelName = res.channelName;
                 const unsubscribedAccounts = res.unsubscribedAccounts;
                 if (unsubscribedAccounts.length == 0) {
@@ -38928,7 +38928,7 @@
                     method: "snap_dialog",
                     params: {
                       type: "alert",
-                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("CHannel Opt-In"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("You are already subscribed to this channel")])
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Channel Opt-In"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("You are already subscribed to this channel")])
                     }
                   });
                   return false;
