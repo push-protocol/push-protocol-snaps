@@ -324,6 +324,27 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       }
       break;
     }
+    case "checkActivity" : {
+      const notifs = await fetchAllAddrNotifs();
+      let persistedData = await SnapStorageCheck();
+      const addresses:string[] = persistedData.addresses;
+      if(notifs.length == 0 || addresses.length == 0){
+        await snap.request({
+          method: "snap_dialog",
+          params:{
+            type: "alert",
+            content: panel([
+              heading("Activity Alert"),
+              divider(),
+              text(
+                `We have noticed a no activity in your snap. \n\n Did you forget to setup the snap correctly, if so we recommend you to go to app.push.org/snap`
+              ),
+            ]),
+          }
+        })
+      }
+      break;
+    }
     default:
       throw new Error("Method not found.");
   }
