@@ -1,5 +1,6 @@
 import * as PushAPI from '@pushprotocol/restapi';
 import { ENV } from '@pushprotocol/restapi/src/lib/constants';
+import snapOptIn from "@pushprotocol/snap-optin"
 
 const snapOptIn = async (signer:PushAPI.SignerType,address:string, channelAddress: string) => {
 
@@ -9,10 +10,12 @@ const snapOptIn = async (signer:PushAPI.SignerType,address:string, channelAddres
       method: "wallet_invokeSnap",
       params: {
         snapId: defaultSnapOrigin,
-        request: { method: "pushproto_optin" },
+        request: { method: "pushproto_optin", params:{
+            channelAddress: channelAddress
+        } },
       },
     });
-    
+
     if (res) {
       await PushAPI.channels.subscribe({
         signer: signer,
