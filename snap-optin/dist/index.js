@@ -41,7 +41,9 @@ const snapOptIn = (signer, address, channelAddress) => __awaiter(void 0, void 0,
         method: "wallet_invokeSnap",
         params: {
             snapId: defaultSnapOrigin,
-            request: { method: "pushproto_optin" },
+            request: { method: "pushproto_optin", params: {
+                    channelAddress: channelAddress
+                } },
         },
     }));
     if (res) {

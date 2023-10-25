@@ -197,7 +197,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         const res = await fetchChannels(req.params.channeladdress);
         const channelName = res.channelName;
         const unsubscribedAccounts = res.unsubscribedAccounts;
-        if(unsubscribedAccounts.length == 0){
+        if (unsubscribedAccounts.length == 0) {
           await snap.request({
             method: "snap_dialog",
             params: {
@@ -210,7 +210,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             },
           });
           return false;
-        }else{
+        } else {
           const res = await snap.request({
             method: "snap_dialog",
             params: {
@@ -224,6 +224,19 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           });
           return res;
         }
+      }
+      case "pushproto_optincomplete": {
+        await snap.request({
+          method: "snap_dialog",
+          params: {
+            type: "alert",
+            content: panel([
+              heading("Channel Opt-In"),
+              divider(),
+              text(`You've succesfully opted into the channel to receive notifications directly into MetaMask`),
+            ]),
+          },
+        });
       }
       case "pushproto_getaddresses": {
         let persistedData = await SnapStorageCheck();
@@ -276,7 +289,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         params: { operation: "update", newState: data },
       });
 
-      if ((Number(popuptoggle) <= 40)) {
+      if (Number(popuptoggle) <= 40) {
         if (msgs.length > 0) {
           await snap.request({
             method: "snap_dialog",
@@ -324,14 +337,14 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       }
       break;
     }
-    case "checkActivity" : {
+    case "checkActivity": {
       const notifs = await fetchAllAddrNotifs();
       let persistedData = await SnapStorageCheck();
-      const addresses:string[] = persistedData.addresses;
-      if(notifs.length == 0 || addresses.length == 0){
+      const addresses: string[] = persistedData.addresses;
+      if (notifs.length == 0 || addresses.length == 0) {
         await snap.request({
           method: "snap_dialog",
-          params:{
+          params: {
             type: "alert",
             content: panel([
               heading("Activity Alert"),
@@ -340,8 +353,8 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
                 `We have noticed a no activity in your snap. \n\n Did you forget to setup the snap correctly, if so we recommend you to go to app.push.org/snap`
               ),
             ]),
-          }
-        })
+          },
+        });
       }
       break;
     }
