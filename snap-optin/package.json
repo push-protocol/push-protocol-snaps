@@ -1,0 +1,15 @@
+{
+  "name": "@pushprotocol/snap-optin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build":"tsc",
+    "build:clean":"rm -rf dist && tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pushprotocol/restapi": "^1.4.29"
+  }
+}
