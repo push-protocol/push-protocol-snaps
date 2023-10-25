@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ethereum-push-notification-service/push-protocol-snaps"
+  },
+  "license": "GNU General Public License v2.0",
   "scripts": {
     "build":"tsc",
     "build:clean":"rm -rf dist && tsc"
   },
   "author": "",
-  "license": "ISC",
   "dependencies": {
     "@pushprotocol/restapi": "^1.4.29"
   }
