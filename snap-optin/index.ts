@@ -1,8 +1,8 @@
 import * as PushAPI from '@pushprotocol/restapi';
 import { ENV } from '@pushprotocol/restapi/src/lib/constants';
-import snapOptIn from "@pushprotocol/snap-optin"
+import axios from 'axios';
 
-const snapOptIn = async (signer:PushAPI.SignerType,address:string, channelAddress: string) => {
+const snapOptIn = async (signer:PushAPI.SignerType,address:string, channelAddress: string, chainid: string) => {
 
     const defaultSnapOrigin='npm:@pushprotocol/snap'
 
@@ -19,8 +19,8 @@ const snapOptIn = async (signer:PushAPI.SignerType,address:string, channelAddres
     if (res) {
       await PushAPI.channels.subscribe({
         signer: signer,
-        channelAddress: `eip155:5:${channelAddress}`,
-        userAddress: `eip155:5:${address}`,
+        channelAddress: `eip155:${chainid}:${channelAddress}`,
+        userAddress: `eip155:${chainid}:${address}`,
         onSuccess: () => {
           console.log("opt in success");
         },
@@ -29,6 +29,18 @@ const snapOptIn = async (signer:PushAPI.SignerType,address:string, channelAddres
         },
         env: ENV.PROD,
       });
+
+      let subscribed = await axios.get(`https://backend-staging.epns.io/apis/v1/users/eip155:${chainid}:${address}/subscriptions`);
+      subscribed = subscribed.data.subscriptions;
+      if(subscribed.length == 1){
+        await window.ethereum?.request({
+          method: "wallet_invokeSnap",
+          params: {
+            snapId: defaultSnapOrigin,
+            request: { method: "pushproto_firstchanneloptin"},
+          },
+        });
+      }
     }
   };
 

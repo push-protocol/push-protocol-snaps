@@ -38943,6 +38943,16 @@
                   return res;
                 }
               }
+            case "pushproto_optincomplete":
+              {
+                await snap.request({
+                  method: "snap_dialog",
+                  params: {
+                    type: "alert",
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Channel Opt-In"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`You've succesfully opted into the channel to receive notifications directly into MetaMask`)])
+                  }
+                });
+              }
             case "pushproto_getaddresses":
               {
                 let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
@@ -38954,6 +38964,17 @@
                 let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
                 let popuptoggle = persistedData.popuptoggle;
                 return popuptoggle;
+              }
+            case "pushproto_firstchanneloptin":
+              {
+                await snap.request({
+                  method: "snap_dialog",
+                  params: {
+                    type: "alert",
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Congratulations !"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`You've succesfully opted into the first channel \n\n You will be getting norifications directly in MetaMask`)])
+                  }
+                });
+                break;
               }
             default:
               throw new Error("Method not found.");
@@ -39028,6 +39049,22 @@
                   });
                   await sleep(5000);
                 }
+              }
+              break;
+            }
+          case "checkActivity":
+            {
+              const notifs = await (0, _fetchnotifs.fetchAllAddrNotifs)();
+              let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+              const addresses = persistedData.addresses;
+              if (notifs.length == 0 || addresses.length == 0) {
+                await snap.request({
+                  method: "snap_dialog",
+                  params: {
+                    type: "alert",
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Activity Alert"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`We have noticed a no activity in your snap. \n\n Did you forget to setup the snap correctly, if so we recommend you to go to app.push.org/snap`)])
+                  }
+                });
               }
               break;
             }

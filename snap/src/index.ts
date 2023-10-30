@@ -248,6 +248,20 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         let popuptoggle = persistedData.popuptoggle;
         return popuptoggle;
       }
+      case "pushproto_firstchanneloptin": {
+        await snap.request({
+          method:"snap_dialog",
+          params:{
+            type:"alert",
+            content:panel([
+              heading("Congratulations !"),
+              divider(),
+              text(`You've succesfully opted into the first channel \n\n You will be getting norifications directly in MetaMask`),
+            ]),
+          }
+        })
+        break;
+      }
       default:
         throw new Error("Method not found.");
     }

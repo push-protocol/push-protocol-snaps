@@ -31,11 +31,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const PushAPI = __importStar(require("@pushprotocol/restapi"));
 const constants_1 = require("@pushprotocol/restapi/src/lib/constants");
-const snapOptIn = (signer, address, channelAddress) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const axios_1 = __importDefault(require("axios"));
+const snapOptIn = (signer, address, channelAddress, chainid) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     const defaultSnapOrigin = 'npm:@pushprotocol/snap';
     const res = yield ((_a = window.ethereum) === null || _a === void 0 ? void 0 : _a.request({
         method: "wallet_invokeSnap",
@@ -49,8 +53,8 @@ const snapOptIn = (signer, address, channelAddress) => __awaiter(void 0, void 0,
     if (res) {
         yield PushAPI.channels.subscribe({
             signer: signer,
-            channelAddress: `eip155:5:${channelAddress}`,
-            userAddress: `eip155:5:${address}`,
+            channelAddress: `eip155:${chainid}:${channelAddress}`,
+            userAddress: `eip155:${chainid}:${address}`,
             onSuccess: () => {
                 console.log("opt in success");
             },
@@ -59,6 +63,17 @@ const snapOptIn = (signer, address, channelAddress) => __awaiter(void 0, void 0,
             },
             env: constants_1.ENV.PROD,
         });
+        let subscribed = yield axios_1.default.get(`https://backend-staging.epns.io/apis/v1/users/eip155:${chainid}:${address}/subscriptions`);
+        subscribed = subscribed.data.subscriptions;
+        if (subscribed.length == 1) {
+            yield ((_b = window.ethereum) === null || _b === void 0 ? void 0 : _b.request({
+                method: "wallet_invokeSnap",
+                params: {
+                    snapId: defaultSnapOrigin,
+                    request: { method: "pushproto_firstchanneloptin" },
+                },
+            }));
+        }
     }
 });
 exports.default = snapOptIn;
