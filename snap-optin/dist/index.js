@@ -40,7 +40,7 @@ const constants_1 = require("@pushprotocol/restapi/src/lib/constants");
 const axios_1 = __importDefault(require("axios"));
 const snapOptIn = (signer, address, channelAddress, chainid) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    const defaultSnapOrigin = 'npm:@pushprotocol/snap';
+    const defaultSnapOrigin = 'local:http://localhost:8080';
     const res = yield ((_a = window.ethereum) === null || _a === void 0 ? void 0 : _a.request({
         method: "wallet_invokeSnap",
         params: {

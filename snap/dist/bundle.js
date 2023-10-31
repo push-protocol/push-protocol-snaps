@@ -38971,7 +38971,8 @@
                   method: "snap_dialog",
                   params: {
                     type: "alert",
-                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Congratulations !"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`You've succesfully opted into the first channel \n\n You will be getting norifications directly in MetaMask`)])
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Congratulations !"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`You have successfully opted in to your first channel. \n\n
+              Now, You are all set to receive notifications directly to your Metamask Wallet.`)])
                   }
                 });
                 break;
@@ -39062,7 +39063,8 @@
                   method: "snap_dialog",
                   params: {
                     type: "alert",
-                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Activity Alert"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`We have noticed a no activity in your snap. \n\n Did you forget to setup the snap correctly, if so we recommend you to go to app.push.org/snap`)])
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Activity Alert"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`We noticed zero activity in your snap since your last visit. \n\n
+                Visit app.push.org/snap to opt-in to channels and start using snap for notifications.`)])
                   }
                 });
               }

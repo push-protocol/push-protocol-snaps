@@ -256,7 +256,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             content:panel([
               heading("Congratulations !"),
               divider(),
-              text(`You've succesfully opted into the first channel \n\n You will be getting norifications directly in MetaMask`),
+              text(`You have successfully opted in to your first channel. \n\n
+              Now, You are all set to receive notifications directly to your Metamask Wallet.`),
             ]),
           }
         })
@@ -364,7 +365,8 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
               heading("Activity Alert"),
               divider(),
               text(
-                `We have noticed a no activity in your snap. \n\n Did you forget to setup the snap correctly, if so we recommend you to go to app.push.org/snap`
+                `We noticed zero activity in your snap since your last visit. \n\n
+                Visit app.push.org/snap to opt-in to channels and start using snap for notifications.`
               ),
             ]),
           },
