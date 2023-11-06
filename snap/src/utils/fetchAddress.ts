@@ -16,6 +16,7 @@ export const addAddress = async (address: string) => {
       const data = {
         addresses: [address],
         popuptoggle: 0,
+        userReplyAddresses: [],
       };
       await snap.request({
         method: "snap_manageState",
@@ -31,6 +32,59 @@ export const addAddress = async (address: string) => {
         const data = {
           addresses: addrlist,
           popuptoggle: popuptoggle,
+          userReplyAddresses: [],
+        };
+        await snap.request({
+          method: "snap_manageState",
+          params: { operation: "update", newState: data },
+        });
+      }
+    }
+  } else {
+    await snap.request({
+      method: "snap_dialog",
+      params: {
+        type: "alert",
+        content: panel([
+          heading("Error"),
+          text("Invalid Ethereum Address address"),
+        ]),
+      },
+    });
+  }
+};
+
+// function to add addresses to which user wants to reply in the snap
+export const addReplyAddress = async (address: string) => {
+  const persistedData = await snap.request({
+    method: "snap_manageState",
+    params: { operation: "get" },
+  });
+
+  const isValidAddress = ethers.utils.isAddress(address);
+
+  if (isValidAddress) {
+    if (persistedData == null) {
+      const data = {
+        userReplyAddresses: [address],
+        popuptoggle: 0,
+        addresses: [],
+      };
+      await snap.request({
+        method: "snap_manageState",
+        params: { operation: "update", newState: data },
+      });
+    } else {
+      const replyAddrList = persistedData.userReplyAddresses;
+      const popuptoggle = persistedData.popuptoggle;
+      if (replyAddrList!.includes(address)) {
+        return;
+      } else {
+        replyAddrList!.push(address);
+        const data = {
+          userReplyAddresses: replyAddrList,
+          popuptoggle: popuptoggle,
+          addresses: [],
         };
         await snap.request({
           method: "snap_manageState",

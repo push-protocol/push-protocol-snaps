@@ -4,6 +4,7 @@ import {
   addAddress,
   confirmAddress,
   removeAddress,
+  addReplyAddress,
 } from "./utils/fetchAddress";
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
@@ -261,6 +262,72 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             ]),
           }
         })
+        break;
+      }
+
+      case "pushproto_addaddressforreply": {
+        if (request.params != null && request.params.address != null) {
+          let addresscheck = await SnapStorageAddressCheck(
+            request.params.address
+          );
+          let isValidAddress = ethers.utils.isAddress(request.params.address);
+
+          if (addresscheck == false && isValidAddress == true) {
+            const res = await snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "confirmation",
+                content: panel([
+                  heading("Address Addition"),
+                  divider(),
+                  text("Do you want to add this reply address to the snap?"),
+                  text(`${request.params.address}`),
+                ]),
+              },
+            });
+            if (res) {
+              await addReplyAddress(request.params.address);
+              await confirmAddress();
+            } else {
+              await snap.request({
+                method: "snap_dialog",
+                params: {
+                  type: "confirmation",
+                  content: panel([
+                    heading("Error"),
+                    divider(),
+                    text(`${request.params.address}`),
+                    text("Address not added to the snap"),
+                  ]),
+                },
+              });
+            }
+          } else {
+            await snap.request({
+              method: "snap_dialog",
+              params: {
+                type: "alert",
+                content: panel([
+                  heading("Error"),
+                  divider(),
+                  text("Address already added to the snap"),
+                ]),
+              },
+            });
+          }
+        } else {
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Error"),
+                divider(),
+                text("Error reading input, please try again"),
+              ]),
+            },
+          });
+        }
         break;
       }
       default:
