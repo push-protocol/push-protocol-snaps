@@ -38754,7 +38754,8 @@
       const SnapStorageCheck = async () => {
         const defaultstate = {
           addresses: [],
-          popuptoggle: 0
+          popuptoggle: 0,
+          pgpPvtKey: ''
         };
         let persistedData = await snap.request({
           method: "snap_manageState",
@@ -38784,13 +38785,13 @@
       });
       exports.onRpcRequest = exports.onCronjob = void 0;
       var _snapsUi = require("@metamask/snaps-ui");
+      var _ethers = require("ethers");
       var _fetchAddress = require("./utils/fetchAddress");
       var _fetchnotifs = require("./utils/fetchnotifs");
       var _popupHelper = require("./utils/popupHelper");
       var _toggleHelper = require("./utils/toggleHelper");
-      var _snapstoragecheck = require("./helper/snapstoragecheck");
-      var _ethers = require("ethers");
       var _fetchChannels = require("./utils/fetchChannels");
+      var _snapstoragecheck = require("./helper/snapstoragecheck");
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
@@ -38977,6 +38978,34 @@
                 });
                 break;
               }
+            case "pushproto_storepgppvtkey":
+              {
+                const res = await snap.request({
+                  method: "snap_dialog",
+                  params: {
+                    type: "confirmation",
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Store PGP Private Key"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Do you want to store your PGP Private Key in the Snap?")])
+                  }
+                });
+                if (res) {
+                  await (0, _fetchAddress.addPGPPvtKey)(request.params.pgpPvtKey);
+                  await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "confirmation",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Success!"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("PGP Private Key has been successfully added to the Snap.")])
+                    }
+                  });
+                } else {
+                  await snap.request({
+                    method: "snap_dialog",
+                    params: {
+                      type: "confirmation",
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Error"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("PGP Private Key not added to the snap")])
+                    }
+                  });
+                }
+              }
             default:
               throw new Error("Method not found.");
           }
@@ -39091,7 +39120,7 @@
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
-      exports.removeAddress = exports.fetchAddress = exports.confirmAddress = exports.addAddress = void 0;
+      exports.removeAddress = exports.fetchAddress = exports.confirmAddress = exports.addPGPPvtKey = exports.addAddress = void 0;
       var _snapsUi = require("@metamask/snaps-ui");
       var _snapstoragecheck = require("../helper/snapstoragecheck");
       const {
@@ -39229,6 +39258,49 @@
         }
       };
       exports.fetchAddress = fetchAddress;
+      const addPGPPvtKey = async pgpPvtKey => {
+        const persistedData = await snap.request({
+          method: "snap_manageState",
+          params: {
+            operation: "get"
+          }
+        });
+        if (persistedData == null) {
+          const data = {
+            addresses: [],
+            popuptoggle: 0,
+            pgpPvtKey: pgpPvtKey
+          };
+          await snap.request({
+            method: "snap_manageState",
+            params: {
+              operation: "update",
+              newState: data
+            }
+          });
+        } else {
+          const addrlist = persistedData.addresses;
+          const popuptoggle = persistedData.popuptoggle;
+          const pgpPvtKey = persistedData.pgpPvtKey;
+          if (pgpPvtKey) {
+            return;
+          } else {
+            const data = {
+              addresses: addrlist,
+              popuptoggle: popuptoggle,
+              pgpPvtKey: pgpPvtKey
+            };
+            await snap.request({
+              method: "snap_manageState",
+              params: {
+                operation: "update",
+                newState: data
+              }
+            });
+          }
+        }
+      };
+      exports.addPGPPvtKey = addPGPPvtKey;
     }, {
       "../helper/snapstoragecheck": 247,
       "@metamask/snaps-ui": 127,

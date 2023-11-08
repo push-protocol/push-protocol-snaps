@@ -137,3 +137,40 @@ export const fetchAddress = async () => {
     return [];
   }
 };
+
+export const addPGPPvtKey = async (pgpPvtKey: string) => {
+  const persistedData = await snap.request({
+    method: "snap_manageState",
+    params: { operation: "get" },
+  });
+
+  if (persistedData == null) {
+    const data = {
+      addresses: [],
+      popuptoggle: 0,
+      pgpPvtKey: pgpPvtKey
+    };
+    await snap.request({
+      method: "snap_manageState",
+      params: { operation: "update", newState: data },
+    });
+  } else {
+    const addrlist = persistedData.addresses;
+    const popuptoggle = persistedData.popuptoggle;
+    const pgpPvtKey = persistedData.pgpPvtKey;
+
+    if (pgpPvtKey) {
+      return;
+    } else {
+      const data = {
+        addresses: addrlist,
+        popuptoggle: popuptoggle,
+        pgpPvtKey: pgpPvtKey
+      };
+      await snap.request({
+        method: "snap_manageState",
+        params: { operation: "update", newState: data },
+      });
+    }
+  }
+}
