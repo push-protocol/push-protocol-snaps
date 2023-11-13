@@ -311,7 +311,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             params: {
               type: "alert",
               content: panel([
-                heading("You have a new notifications!"),
+                heading("You have a new notification!"),
                 divider(),
                 ...msgs.map((msg) => text(msg)),
               ]),

@@ -39022,7 +39022,7 @@
                     method: "snap_dialog",
                     params: {
                       type: "alert",
-                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("You have a new notifications!"), (0, _snapsUi.divider)(), ...msgs.map(msg => (0, _snapsUi.text)(msg))])
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("You have a new notification!"), (0, _snapsUi.divider)(), ...msgs.map(msg => (0, _snapsUi.text)(msg))])
                     }
                   });
                 }
@@ -39289,7 +39289,7 @@
         try {
           let addressValidation = _ethers.ethers.utils.isAddress(address);
           if (addressValidation) {
-            const url = `https://backend-staging.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
+            const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
             const response = await fetch(url, {
               method: "get",
               headers: {
