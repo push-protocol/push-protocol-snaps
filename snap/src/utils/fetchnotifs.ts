@@ -6,7 +6,7 @@ export const getNotifications = async (address: string) => {
     let addressValidation = ethers.utils.isAddress(address);
 
     if (addressValidation) {
-      const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
+      const url = `https://backend-staging.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
       const response = await fetch(url, {
         method: "get",
         headers: {
@@ -37,7 +37,7 @@ export const filterNotifications = async (address: string) => {
         let msg =
           fetchedNotifications[i].payload.data.app +
           " : " +
-          fetchedNotifications[i].payload.data.amsg;
+          convertText(fetchedNotifications[i].payload.data.amsg);
         notiffeeds.push(msg);
       }
     }
@@ -55,3 +55,24 @@ export const fetchAllAddrNotifs = async () => {
   notifs = results.reduce((acc, curr) => acc.concat(curr), []);
   return notifs;
 };
+
+function convertText(text:string) {
+  let newText = text.replace(/\n/g, ' ');
+
+  const tagRegex = /\[(d|s|t):([^\]]+)\]/g;
+  newText = newText.replace(tagRegex, (match, tag, value) => value);
+
+  const timestampRegex = /\[timestamp:\s*(\d+)\]/g;
+  let processedTimestamps = new Set();
+  newText = newText.replace(timestampRegex, (match, timestamp) => {
+      if (processedTimestamps.has(timestamp)) {
+          return '';
+      } else {
+          const date = new Date(parseInt(timestamp) * 1000);
+          processedTimestamps.add(timestamp); 
+          return date.toLocaleString(); 
+      }
+  });
+
+  return newText;
+}
