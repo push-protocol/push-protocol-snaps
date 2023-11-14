@@ -1,19 +1,21 @@
 import { OnCronjobHandler, OnRpcRequestHandler } from "@metamask/snaps-types";
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
+import { ethers } from "ethers";
+
 import {
   addAddress,
+  addPGPPvtKey,
   confirmAddress,
   removeAddress,
 } from "./utils/fetchAddress";
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
 import { popupToggle } from "./utils/toggleHelper";
+import { fetchChannels } from "./utils/fetchChannels";
 import {
   SnapStorageAddressCheck,
   SnapStorageCheck,
 } from "./helper/snapstoragecheck";
-import { ethers } from "ethers";
-import { fetchChannels } from "./utils/fetchChannels";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -263,6 +265,49 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         })
         break;
       }
+
+      case "pushproto_storepgppvtkey" : {
+        const res = await snap.request({
+          method: "snap_dialog",
+          params: {
+            type: "confirmation",
+            content: panel([
+              heading("Store PGP Private Key"),
+              divider(),
+              text("Do you want to store your PGP Private Key in the Snap?"),
+            ]),
+          },
+        });
+
+        if (res) {
+          await addPGPPvtKey(request.params.pgpPvtKey);
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "confirmation",
+              content: panel([
+                heading("Success!"),
+                divider(),
+                text("PGP Private Key has been successfully added to the Snap."),
+              ]),
+            },
+          });
+        } else {
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "confirmation",
+              content: panel([
+                heading("Error"),
+                divider(),
+                text("PGP Private Key not added to the snap"),
+              ]),
+            },
+          });
+        }
+        break;
+      }
+
       default:
         throw new Error("Method not found.");
     }
