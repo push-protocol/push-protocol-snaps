@@ -58,6 +58,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "ethers": "5.7.2"
   }
 }

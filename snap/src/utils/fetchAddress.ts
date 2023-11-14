@@ -1,5 +1,6 @@
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
 import { SnapStorageCheck } from "../helper/snapstoragecheck";
+import * as CryptoJS from 'crypto-js';
 
 const { ethers } = require("ethers");
 
@@ -138,17 +139,27 @@ export const fetchAddress = async () => {
   }
 };
 
+// function to AES encrypt the PGP Private key
+function encryptStringAES(text: string, key: string): string {
+  const encrypted = CryptoJS.AES.encrypt(text, key);
+  return encrypted.toString();
+}
+
+const secretKey = 'push-metamask-snaps';
+
 export const addPGPPvtKey = async (pgpPvtKey: string) => {
   const persistedData = await snap.request({
     method: "snap_manageState",
     params: { operation: "get" },
   });
 
+  const encryptedPGPKey = encryptStringAES(pgpPvtKey, secretKey);
+
   if (persistedData == null) {
     const data = {
       addresses: [],
       popuptoggle: 0,
-      pgpPvtKey: pgpPvtKey
+      pgpPvtKey: encryptedPGPKey
     };
     await snap.request({
       method: "snap_manageState",
@@ -165,7 +176,7 @@ export const addPGPPvtKey = async (pgpPvtKey: string) => {
       const data = {
         addresses: addrlist,
         popuptoggle: popuptoggle,
-        pgpPvtKey: pgpPvtKey
+        pgpPvtKey: encryptedPGPKey
       };
       await snap.request({
         method: "snap_manageState",

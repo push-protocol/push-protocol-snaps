@@ -305,6 +305,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             },
           });
         }
+        break;
       }
 
       default:
