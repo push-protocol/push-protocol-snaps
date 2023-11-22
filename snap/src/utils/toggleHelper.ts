@@ -14,3 +14,19 @@ export const popupToggle= async (notifcount:number) => {
         params: { operation: 'update', newState:data },
     });
 };
+
+export const setSnoozeDuration = async (snoozeDur: number) => {
+    let snoozeInMins = snoozeDur;
+    let persistedData = await SnapStorageCheck();
+
+    const data = {
+        addresses: persistedData.addresses,
+        popuptoggle: persistedData.popuptoggle,
+        snoozeDuration: snoozeInMins,
+    };
+
+    await snap.request({
+        method: 'snap_manageState',
+        params: { operation: 'update', newState:data },
+    });
+}

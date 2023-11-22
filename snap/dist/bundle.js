@@ -38754,7 +38754,8 @@
       const SnapStorageCheck = async () => {
         const defaultstate = {
           addresses: [],
-          popuptoggle: 0
+          popuptoggle: 0,
+          snoozeDuration: 0
         };
         let persistedData = await snap.request({
           method: "snap_manageState",
@@ -38897,8 +38898,8 @@
               {
                 let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
                 let popuptoggle = persistedData.popuptoggle;
-                if (Number(popuptoggle) <= 40) {
-                  (0, _toggleHelper.popupToggle)(42);
+                if (Number(popuptoggle) <= 25) {
+                  (0, _toggleHelper.popupToggle)(27);
                   await snap.request({
                     method: "snap_dialog",
                     params: {
@@ -38917,6 +38918,21 @@
                   });
                 }
                 break;
+              }
+            case "pushproto_":
+              {
+                await (0, _snapstoragecheck.SnapStorageCheck)();
+                const result = await snap.request({
+                  method: 'snap_dialog',
+                  params: {
+                    type: 'confirmation',
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)('Snooze Notifications'), (0, _snapsUi.divider)(), (0, _snapsUi.text)('You are receiving a lot of notifications, do you want to turn snooze on?')])
+                  }
+                });
+                if (result) {
+                  const snoozeDuration = await (0, _fetchAddress.snoozeNotifs)();
+                  (0, _toggleHelper.setSnoozeDuration)(Number(snoozeDuration));
+                }
               }
             case "pushproto_optin":
               {
@@ -39016,7 +39032,7 @@
                   newState: data
                 }
               });
-              if (Number(popuptoggle) <= 40) {
+              if (Number(popuptoggle) <= 25) {
                 if (msgs.length > 0) {
                   await snap.request({
                     method: "snap_dialog",
@@ -39026,7 +39042,7 @@
                     }
                   });
                 }
-              } else if (Number(popuptoggle) == 41) {
+              } else if (Number(popuptoggle) == 26) {
                 await snap.request({
                   method: "snap_dialog",
                   params: {
@@ -39091,7 +39107,7 @@
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
-      exports.removeAddress = exports.fetchAddress = exports.confirmAddress = exports.addAddress = void 0;
+      exports.snoozeNotifs = exports.removeAddress = exports.fetchAddress = exports.confirmAddress = exports.addAddress = void 0;
       var _snapsUi = require("@metamask/snaps-ui");
       var _snapstoragecheck = require("../helper/snapstoragecheck");
       const {
@@ -39229,6 +39245,18 @@
         }
       };
       exports.fetchAddress = fetchAddress;
+      const snoozeNotifs = async () => {
+        const snoozeDuration = await snap.request({
+          method: "snap_dialog",
+          params: {
+            type: "prompt",
+            content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Set snooze duration"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Set the duration for snooze")]),
+            placeholder: 'Snooze duration in minutes'
+          }
+        });
+        return snoozeDuration;
+      };
+      exports.snoozeNotifs = snoozeNotifs;
     }, {
       "../helper/snapstoragecheck": 247,
       "@metamask/snaps-ui": 127,
@@ -39370,7 +39398,7 @@
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
-      exports.popupToggle = void 0;
+      exports.setSnoozeDuration = exports.popupToggle = void 0;
       var _snapstoragecheck = require("../helper/snapstoragecheck");
       const popupToggle = async notifcount => {
         let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
@@ -39388,6 +39416,23 @@
         });
       };
       exports.popupToggle = popupToggle;
+      const setSnoozeDuration = async snoozeDur => {
+        let snoozeInMins = snoozeDur;
+        let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+        const data = {
+          addresses: persistedData.addresses,
+          popuptoggle: persistedData.popuptoggle,
+          snoozeDuration: snoozeInMins
+        };
+        await snap.request({
+          method: 'snap_manageState',
+          params: {
+            operation: 'update',
+            newState: data
+          }
+        });
+      };
+      exports.setSnoozeDuration = setSnoozeDuration;
     }, {
       "../helper/snapstoragecheck": 247
     }]
