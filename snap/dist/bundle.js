@@ -38755,7 +38755,7 @@
         const defaultstate = {
           addresses: [],
           popuptoggle: 0,
-          snoozeDuration: 0
+          snoozeDuration: new Date().getTime()
         };
         let persistedData = await snap.request({
           method: "snap_manageState",
@@ -39025,6 +39025,7 @@
                 addresses: persistedData.addresses,
                 popuptoggle: popuptoggle
               };
+              let currentTimeEpoch = new Date().getTime();
               await snap.request({
                 method: "snap_manageState",
                 params: {
@@ -39032,7 +39033,7 @@
                   newState: data
                 }
               });
-              if (Number(popuptoggle) <= 25) {
+              if (Number(popuptoggle) <= 25 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
                 if (msgs.length > 0) {
                   await snap.request({
                     method: "snap_dialog",
@@ -39042,7 +39043,7 @@
                     }
                   });
                 }
-              } else if (Number(popuptoggle) == 26) {
+              } else if (Number(popuptoggle) == 26 && currentTimeEpoch <= Number(persistedData.snoozeDuration)) {
                 await snap.request({
                   method: "snap_dialog",
                   params: {
@@ -39251,7 +39252,7 @@
           params: {
             type: "prompt",
             content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Set snooze duration"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Set the duration for snooze")]),
-            placeholder: 'Snooze duration in minutes'
+            placeholder: 'Snooze duration in Hours (e.g. 6)'
           }
         });
         return snoozeDuration;
@@ -39417,12 +39418,13 @@
       };
       exports.popupToggle = popupToggle;
       const setSnoozeDuration = async snoozeDur => {
-        let snoozeInMins = snoozeDur;
+        let snoozeInHours = snoozeDur;
         let persistedData = await (0, _snapstoragecheck.SnapStorageCheck)();
+        let currentTimeEpoch = new Date().getTime();
         const data = {
           addresses: persistedData.addresses,
           popuptoggle: persistedData.popuptoggle,
-          snoozeDuration: snoozeInMins
+          snoozeDuration: currentTimeEpoch + snoozeInHours * 60 * 60 * 1000
         };
         await snap.request({
           method: 'snap_manageState',

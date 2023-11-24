@@ -212,7 +212,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           },
         });
         
-        // if user approves, ask user for snooze duration in mins
+        // if user approves, ask user for snooze duration in hours
         if (result) {
           const snoozeDuration = await snoozeNotifs();
           setSnoozeDuration(Number(snoozeDuration));
@@ -325,13 +325,15 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         popuptoggle: popuptoggle,
       };
 
+      let currentTimeEpoch = new Date().getTime();
+
       await snap.request({
         method: "snap_manageState",
         params: { operation: "update", newState: data },
       });
 
       // if user is recieving more than 25 notifications, remind them to turn on snooze
-      if (Number(popuptoggle) <= 25) {
+      if (Number(popuptoggle) <= 25 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
         if (msgs.length > 0) {
           await snap.request({
             method: "snap_dialog",
@@ -345,7 +347,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             },
           });
         }
-      } else if (Number(popuptoggle) == 26) {
+      } else if (Number(popuptoggle) == 26 && currentTimeEpoch <= Number(persistedData.snoozeDuration)) {
         await snap.request({
           method: "snap_dialog",
           params: {

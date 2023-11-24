@@ -16,17 +16,21 @@ export const popupToggle= async (notifcount:number) => {
 };
 
 export const setSnoozeDuration = async (snoozeDur: number) => {
-    let snoozeInMins = snoozeDur;
+    let snoozeInHours = snoozeDur;
     let persistedData = await SnapStorageCheck();
+
+    // get the local time in epoch
+    let currentTimeEpoch = new Date().getTime();
 
     const data = {
         addresses: persistedData.addresses,
         popuptoggle: persistedData.popuptoggle,
-        snoozeDuration: snoozeInMins,
+        // store the timestamp till which snooze will be enabled
+        snoozeDuration: currentTimeEpoch + snoozeInHours * 60 * 60 * 1000,
     };
 
     await snap.request({
         method: 'snap_manageState',
-        params: { operation: 'update', newState:data },
+        params: { operation: 'update', newState: data },
     });
 }

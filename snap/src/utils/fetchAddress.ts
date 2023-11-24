@@ -149,7 +149,7 @@ export const snoozeNotifs = async () => {
         divider(),
         text("Set the duration for snooze"),
       ]),
-      placeholder: 'Snooze duration in minutes',
+      placeholder: 'Snooze duration in Hours (e.g. 6)',
     },
   });
 
