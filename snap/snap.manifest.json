@@ -37,6 +37,12 @@
           "request": {
             "method": "checkActivity"
           }
+        },
+        {
+          "expression": "* * * * *",
+          "request": {
+            "method": "pushproto_removesnooze"
+          }
         }
       ]
     },
