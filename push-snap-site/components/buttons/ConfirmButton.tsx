@@ -26,8 +26,7 @@ export default function ConfirmButton() {
       params: {
         snapId: defaultSnapOrigin,
         request: {
-          method: "pushproto_removeaddress",
-          params: { address: address },
+          method: "pushproto_snoozeduration"
         },
       },
     });

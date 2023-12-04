@@ -153,5 +153,17 @@ export const snoozeNotifs = async () => {
     },
   });
 
+  await snap.request({
+    method:"snap_dialog",
+    params:{
+      type:"alert",
+      content:panel([
+        heading("Notification Snooze"),
+        divider(),
+        text(`Notification has been snoozed for ${snoozeDuration} hours`)
+      ])
+    }
+  })
+
   return snoozeDuration;
 }

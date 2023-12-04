@@ -195,11 +195,9 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         break;
       }
 
-      // set custom snooze duration for snaps
-      case "pushproto_": {
+      case "pushproto_snoozeduration": {
         await SnapStorageCheck();
 
-        // ask user if they want to turn snooze on or off
         const result = await snap.request({
           method: 'snap_dialog',
           params: {
@@ -212,11 +210,11 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           },
         });
         
-        // if user approves, ask user for snooze duration in hours
         if (result) {
           const snoozeDuration = await snoozeNotifs();
           setSnoozeDuration(Number(snoozeDuration));
         }
+        break;
       }
 
       case "pushproto_optin": {

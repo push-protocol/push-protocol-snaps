@@ -38919,7 +38919,7 @@
                 }
                 break;
               }
-            case "pushproto_":
+            case "pushproto_snoozeduration":
               {
                 await (0, _snapstoragecheck.SnapStorageCheck)();
                 const result = await snap.request({
@@ -38933,6 +38933,7 @@
                   const snoozeDuration = await (0, _fetchAddress.snoozeNotifs)();
                   (0, _toggleHelper.setSnoozeDuration)(Number(snoozeDuration));
                 }
+                break;
               }
             case "pushproto_optin":
               {
@@ -39253,6 +39254,13 @@
             type: "prompt",
             content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Set snooze duration"), (0, _snapsUi.divider)(), (0, _snapsUi.text)("Set the duration for snooze")]),
             placeholder: 'Snooze duration in Hours (e.g. 6)'
+          }
+        });
+        await snap.request({
+          method: "snap_dialog",
+          params: {
+            type: "alert",
+            content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification Snooze"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`Notification has been snoozed for ${snoozeDuration} hours`)])
           }
         });
         return snoozeDuration;
