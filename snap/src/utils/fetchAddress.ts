@@ -137,3 +137,21 @@ export const fetchAddress = async () => {
     return [];
   }
 };
+
+
+export const snoozeNotifs = async () => {
+  const snoozeDuration = await snap.request({
+    method: "snap_dialog",
+    params: {
+      type: "prompt",
+      content: panel([
+        heading("Set snooze duration"),
+        divider(),
+        text("Set the duration for snooze"),
+      ]),
+      placeholder: 'Snooze duration in Hours (e.g. 6)',
+    },
+  });
+
+  return snoozeDuration;
+}

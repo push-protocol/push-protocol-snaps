@@ -4,10 +4,11 @@ import {
   addAddress,
   confirmAddress,
   removeAddress,
+  snoozeNotifs,
 } from "./utils/fetchAddress";
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
-import { popupToggle } from "./utils/toggleHelper";
+import { popupToggle, setSnoozeDuration } from "./utils/toggleHelper";
 import {
   SnapStorageAddressCheck,
   SnapStorageCheck,
@@ -163,8 +164,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         let persistedData = await SnapStorageCheck();
         let popuptoggle = persistedData.popuptoggle;
 
-        if (Number(popuptoggle) <= 40) {
-          popupToggle(42);
+        if (Number(popuptoggle) <= 25) {
+          popupToggle(27);
 
           await snap.request({
             method: "snap_dialog",
@@ -193,6 +194,31 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
 
         break;
       }
+
+      // set custom snooze duration for snaps
+      case "pushproto_": {
+        await SnapStorageCheck();
+
+        // ask user if they want to turn snooze on or off
+        const result = await snap.request({
+          method: 'snap_dialog',
+          params: {
+            type: 'confirmation',
+            content: panel([
+              heading('Snooze Notifications'),
+              divider(),
+              text('You are receiving a lot of notifications, do you want to turn snooze on?'),
+            ]),
+          },
+        });
+        
+        // if user approves, ask user for snooze duration in hours
+        if (result) {
+          const snoozeDuration = await snoozeNotifs();
+          setSnoozeDuration(Number(snoozeDuration));
+        }
+      }
+
       case "pushproto_optin": {
         const res = await fetchChannels(req.params.channeladdress);
         const channelName = res.channelName;
@@ -299,12 +325,15 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         popuptoggle: popuptoggle,
       };
 
+      let currentTimeEpoch = new Date().getTime();
+
       await snap.request({
         method: "snap_manageState",
         params: { operation: "update", newState: data },
       });
 
-      if (Number(popuptoggle) <= 40) {
+      // if user is recieving more than 25 notifications, remind them to turn on snooze
+      if (Number(popuptoggle) <= 25 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
         if (msgs.length > 0) {
           await snap.request({
             method: "snap_dialog",
@@ -318,7 +347,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             },
           });
         }
-      } else if (Number(popuptoggle) == 41) {
+      } else if (Number(popuptoggle) == 26 && currentTimeEpoch <= Number(persistedData.snoozeDuration)) {
         await snap.request({
           method: "snap_dialog",
           params: {
