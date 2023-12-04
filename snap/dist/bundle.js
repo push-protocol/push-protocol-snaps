@@ -39039,7 +39039,7 @@
                     method: "snap_dialog",
                     params: {
                       type: "alert",
-                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("You have a new notifications!"), (0, _snapsUi.divider)(), ...msgs.map(msg => (0, _snapsUi.text)(msg))])
+                      content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("You have a new notification!"), (0, _snapsUi.divider)(), ...msgs.map(msg => (0, _snapsUi.text)(msg))])
                     }
                   });
                 }
@@ -39351,7 +39351,7 @@
             let feedepoch = fetchedNotifications[i].payload.data.epoch;
             feedepoch = Number(feedepoch).toFixed(0);
             if (feedepoch > currentepoch - 60) {
-              let msg = fetchedNotifications[i].payload.data.app + " : " + fetchedNotifications[i].payload.data.amsg;
+              let msg = fetchedNotifications[i].payload.data.app + " : " + convertText(fetchedNotifications[i].payload.data.amsg);
               notiffeeds.push(msg);
             }
           }
@@ -39370,6 +39370,23 @@
         return notifs;
       };
       exports.fetchAllAddrNotifs = fetchAllAddrNotifs;
+      function convertText(text) {
+        let newText = text.replace(/\n/g, ' ');
+        const tagRegex = /\[(d|s|t):([^\]]+)\]/g;
+        newText = newText.replace(tagRegex, (match, tag, value) => value);
+        const timestampRegex = /\[timestamp:\s*(\d+)\]/g;
+        let processedTimestamps = new Set();
+        newText = newText.replace(timestampRegex, (match, timestamp) => {
+          if (processedTimestamps.has(timestamp)) {
+            return '';
+          } else {
+            const date = new Date(parseInt(timestamp) * 1000);
+            processedTimestamps.add(timestamp);
+            return date.toLocaleString();
+          }
+        });
+        return newText;
+      }
     }, {
       "./fetchAddress": 249,
       "ethers": 176
