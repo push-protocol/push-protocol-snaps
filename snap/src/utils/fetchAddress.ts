@@ -6,7 +6,7 @@ const { ethers } = require("ethers");
 export const addAddress = async (address: string) => {
   const persistedData = await snap.request({
     method: "snap_manageState",
-    params: { operation: "get" },
+    params: { operation: "get", encrypted: false },
   });
 
   const isValidAddress = ethers.utils.isAddress(address);
@@ -19,7 +19,7 @@ export const addAddress = async (address: string) => {
       };
       await snap.request({
         method: "snap_manageState",
-        params: { operation: "update", newState: data },
+        params: { operation: "update", newState: data, encrypted: false },
       });
     } else {
       const addrlist = persistedData.addresses;
@@ -34,7 +34,7 @@ export const addAddress = async (address: string) => {
         };
         await snap.request({
           method: "snap_manageState",
-          params: { operation: "update", newState: data },
+          params: { operation: "update", newState: data, encrypted: false },
         });
       }
     }
@@ -55,7 +55,7 @@ export const addAddress = async (address: string) => {
 export const confirmAddress = async () => {
   const persistedData = await snap.request({
     method: "snap_manageState",
-    params: { operation: "get" },
+    params: { operation: "get", encrypted: false },
   });
   if (persistedData != null) {
     const data = persistedData.addresses;
@@ -121,14 +121,14 @@ export const removeAddress = async (address: string) => {
 
   await snap.request({
     method: "snap_manageState",
-    params: { operation: "update", newState: newData },
+    params: { operation: "update", newState: newData, encrypted: false },
   });
 };
 
 export const fetchAddress = async () => {
   const persistedData = await snap.request({
     method: "snap_manageState",
-    params: { operation: "get" },
+    params: { operation: "get", encrypted: false },
   });
   if (persistedData != null) {
     const addresses = persistedData!.addresses;

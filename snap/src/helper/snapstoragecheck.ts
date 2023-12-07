@@ -7,7 +7,7 @@ export const SnapStorageCheck = async () => {
   };
   let persistedData = await snap.request({
     method: "snap_manageState",
-    params: { operation: "get" },
+    params: { operation: "get", encrypted: false },
   });
   return persistedData || defaultstate;
 };

@@ -38760,7 +38760,8 @@
         let persistedData = await snap.request({
           method: "snap_manageState",
           params: {
-            operation: "get"
+            operation: "get",
+            encrypted: false
           }
         });
         return persistedData || defaultstate;
@@ -39031,7 +39032,8 @@
                 method: "snap_manageState",
                 params: {
                   operation: "update",
-                  newState: data
+                  newState: data,
+                  encrypted: false
                 }
               });
               if (Number(popuptoggle) <= 25 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
@@ -39119,7 +39121,8 @@
         const persistedData = await snap.request({
           method: "snap_manageState",
           params: {
-            operation: "get"
+            operation: "get",
+            encrypted: false
           }
         });
         const isValidAddress = ethers.utils.isAddress(address);
@@ -39133,7 +39136,8 @@
               method: "snap_manageState",
               params: {
                 operation: "update",
-                newState: data
+                newState: data,
+                encrypted: false
               }
             });
           } else {
@@ -39151,7 +39155,8 @@
                 method: "snap_manageState",
                 params: {
                   operation: "update",
-                  newState: data
+                  newState: data,
+                  encrypted: false
                 }
               });
             }
@@ -39171,7 +39176,8 @@
         const persistedData = await snap.request({
           method: "snap_manageState",
           params: {
-            operation: "get"
+            operation: "get",
+            encrypted: false
           }
         });
         if (persistedData != null) {
@@ -39227,7 +39233,8 @@
           method: "snap_manageState",
           params: {
             operation: "update",
-            newState: newData
+            newState: newData,
+            encrypted: false
           }
         });
       };
@@ -39236,7 +39243,8 @@
         const persistedData = await snap.request({
           method: "snap_manageState",
           params: {
-            operation: "get"
+            operation: "get",
+            encrypted: false
           }
         });
         if (persistedData != null) {
@@ -39437,7 +39445,8 @@
           method: 'snap_manageState',
           params: {
             operation: 'update',
-            newState: data
+            newState: data,
+            encrypted: false
           }
         });
       };
@@ -39455,7 +39464,8 @@
           method: 'snap_manageState',
           params: {
             operation: 'update',
-            newState: data
+            newState: data,
+            encrypted: false
           }
         });
       };
