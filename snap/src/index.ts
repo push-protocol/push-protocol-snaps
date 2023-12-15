@@ -1,5 +1,5 @@
 import { OnCronjobHandler, OnRpcRequestHandler } from "@metamask/snaps-types";
-import { divider, heading, panel, text } from "@metamask/snaps-ui";
+import { divider, heading, panel, text, image } from "@metamask/snaps-ui";
 import {
   addAddress,
   confirmAddress,
@@ -15,6 +15,7 @@ import {
 } from "./helper/snapstoragecheck";
 import { ethers } from "ethers";
 import { fetchChannels } from "./utils/fetchChannels";
+import { fileURLToDataURL } from "./helper/imageHelper";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -287,6 +288,32 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         })
         break;
       }
+
+      case "pushproto_imagerender": {
+        let dataURLtoRender;
+        const imageUrl = 'https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg';
+        fileURLToDataURL(imageUrl)
+          .then(dataURL => {
+            dataURLtoRender = dataURL;
+            console.log(dataURLtoRender);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        await snap.request({
+          method: "snap_dialog",
+          params: {
+            type: "alert",
+            content: panel([
+              heading("Rednering Image from File URL"),
+              divider(),
+              text(`Heres an image`),
+              image(`<svg width="400" height="400" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><img src="${dataURLtoRender}" x="20" y="20" width="160" height="160"/></svg>`)
+            ]),
+          },
+        });
+      }
+
       default:
         throw new Error("Method not found.");
     }

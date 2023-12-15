@@ -7,7 +7,7 @@ export default function ReconnectButton() {
       method: "wallet_invokeSnap",
       params: {
         snapId: defaultSnapOrigin,
-        request: { method: 'pushproto_testing' },
+        request: { method: 'pushproto_imagerender' },
       },
     }))
   };
