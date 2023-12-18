@@ -1,5 +1,5 @@
 import { OnCronjobHandler, OnRpcRequestHandler } from "@metamask/snaps-types";
-import { divider, heading, panel, text } from "@metamask/snaps-ui";
+import { divider, heading, panel, text, image } from "@metamask/snaps-ui";
 import {
   addAddress,
   confirmAddress,
@@ -15,6 +15,7 @@ import {
 } from "./helper/snapstoragecheck";
 import { ethers } from "ethers";
 import { fetchChannels } from "./utils/fetchChannels";
+import { getImageData } from "./helper/imageHelper";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -287,6 +288,31 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         })
         break;
       }
+
+      case "pushproto_imagerender": {
+        const imageData = await getImageData(
+          "https://play-lh.googleusercontent.com/IeNJWoKYx1waOhfWF6TiuSiWBLfqLb18lmZYXSgsH1fvb8v1IYiZr5aYWe0Gxu-pVZX3"
+        );
+        let svg = `
+          <svg width="1000" height="1000" xmlns="http://www.w3.org/2000/svg">
+            <image href="${imageData}" />
+          </svg>
+        `;
+
+        await snap.request({
+          method: "snap_dialog",
+          params: {
+            type: "alert",
+            content: panel([
+              heading("Rendering Image from File URL"),
+              divider(),
+              text(`Heres an image`),
+              image(svg),
+            ]),
+          },
+        });
+      }
+
       default:
         throw new Error("Method not found.");
     }

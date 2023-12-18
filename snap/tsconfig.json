@@ -2,6 +2,6 @@
   "extends": "../../tsconfig.json",
   "include": ["src"],
   "compilerOptions": {
-    "lib": ["ES2017"]
+    "lib": ["ES2017", "dom", "es6", "dom.iterable", "scripthost"]
   }
 }
