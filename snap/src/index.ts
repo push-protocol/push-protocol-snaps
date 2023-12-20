@@ -346,19 +346,25 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
           });
         }
       } else if (Number(popuptoggle) == 26 && currentTimeEpoch <= Number(persistedData.snoozeDuration)) {
-        await snap.request({
-          method: "snap_dialog",
+        await SnapStorageCheck();
+
+        const result = await snap.request({
+          method: 'snap_dialog',
           params: {
-            type: "alert",
+            type: 'confirmation',
             content: panel([
-              heading("Notification snooze"),
+              heading('Snooze Notifications'),
               divider(),
-              text(
-                `We have noticed a high volume of notifications. \n\n You can snooze pop-ups in Snap settings by visiting app.push.org/snap`
-              ),
+              text('You are receiving a lot of notifications, do you want to turn snooze on?'),
             ]),
           },
         });
+        
+        if (result) {
+          const snoozeDuration = await snoozeNotifs();
+          setSnoozeDuration(Number(snoozeDuration));
+        }
+        break;
       }
 
       if (msgs.length > 0) {

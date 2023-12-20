@@ -39047,13 +39047,19 @@
                   });
                 }
               } else if (Number(popuptoggle) == 26 && currentTimeEpoch <= Number(persistedData.snoozeDuration)) {
-                await snap.request({
-                  method: "snap_dialog",
+                await (0, _snapstoragecheck.SnapStorageCheck)();
+                const result = await snap.request({
+                  method: 'snap_dialog',
                   params: {
-                    type: "alert",
-                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)("Notification snooze"), (0, _snapsUi.divider)(), (0, _snapsUi.text)(`We have noticed a high volume of notifications. \n\n You can snooze pop-ups in Snap settings by visiting app.push.org/snap`)])
+                    type: 'confirmation',
+                    content: (0, _snapsUi.panel)([(0, _snapsUi.heading)('Snooze Notifications'), (0, _snapsUi.divider)(), (0, _snapsUi.text)('You are receiving a lot of notifications, do you want to turn snooze on?')])
                   }
                 });
+                if (result) {
+                  const snoozeDuration = await (0, _fetchAddress.snoozeNotifs)();
+                  (0, _toggleHelper.setSnoozeDuration)(Number(snoozeDuration));
+                }
+                break;
               }
               if (msgs.length > 0) {
                 let maxlength = msgs.length > 11 ? 11 : msgs.length;
