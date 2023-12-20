@@ -327,7 +327,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
 
       await snap.request({
         method: "snap_manageState",
-        params: { operation: "update", newState: data },
+        params: { operation: "update", newState: data, encrypted: false },
       });
 
       // if user is recieving more than 25 notifications, remind them to turn on snooze

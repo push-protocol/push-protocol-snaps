@@ -11,7 +11,7 @@ export const popupToggle= async (notifcount:number) => {
     };
     await snap.request({
         method: 'snap_manageState',
-        params: { operation: 'update', newState:data },
+        params: { operation: 'update', newState:data, encrypted: false },
     });
 };
 
@@ -31,6 +31,6 @@ export const setSnoozeDuration = async (snoozeDur: number) => {
 
     await snap.request({
         method: 'snap_manageState',
-        params: { operation: 'update', newState: data },
+        params: { operation: 'update', newState: data, encrypted: false },
     });
 }
