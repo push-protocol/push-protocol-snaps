@@ -330,7 +330,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         params: { operation: "update", newState: data, encrypted: false },
       });
 
-      // if user is recieving more than 25 notifications, remind them to turn on snooze
+      // if user is recieving more than 25 notifications, then remind them to turn on snooze
       if (Number(popuptoggle) <= 25 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
         if (msgs.length > 0) {
           await snap.request({
