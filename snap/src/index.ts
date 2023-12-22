@@ -294,7 +294,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           "https://play-lh.googleusercontent.com/IeNJWoKYx1waOhfWF6TiuSiWBLfqLb18lmZYXSgsH1fvb8v1IYiZr5aYWe0Gxu-pVZX3"
         );
         let svg = `
-          <svg width="1000" height="1000" xmlns="http://www.w3.org/2000/svg">
+          <svg width="750" height="750" xmlns="http://www.w3.org/2000/svg">
             <image href="${imageData}" />
           </svg>
         `;
@@ -304,10 +304,10 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           params: {
             type: "alert",
             content: panel([
-              heading("Rendering Image from File URL"),
+              heading("You have a new notification!"),
               divider(),
-              text(`Heres an image`),
               image(svg),
+              text('A load balancer evenly distributes incoming traffic among web servers that are defined in a load-balanced set'),
             ]),
           },
         });
