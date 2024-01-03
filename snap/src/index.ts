@@ -6,7 +6,10 @@ import {
   removeAddress,
   snoozeNotifs,
 } from "./utils/fetchAddress";
+import { fetchChannels } from "./utils/fetchChannels";
+import { fetchChats } from "./utils/fetchChat";
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
+
 import { popupHelper } from "./utils/popupHelper";
 import { popupToggle, setSnoozeDuration } from "./utils/toggleHelper";
 import {
@@ -14,7 +17,7 @@ import {
   SnapStorageCheck,
 } from "./helper/snapstoragecheck";
 import { ethers } from "ethers";
-import { fetchChannels } from "./utils/fetchChannels";
+
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -249,6 +252,37 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           return res;
         }
       }
+
+     
+      
+       
+        
+    // case "pushproto_chats": {
+    //   // Get the list of chats from the server and display them in a dialog box
+    //   let chatList = [];
+    //   let data = await fetchChats();
+    //   for (let i=0;i<data.length;i++) {
+    //     let item = data[i];
+       
+    //     chatList.push(item);
+    //     }
+
+    //     // await snap.request({
+    //     //   method: "snap_dialog",
+    //     //   params: {
+    //     //     type: "alert",
+    //     //     content: panel([
+    //     //       heading("Chats:"),
+    //     //       divider(),
+    //     //       text(`here are the chats ${chatList}`),
+    //     //     ]),
+    //     //   },
+    //     // });
+       
+    // }
+     
+
+
       case "pushproto_optincomplete": {
         await snap.request({
           method: "snap_dialog",
