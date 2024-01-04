@@ -147,23 +147,33 @@ export const snoozeNotifs = async () => {
       content: panel([
         heading("Set snooze duration"),
         divider(),
-        text("Set the duration for snooze"),
+        text("Customize your snooze from 1 to 24 hours and stay focused."),
       ]),
       placeholder: 'Snooze duration in Hours (e.g. 6)',
     },
   });
 
-  await snap.request({
-    method:"snap_dialog",
-    params:{
-      type:"alert",
-      content:panel([
-        heading("Notification Snooze"),
-        divider(),
-        text(`Notification has been snoozed for ${snoozeDuration} hours`)
-      ])
+  if (typeof snoozeDuration === 'string') {
+    let snoozeDurationNumber = parseInt(snoozeDuration, 10);
+    
+    if (snoozeDurationNumber > 24) {
+      snoozeDurationNumber = 24;
+    } else if (snoozeDurationNumber === undefined) {
+      snoozeDurationNumber = 0;
     }
-  })
 
-  return snoozeDuration;
+    await snap.request({
+      method:"snap_dialog",
+      params:{
+        type:"alert",
+        content:panel([
+          heading("Notification Snooze"),
+          divider(),
+          text(`Your notifications have been snoozed for the next ${snoozeDurationNumber} hours`)
+        ])
+      }
+    })
+
+    return snoozeDuration;
+  }
 }
