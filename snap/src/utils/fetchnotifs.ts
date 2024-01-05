@@ -70,7 +70,7 @@ function convertText(text:string) {
       } else {
           const date = new Date(parseInt(timestamp) * 1000);
           processedTimestamps.add(timestamp); 
-          return date.toLocaleString(); 
+          return "- " + date.toLocaleString(); 
       }
   });
 
