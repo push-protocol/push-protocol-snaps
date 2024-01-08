@@ -6,7 +6,7 @@ const { ethers } = require("ethers");
 export const addAddress = async (address: string) => {
   const persistedData = await snap.request({
     method: "snap_manageState",
-    params: { operation: "get" },
+    params: { operation: "get", encrypted: false },
   });
 
   const isValidAddress = ethers.utils.isAddress(address);
@@ -19,7 +19,7 @@ export const addAddress = async (address: string) => {
       };
       await snap.request({
         method: "snap_manageState",
-        params: { operation: "update", newState: data },
+        params: { operation: "update", newState: data, encrypted: false },
       });
     } else {
       const addrlist = persistedData.addresses;
@@ -34,7 +34,7 @@ export const addAddress = async (address: string) => {
         };
         await snap.request({
           method: "snap_manageState",
-          params: { operation: "update", newState: data },
+          params: { operation: "update", newState: data, encrypted: false },
         });
       }
     }
@@ -55,7 +55,7 @@ export const addAddress = async (address: string) => {
 export const confirmAddress = async () => {
   const persistedData = await snap.request({
     method: "snap_manageState",
-    params: { operation: "get" },
+    params: { operation: "get", encrypted: false },
   });
   if (persistedData != null) {
     const data = persistedData.addresses;
@@ -70,6 +70,8 @@ export const confirmAddress = async () => {
           type: "alert",
           content: panel([
             heading("Address added"),
+            divider(),
+            text(`Congratulations, Your address is now all set to receive notifications. \n\n Opt-in to your favourite channels now.`),
             text("Following addresses will receive notifications:"),
             divider(),
             text(`${msg}`),
@@ -119,14 +121,14 @@ export const removeAddress = async (address: string) => {
 
   await snap.request({
     method: "snap_manageState",
-    params: { operation: "update", newState: newData },
+    params: { operation: "update", newState: newData, encrypted: false },
   });
 };
 
 export const fetchAddress = async () => {
   const persistedData = await snap.request({
     method: "snap_manageState",
-    params: { operation: "get" },
+    params: { operation: "get", encrypted: false },
   });
   if (persistedData != null) {
     const addresses = persistedData!.addresses;
@@ -135,3 +137,43 @@ export const fetchAddress = async () => {
     return [];
   }
 };
+
+
+export const snoozeNotifs = async () => {
+  const snoozeDuration = await snap.request({
+    method: "snap_dialog",
+    params: {
+      type: "prompt",
+      content: panel([
+        heading("Set snooze duration"),
+        divider(),
+        text("Customize your snooze from 1 to 24 hours and stay focused."),
+      ]),
+      placeholder: 'Snooze duration in Hours (e.g. 6)',
+    },
+  });
+
+  if (typeof snoozeDuration === 'string') {
+    let snoozeDurationNumber = parseInt(snoozeDuration, 10);
+    
+    if (snoozeDurationNumber > 24) {
+      snoozeDurationNumber = 24;
+    } else if (snoozeDurationNumber === undefined) {
+      snoozeDurationNumber = 0;
+    }
+
+    await snap.request({
+      method:"snap_dialog",
+      params:{
+        type:"alert",
+        content:panel([
+          heading("Notification Snooze"),
+          divider(),
+          text(`Your notifications have been snoozed for the next ${snoozeDurationNumber} hours`)
+        ])
+      }
+    })
+
+    return snoozeDuration;
+  }
+}

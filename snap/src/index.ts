@@ -4,12 +4,17 @@ import {
   addAddress,
   confirmAddress,
   removeAddress,
+  snoozeNotifs,
 } from "./utils/fetchAddress";
 import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
-import { popupToggle } from "./utils/toggleHelper";
-import { SnapStorageAddressCheck, SnapStorageCheck } from "./helper/snapstoragecheck";
+import { popupToggle, setSnoozeDuration } from "./utils/toggleHelper";
+import {
+  SnapStorageAddressCheck,
+  SnapStorageCheck,
+} from "./helper/snapstoragecheck";
 import { ethers } from "ethers";
+import { fetchChannels } from "./utils/fetchChannels";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -156,18 +161,130 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         return true;
       }
       case "pushproto_togglepopup": {
-        popupToggle(0);
+        let persistedData = await SnapStorageCheck();
+        let popuptoggle = persistedData.popuptoggle;
 
+        if (Number(popuptoggle) <= 25) {
+          popupToggle(27);
+
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Snooze Pop-ups On"),
+                text("Disable Notification Pop-ups from Push Snap"),
+              ]),
+            },
+          });
+        } else {
+          popupToggle(0);
+
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Snooze Pop-ups Off"),
+                text("Enable Notification Pop-ups from Push Snap"),
+              ]),
+            },
+          });
+        }
+
+        break;
+      }
+
+      case "pushproto_snoozeduration": {
+        await SnapStorageCheck();
+
+        const result = await snap.request({
+          method: 'snap_dialog',
+          params: {
+            type: 'confirmation',
+            content: panel([
+              heading('Snooze Notifications'),
+              divider(),
+              text('Too many notifications to keep up with? You can temporarily snooze them to take a break. Approving will enable notification snooze.'),
+            ]),
+          },
+        });
+        
+        if (result) {
+          const snoozeDuration = await snoozeNotifs();
+          setSnoozeDuration(Number(snoozeDuration));
+        }
+        break;
+      }
+
+      case "pushproto_optin": {
+        const res = await fetchChannels(req.params.channeladdress);
+        const channelName = res.channelName;
+        const unsubscribedAccounts = res.unsubscribedAccounts;
+        if (unsubscribedAccounts.length == 0) {
+          await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("Channel Opt-In"),
+                divider(),
+                text("You are already subscribed to this channel"),
+              ]),
+            },
+          });
+          return false;
+        } else {
+          const res = await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "confirmation",
+              content: panel([
+                heading("Channel Opt-In"),
+                divider(),
+                text(`Do you want to subscribe to ${channelName} ?`),
+              ]),
+            },
+          });
+          return res;
+        }
+      }
+      case "pushproto_optincomplete": {
         await snap.request({
           method: "snap_dialog",
           params: {
             type: "alert",
             content: panel([
-              heading("Notification Snooze Off"),
-              text("You will be receiving popup notifications now"),
+              heading("Channel Opt-In"),
+              divider(),
+              text(`You've succesfully opted into the channel to receive notifications directly into MetaMask`),
             ]),
           },
         });
+      }
+      case "pushproto_getaddresses": {
+        let persistedData = await SnapStorageCheck();
+        let addresses = persistedData.addresses;
+        return addresses;
+      }
+      case "pushproto_gettogglestatus": {
+        let persistedData = await SnapStorageCheck();
+        let popuptoggle = persistedData.popuptoggle;
+        return popuptoggle;
+      }
+      case "pushproto_firstchanneloptin": {
+        await snap.request({
+          method:"snap_dialog",
+          params:{
+            type:"alert",
+            content:panel([
+              heading("Congratulations !"),
+              divider(),
+              text(`You have successfully opted in to your first channel. \n\n
+              Now, You are all set to receive notifications directly to your Metamask Wallet.`),
+            ]),
+          }
+        })
         break;
       }
       default:
@@ -206,40 +323,48 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         popuptoggle: popuptoggle,
       };
 
+      let currentTimeEpoch = new Date().getTime();
+
       await snap.request({
         method: "snap_manageState",
-        params: { operation: "update", newState: data },
+        params: { operation: "update", newState: data, encrypted: false },
       });
 
-      if (Number(popuptoggle) < 25) {
+      // if user is recieving more than 25 notifications, then remind them to turn on snooze
+      if (Number(popuptoggle) <= 25 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
         if (msgs.length > 0) {
           await snap.request({
             method: "snap_dialog",
             params: {
               type: "alert",
               content: panel([
-                heading("You have a new notifications!"),
+                heading("You have a new notification!"),
                 divider(),
                 ...msgs.map((msg) => text(msg)),
               ]),
             },
           });
         }
-      } else {
-        await snap.request({
-          method: "snap_dialog",
+      } else if (Number(popuptoggle) == 26 && currentTimeEpoch <= Number(persistedData.snoozeDuration)) {
+        await SnapStorageCheck();
+
+        const result = await snap.request({
+          method: 'snap_dialog',
           params: {
-            type: "alert",
+            type: 'confirmation',
             content: panel([
-              heading("Notification snooze"),
+              heading('Snooze Notifications'),
               divider(),
-              text(
-                `You've been receiving too many notifications. \n The pop-up notifications are now snoozed `
-              ),
-              text(`You can turn them back on from the dapp`),
+              text('Too many notifications to keep up with? You can temporarily snooze them to take a break. Approving will enable notification snooze.'),
             ]),
           },
         });
+        
+        if (result) {
+          const snoozeDuration = await snoozeNotifs();
+          setSnoozeDuration(Number(snoozeDuration));
+        }
+        break;
       }
 
       if (msgs.length > 0) {
@@ -258,6 +383,55 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
           await sleep(5000);
         }
       }
+      break;
+    }
+    case "checkActivity": {
+      const notifs = await fetchAllAddrNotifs();
+      let persistedData = await SnapStorageCheck();
+      const addresses: string[] = persistedData.addresses;
+      if (notifs.length == 0 || addresses.length == 0) {
+        await snap.request({
+          method: "snap_dialog",
+          params: {
+            type: "alert",
+            content: panel([
+              heading("Activity Alert"),
+              divider(),
+              text(
+                `Looks like it's been quiet since your last visit! Check out https://app.push.org/channels and opt-in to receive notifications.`
+              ),
+            ]),
+          },
+        });
+      }
+      break;
+    }
+    case 'pushproto_removesnooze':{
+      const persistedData = await SnapStorageCheck();
+      const snoozeFlag = persistedData.popuptoggle;
+      if(Number(snoozeFlag)>=41){
+        const data = {
+          addresses: persistedData.addresses,
+          popuptoggle: 0,
+        };
+  
+        await snap.request({
+          method: "snap_manageState",
+          params: { operation: "update", newState: data },
+        });
+
+        await snap.request({
+          method:"snap_dialog",
+          params:{
+            type:"alert",
+            content:panel([
+              heading("Snooze Alert"),
+              text("Notification snooze has been turned off, you will start getting popup notifications from now on.")
+            ])
+          }
+        })
+      }
+      break;
     }
     default:
       throw new Error("Method not found.");

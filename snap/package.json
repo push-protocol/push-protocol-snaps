@@ -1,6 +1,6 @@
 {
-  "name": "push-v1",
-  "version": "0.1.1",
+  "name": "@pushprotocol/snap",
+  "version": "1.1.11",
   "description": "Get Push Notifications directly in your MetaMask wallet!",
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "@metamask/eslint-config-jest": "^10.0.0",
     "@metamask/eslint-config-nodejs": "^10.0.0",
     "@metamask/eslint-config-typescript": "^10.0.0",
-    "@metamask/snaps-cli": "^0.32.2",
+    "@metamask/snaps-cli": "^4.0.0",
     "@metamask/snaps-types": "^0.32.2",
     "@metamask/snaps-ui": "^0.32.2",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
