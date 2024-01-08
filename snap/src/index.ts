@@ -205,7 +205,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             content: panel([
               heading('Snooze Notifications'),
               divider(),
-              text('You are receiving a lot of notifications, do you want to turn snooze on?'),
+              text('Too many notifications to keep up with? You can temporarily snooze them to take a break. Approving will enable notification snooze.'),
             ]),
           },
         });
@@ -355,7 +355,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             content: panel([
               heading('Snooze Notifications'),
               divider(),
-              text('You are receiving a lot of notifications, do you want to turn snooze on?'),
+              text('Too many notifications to keep up with? You can temporarily snooze them to take a break. Approving will enable notification snooze.'),
             ]),
           },
         });
@@ -398,8 +398,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
               heading("Activity Alert"),
               divider(),
               text(
-                `We noticed zero activity in your snap since your last visit. \n\n
-                Visit app.push.org/snap to opt-in to channels and start using snap for notifications.`
+                `Looks like it's been quiet since your last visit! Check out https://app.push.org/channels and opt-in to receive notifications.`
               ),
             ]),
           },
