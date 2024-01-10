@@ -34,27 +34,40 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     origin === "http://localhost:3000"
   ) {
     switch (request.method) {
-       
       case "pushproto_chats": {
-       const persistedData = await SnapStorageCheck();
-        let key: any = persistedData.key;
+        const persistedData = await SnapStorageCheck();
 
-        const decryptedPGPKey = {
-          key: persistedData.key,
-        };
+        if (persistedData == null) {
+          const data = {
+            addresses: [],
+            popuptoggle: 0,
+            pgpPvtKey: request.params.decryptedKey,
+          };
+          await snap.request({
+            method: "snap_manageState",
+            params: { operation: "update", newState: data },
+          });
+        } else {
+          const addrlist = persistedData.addresses;
+          const popuptoggle = persistedData.popuptoggle;
+          const pgpPvtKey = persistedData.key;
 
-        console.log(key, "decrypted key from LS dapp");
+          if (pgpPvtKey) {
+            return;
+          } else {
+            const data = {
+              addresses: addrlist,
+              popuptoggle: popuptoggle,
+              pgpPvtKey: request.params.decryptedKey,
+            };
+            await snap.request({
+              method: "snap_manageState",
+              params: { operation: "update", newState: data },
+            });
+          }
+        }
 
-        await snap.request({
-          method: "snap_manageState",
-          params: { operation: "update", newState: decryptedPGPKey },
-        });
-
-        const data = await fetchChats(decryptedPGPKey);
-
-        console.log(data, "decrypted key")
-
-       
+        const data = await fetchChats(request.params.decryptedKey);
 
         await snap.request({
           method: "snap_dialog",
@@ -68,7 +81,6 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           },
         });
       }
-
 
       case "pushproto_addaddress": {
         if (request.params != null && request.params.address != null) {
@@ -293,8 +305,6 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
 
       //decryptedpgp key
       //get modify store
-
-
 
       case "pushproto_optincomplete": {
         await snap.request({
