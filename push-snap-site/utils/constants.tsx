@@ -12,6 +12,10 @@ export const NOTIFICATION_TESTS = {
     HEAD_1: "Notification Tests",
     PARA_1: "Check all the channels opted in and new notification will be delivered directly to your MetaMask Wallet."
 }
+export const CHAT_TESTS = {
+    HEAD_1 : "Chat Tests",
+    PARA_1: "Here are your chats: "
+}
 
 export const NOTE = {
     PARA_1: "Please note that the ",
@@ -25,3 +29,4 @@ export const ADD_ADDRESS = {
     HEAD_1: "Add/Remove Address for Notifications",
     PARA_1: "",
 }
+

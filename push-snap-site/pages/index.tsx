@@ -1,6 +1,7 @@
 import Navbar from "@/components/layouts/Navbar"
 import InstallSnap from "@/components/content/InstallSnap"
 import NotificationTests from "@/components/content/NotificationTests"
+import ChatTests from "@/components/content/ChatTests"
 import Note from "@/components/content/Note"
 import Footer from "@/components/layouts/Footer"
 import Heading from "@/components/content/Heading"
@@ -24,6 +25,9 @@ export default function Home() {
           </div>
           <div className="my-6 sm:my-0 sm:ml-6">
             <NotificationTests/>
+          </div>
+          <div className="my-6 sm:my-0 sm:ml-6">
+            <ChatTests/>
           </div>
         </div>
         <div className="flex flex-col-reverse sm:flex-row items-center justify-center ">

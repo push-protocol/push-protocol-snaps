@@ -1,9 +1,9 @@
-
 export const SnapStorageCheck = async () => {
   const defaultstate = {
     addresses: [],
     popuptoggle: 0,
     snoozeDuration: new Date().getTime(),
+    key: "",
   };
   let persistedData = await snap.request({
     method: "snap_manageState",
@@ -12,12 +12,12 @@ export const SnapStorageCheck = async () => {
   return persistedData || defaultstate;
 };
 
-export const SnapStorageAddressCheck =async (address:string) => {
-    const data = await SnapStorageCheck();
-    let addresslist = data.addresses;
-    if(addresslist.includes(address)){
-        return true;
-    }else{
-        return false;
-    }
-}
+export const SnapStorageAddressCheck = async (address: string) => {
+  const data = await SnapStorageCheck();
+  let addresslist = data.addresses;
+  if (addresslist.includes(address)) {
+    return true;
+  } else {
+    return false;
+  }
+};
