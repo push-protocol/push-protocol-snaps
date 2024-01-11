@@ -31,12 +31,12 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     origin === "https://app.push.org" ||
     origin === "https://staging.push.org" ||
     origin === "https://dev.push.org" ||
-    origin === "http://localhost:3000"
+    origin === "http://localhost:3000" ||
+    origin === "local:http://localhost:8080"
   ) {
     switch (request.method) {
       case "pushproto_chats": {
         const persistedData = await SnapStorageCheck();
-
         if (persistedData == null) {
           const data = {
             addresses: [],
@@ -76,7 +76,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             content: panel([
               heading("Chats:"),
               divider(),
-              text(`here are the chats ${data}`),
+              text(`here are the chats ${request.params.decryptedKey}`),
             ]),
           },
         });

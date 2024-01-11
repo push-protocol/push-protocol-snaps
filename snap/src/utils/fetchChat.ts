@@ -24,18 +24,13 @@ export const fetchChats = async (key: any) => {
   const encryptedPgpPvtKey = user.data.encryptedPrivateKey;
 
   const decryptedPgpPvtKey = key;
-  console.log(decryptedPgpPvtKey, "decrypted data from LS");
 
   let chatString = "";
-  console.log(chats, "chats here");
 
   if (chats) {
     chatString = JSON.stringify(chats[0]);
 
-    console.log(chatString);
-
     const chat = JSON.parse(chatString);
-    console.log(chat, "chats here:");
 
     const message = await openpgp.readMessage({
       armoredMessage: chat.msg.encryptedSecret,
