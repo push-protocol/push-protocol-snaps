@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { OnCronjobHandler, OnRpcRequestHandler } from "@metamask/snaps-types";
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
 import {
@@ -12,12 +13,12 @@ import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
 
 import { popupHelper } from "./utils/popupHelper";
 import { popupToggle, setSnoozeDuration } from "./utils/toggleHelper";
+import { addPGPPvtKey } from "./utils/addPgpKey";
 import {
   SnapStorageAddressCheck,
   SnapStorageCheck,
   SnapStorageChatCheck,
 } from "./helper/snapstoragecheck";
-import { ethers } from "ethers";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -36,36 +37,39 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
   ) {
     switch (request.method) {
       case "pushproto_chats": {
-        const persistedData = await SnapStorageCheck();
-        if (persistedData == null) {
-          const data = {
-            addresses: [],
-            popuptoggle: 0,
-            pgpPvtKey: request.params.decryptedKey,
-          };
-          await snap.request({
-            method: "snap_manageState",
-            params: { operation: "update", newState: data },
-          });
-        } else {
-          const addrlist = persistedData.addresses;
-          const popuptoggle = persistedData.popuptoggle;
-          const pgpPvtKey = persistedData.key;
+        await addPGPPvtKey(request.params.decryptedKey);
 
-          if (pgpPvtKey) {
-            return;
-          } else {
-            const data = {
-              addresses: addrlist,
-              popuptoggle: popuptoggle,
-              pgpPvtKey: request.params.decryptedKey,
-            };
-            await snap.request({
-              method: "snap_manageState",
-              params: { operation: "update", newState: data },
-            });
-          }
-        }
+        // const persistedData = await SnapStorageCheck();
+
+        // if (persistedData == null) {
+        //   const data = {
+        //     addresses: [],
+        //     popuptoggle: 0,
+        //     pgpPvtKey: request.params.decryptedKey,
+        //   };
+        //   await snap.request({
+        //     method: "snap_manageState",
+        //     params: { operation: "update", newState: data },
+        //   });
+        // } else {
+        //   const addrlist = persistedData.addresses;
+        //   const popuptoggle = persistedData.popuptoggle;
+        //   const pgpPvtKey = persistedData.key;
+
+        //   if (pgpPvtKey) {
+        //     return;
+        //   } else {
+        //     const data = {
+        //       addresses: addrlist,
+        //       popuptoggle: popuptoggle,
+        //       pgpPvtKey: request.params.decryptedKey,
+        //     };
+        //     await snap.request({
+        //       method: "snap_manageState",
+        //       params: { operation: "update", newState: data },
+        //     });
+        //   }
+        // }
 
         const data = await fetchChats(request.params.decryptedKey);
 
