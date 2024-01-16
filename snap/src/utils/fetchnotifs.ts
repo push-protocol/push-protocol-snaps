@@ -1,12 +1,13 @@
 import { fetchAddress } from "./fetchAddress";
 import { ethers } from "ethers";
+import { getImageData } from "../helper/imageHelper";
 
 export const getNotifications = async (address: string) => {
   try {
     let addressValidation = ethers.utils.isAddress(address);
 
     if (addressValidation) {
-      const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
+      const url = `https://backend-staging.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
       const response = await fetch(url, {
         method: "get",
         headers: {
@@ -14,6 +15,7 @@ export const getNotifications = async (address: string) => {
         },
       });
       const data = await response.json();
+      console.log(data, "api data");
       return data;
     } else {
       return { feeds: [] };
@@ -27,23 +29,76 @@ export const getNotifications = async (address: string) => {
 export const filterNotifications = async (address: string) => {
   let fetchedNotifications = await getNotifications(address);
   fetchedNotifications = fetchedNotifications?.feeds;
-  let notiffeeds: String[] = [];
-  const currentepoch: number = Math.floor(Date.now() / 1000);
-  if (fetchedNotifications.length > 0) {
+  let notiffeeds = [];
+  const currentepoch = Math.floor(Date.now() / 1000);
+
+  console.log(fetchedNotifications, "fetched notifs: ");
+
+  if (fetchedNotifications && fetchedNotifications.length > 0) {
     for (let i = 0; i < fetchedNotifications.length; i++) {
-      let feedepoch = fetchedNotifications[i].payload.data.epoch;
-      feedepoch = Number(feedepoch).toFixed(0);
-      if (feedepoch > currentepoch - 60) {
-        let msg =
-          fetchedNotifications[i].payload.data.app +
-          " : " +
-          convertText(fetchedNotifications[i].payload.data.amsg);
-        notiffeeds.push(msg);
-      }
+      //       let feedepoch = parseInt(fetchedNotifications[i].payload.data.epoch, 10);
+      //       if (feedepoch > currentepoch - 60) {
+
+      //         const  aimg = fetchedNotifications[i].payload.data.aimg
+
+      //         let imageBase64 = null ;
+
+      //         if (fetchedNotifications[i].payload.data.aimg) {
+      //           try {
+      //             imageBase64 = await getImageData(aimg);
+      //           } catch (error) {
+      //             console.error('Error fetching image: ', error);
+
+      //           }
+      //         } else {
+      // imageBase64
+
+      //         }
+      let imageBase64 = await getImageData(
+        fetchedNotifications[i].payload.data.aimg
+      );
+
+      const message =
+        fetchedNotifications[i].payload.data.app +
+        " : " +
+        convertText(fetchedNotifications[i].payload.data.amsg);
+
+      notiffeeds.push({ message });
     }
   }
-  notiffeeds = notiffeeds.reverse();
-  return notiffeeds;
+
+  return notiffeeds.reverse();
+};
+
+export const fetchImageUrl = async (address: string) => {
+  let fetchedNotifications = await getNotifications(address);
+  fetchedNotifications = fetchedNotifications?.feeds;
+  let imageBase64;
+
+  if (fetchedNotifications && fetchedNotifications.length > 0) {
+    for (let i = 0; i < fetchedNotifications.length; i++) {
+      const aimg = fetchedNotifications[i].payload.data.aimg;
+
+      imageBase64 = await getImageData(aimg);
+
+      //         if (fetchedNotifications[i]) {
+      //           try {
+      //             imageBase64 = await getImageData("https://picsum.photos/200/300");
+
+      //           } catch (error) {
+      //             console.error('Error fetching image: ', error);
+
+      //           }
+      //         } else {
+      // imageBase64 = await getImageData("https://picsum.photos/200/300");
+
+      //         }
+
+      return imageBase64;
+    }
+  }
+
+  return imageBase64;
 };
 
 export const fetchAllAddrNotifs = async () => {
@@ -56,8 +111,8 @@ export const fetchAllAddrNotifs = async () => {
   return notifs;
 };
 
-function convertText(text:string) {
-  let newText = text.replace(/\n/g, ' ');
+function convertText(text: string) {
+  let newText = text.replace(/\n/g, " ");
 
   const tagRegex = /\[(d|s|t):([^\]]+)\]/g;
   newText = newText.replace(tagRegex, (match, tag, value) => value);
@@ -65,13 +120,13 @@ function convertText(text:string) {
   const timestampRegex = /\[timestamp:\s*(\d+)\]/g;
   let processedTimestamps = new Set();
   newText = newText.replace(timestampRegex, (match, timestamp) => {
-      if (processedTimestamps.has(timestamp)) {
-          return '';
-      } else {
-          const date = new Date(parseInt(timestamp) * 1000);
-          processedTimestamps.add(timestamp); 
-          return date.toLocaleString(); 
-      }
+    if (processedTimestamps.has(timestamp)) {
+      return "";
+    } else {
+      const date = new Date(parseInt(timestamp) * 1000);
+      processedTimestamps.add(timestamp);
+      return date.toLocaleString();
+    }
   });
 
   return newText;

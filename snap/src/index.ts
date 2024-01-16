@@ -6,7 +6,11 @@ import {
   removeAddress,
   snoozeNotifs,
 } from "./utils/fetchAddress";
-import { fetchAllAddrNotifs } from "./utils/fetchnotifs";
+import {
+  fetchAllAddrNotifs,
+  filterNotifications,
+  fetchImageUrl,
+} from "./utils/fetchnotifs";
 import { popupHelper } from "./utils/popupHelper";
 import { popupToggle, setSnoozeDuration } from "./utils/toggleHelper";
 import {
@@ -200,17 +204,19 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         await SnapStorageCheck();
 
         const result = await snap.request({
-          method: 'snap_dialog',
+          method: "snap_dialog",
           params: {
-            type: 'confirmation',
+            type: "confirmation",
             content: panel([
-              heading('Snooze Notifications'),
+              heading("Snooze Notifications"),
               divider(),
-              text('You are receiving a lot of notifications, do you want to turn snooze on?'),
+              text(
+                "You are receiving a lot of notifications, do you want to turn snooze on?"
+              ),
             ]),
           },
         });
-        
+
         if (result) {
           const snoozeDuration = await snoozeNotifs();
           setSnoozeDuration(Number(snoozeDuration));
@@ -258,7 +264,9 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
             content: panel([
               heading("Channel Opt-In"),
               divider(),
-              text(`You've succesfully opted into the channel to receive notifications directly into MetaMask`),
+              text(
+                `You've succesfully opted into the channel to receive notifications directly into MetaMask`
+              ),
             ]),
           },
         });
@@ -275,23 +283,23 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       }
       case "pushproto_firstchanneloptin": {
         await snap.request({
-          method:"snap_dialog",
-          params:{
-            type:"alert",
-            content:panel([
+          method: "snap_dialog",
+          params: {
+            type: "alert",
+            content: panel([
               heading("Congratulations !"),
               divider(),
               text(`You have successfully opted in to your first channel. \n\n
               Now, You are all set to receive notifications directly to your Metamask Wallet.`),
             ]),
-          }
-        })
+          },
+        });
         break;
       }
 
       case "pushproto_imagerender": {
-        const imageData = await getImageData(
-          "https://play-lh.googleusercontent.com/IeNJWoKYx1waOhfWF6TiuSiWBLfqLb18lmZYXSgsH1fvb8v1IYiZr5aYWe0Gxu-pVZX3"
+        const imageData = await fetchImageUrl(
+          "0x28a292f4dC182492F7E23CFda4354bff688f6ea8"
         );
         let svg = `
           <svg width="750" height="750" xmlns="http://www.w3.org/2000/svg">
@@ -307,7 +315,9 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
               heading("You have a new notification!"),
               divider(),
               image(svg),
-              text('A load balancer evenly distributes incoming traffic among web servers that are defined in a load-balanced set'),
+              text(
+                "A load balancer evenly distributes incoming traffic among web servers that are defined in a load-balanced set"
+              ),
             ]),
           },
         });
@@ -357,7 +367,10 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       });
 
       // if user is recieving more than 25 notifications, remind them to turn on snooze
-      if (Number(popuptoggle) <= 25 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
+      if (
+        Number(popuptoggle) <= 25 &&
+        currentTimeEpoch > Number(persistedData.snoozeDuration)
+      ) {
         if (msgs.length > 0) {
           await snap.request({
             method: "snap_dialog",
@@ -371,7 +384,10 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             },
           });
         }
-      } else if (Number(popuptoggle) == 26 && currentTimeEpoch <= Number(persistedData.snoozeDuration)) {
+      } else if (
+        Number(popuptoggle) == 26 &&
+        currentTimeEpoch <= Number(persistedData.snoozeDuration)
+      ) {
         await snap.request({
           method: "snap_dialog",
           params: {

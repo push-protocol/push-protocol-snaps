@@ -55,7 +55,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@metamask/snaps-cli": "^4.0.0",
+    "@metamask/snaps-cli": "^4.0.1",
     "@metamask/snaps-types": "^3.1.0",
     "@metamask/snaps-ui": "^3.1.0",
     "ethers": "5.7.2"
