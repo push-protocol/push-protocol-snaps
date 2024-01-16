@@ -36,34 +36,15 @@ export const filterNotifications = async (address: string) => {
 
   if (fetchedNotifications && fetchedNotifications.length > 0) {
     for (let i = 0; i < fetchedNotifications.length; i++) {
-      //       let feedepoch = parseInt(fetchedNotifications[i].payload.data.epoch, 10);
-      //       if (feedepoch > currentepoch - 60) {
+      let feedepoch = parseInt(fetchedNotifications[i].payload.data.epoch, 10);
+      if (feedepoch > currentepoch - 60) {
+        const message =
+          fetchedNotifications[i].payload.data.app +
+          " : " +
+          convertText(fetchedNotifications[i].payload.data.amsg);
 
-      //         const  aimg = fetchedNotifications[i].payload.data.aimg
-
-      //         let imageBase64 = null ;
-
-      //         if (fetchedNotifications[i].payload.data.aimg) {
-      //           try {
-      //             imageBase64 = await getImageData(aimg);
-      //           } catch (error) {
-      //             console.error('Error fetching image: ', error);
-
-      //           }
-      //         } else {
-      // imageBase64
-
-      //         }
-      let imageBase64 = await getImageData(
-        fetchedNotifications[i].payload.data.aimg
-      );
-
-      const message =
-        fetchedNotifications[i].payload.data.app +
-        " : " +
-        convertText(fetchedNotifications[i].payload.data.amsg);
-
-      notiffeeds.push({ message });
+        notiffeeds.push({ message });
+      }
     }
   }
 
@@ -79,20 +60,17 @@ export const fetchImageUrl = async (address: string) => {
     for (let i = 0; i < fetchedNotifications.length; i++) {
       const aimg = fetchedNotifications[i].payload.data.aimg;
 
-      imageBase64 = await getImageData(aimg);
+      imageBase64 = null;
 
-      //         if (fetchedNotifications[i]) {
-      //           try {
-      //             imageBase64 = await getImageData("https://picsum.photos/200/300");
-
-      //           } catch (error) {
-      //             console.error('Error fetching image: ', error);
-
-      //           }
-      //         } else {
-      // imageBase64 = await getImageData("https://picsum.photos/200/300");
-
-      //         }
+      if (fetchedNotifications[i]) {
+        try {
+          imageBase64 = await getImageData(aimg);
+        } catch (error) {
+          console.error("Error fetching image: ", error);
+        }
+      } else {
+        imageBase64;
+      }
 
       return imageBase64;
     }
