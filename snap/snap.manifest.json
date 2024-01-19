@@ -7,7 +7,7 @@
     "url": "https://github.com/ethereum-push-notification-service/push-protocol-snaps"
   },
   "source": {
-    "shasum": "JYxEyg2GRdEpA4uX/HJsHoU++jawhk5E4l6mSQJNdMQ=",
+    "shasum": "nIKSjK9diSM3za8f/zzoVRD0YX6pULxuxAZW0CuXlpw=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -30,18 +30,6 @@
           "expression": "* * * * *",
           "request": {
             "method": "fireCronjob"
-          }
-        },
-        {
-          "expression": "0 1 * * *",
-          "request": {
-            "method": "checkActivity"
-          }
-        },
-        {
-          "expression": "* * * * *",
-          "request": {
-            "method": "pushproto_removesnooze"
           }
         }
       ]

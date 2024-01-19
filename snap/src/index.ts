@@ -195,27 +195,27 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         break;
       }
 
-      case "pushproto_snoozeduration": {
-        await SnapStorageCheck();
+      // case "pushproto_snoozeduration": {
+      //   await SnapStorageCheck();
 
-        const result = await snap.request({
-          method: 'snap_dialog',
-          params: {
-            type: 'confirmation',
-            content: panel([
-              heading('Snooze Notifications'),
-              divider(),
-              text('Too many notifications to keep up with? You can temporarily snooze them to take a break. Approving will enable notification snooze.'),
-            ]),
-          },
-        });
+      //   const result = await snap.request({
+      //     method: 'snap_dialog',
+      //     params: {
+      //       type: 'confirmation',
+      //       content: panel([
+      //         heading('Snooze Notifications'),
+      //         divider(),
+      //         text('Too many notifications to keep up with? You can temporarily snooze them to take a break. Approving will enable notification snooze.'),
+      //       ]),
+      //     },
+      //   });
         
-        if (result) {
-          const snoozeDuration = await snoozeNotifs();
-          setSnoozeDuration(Number(snoozeDuration));
-        }
-        break;
-      }
+      //   if (result) {
+      //     const snoozeDuration = await snoozeNotifs();
+      //     setSnoozeDuration(Number(snoozeDuration));
+      //   }
+      //   break;
+      // }
 
       case "pushproto_optin": {
         const res = await fetchChannels(req.params.channeladdress);
@@ -272,11 +272,6 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         let popuptoggle = persistedData.popuptoggle;
         return popuptoggle;
       }
-      case "pushproto_testing": {
-        console.log("Hello cbehjbvjhfbv");
-        let persistedData = await SnapStorageCheck();
-        return persistedData;
-      }
       case "pushproto_firstchanneloptin": {
         await snap.request({
           method:"snap_dialog",
@@ -319,25 +314,17 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       let persistedData = await SnapStorageCheck();
 
       let popuptoggle = msgs.length;
-      console.log(popuptoggle);
       if (persistedData != null) {
-        console.log("hfvdfhvbfbvjfv");
-        console.log("type: ", typeof popuptoggle);
-        console.log("persistedData.popuptoggle ", persistedData.popuptoggle);
-        console.log(Number(persistedData.popuptoggle));
         popuptoggle += Number(persistedData.popuptoggle);
       }
-      console.log(popuptoggle);
-      console.log("persistedData ",persistedData);
 
       const data = {
         addresses: persistedData.addresses,
         popuptoggle: popuptoggle,
         snoozeDuration: persistedData.snoozeDuration || 0
       };
-      console.log(data);
 
-      let currentTimeEpoch = new Date().getTime();
+      // let currentTimeEpoch = new Date().getTime();
 
       await snap.request({
         method: "snap_manageState",
@@ -345,19 +332,9 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       });
       persistedData = data;
       
-      console.log(popuptoggle, Number(popuptoggle));
-      console.log(Number(popuptoggle) <= 25);
-      console.log(currentTimeEpoch);
-      console.log(persistedData);
-      console.log(persistedData.snoozeDuration);
-      console.log(Number(persistedData.snoozeDuration));
-      console.log(currentTimeEpoch > Number(persistedData.snoozeDuration));
-      console.log(msgs.length);
-      console.log(msgs.length > 0);
       // if user is recieving more than 25 notifications, then remind them to turn on snooze
-      if (Number(popuptoggle) <= 15 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
+      // if (Number(popuptoggle) <= 15 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
         if (msgs.length > 0) {
-          console.log("should show popup");
           await snap.request({
             method: "snap_dialog",
             params: {
@@ -370,27 +347,27 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             },
           });
         }
-      } else if (Number(popuptoggle) == 16 && currentTimeEpoch >= Number(persistedData.snoozeDuration)) {
-        await SnapStorageCheck();
+      // } else if (Number(popuptoggle) == 16 && currentTimeEpoch >= Number(persistedData.snoozeDuration)) {
+      //   await SnapStorageCheck();
 
-        const result = await snap.request({
-          method: 'snap_dialog',
-          params: {
-            type: 'confirmation',
-            content: panel([
-              heading('Snooze Notifications'),
-              divider(),
-              text('Too many notifications to keep up with? You can temporarily snooze them to take a break. Approving will enable notification snooze.'),
-            ]),
-          },
-        });
+      //   const result = await snap.request({
+      //     method: 'snap_dialog',
+      //     params: {
+      //       type: 'confirmation',
+      //       content: panel([
+      //         heading('Snooze Notifications'),
+      //         divider(),
+      //         text('Too many notifications to keep up with? You can temporarily snooze them to take a break. Approving will enable notification snooze.'),
+      //       ]),
+      //     },
+      //   });
         
-        if (result) {
-          const snoozeDuration = await snoozeNotifs();
-          setSnoozeDuration(Number(snoozeDuration));
-        }
-        break;
-      }
+      //   if (result) {
+      //     const snoozeDuration = await snoozeNotifs();
+      //     setSnoozeDuration(Number(snoozeDuration));
+      //   }
+      //   break;
+      // }
 
       if (msgs.length > 0) {
         let maxlength = msgs.length > 11 ? 11 : msgs.length;
@@ -410,54 +387,54 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       }
       break;
     }
-    case "checkActivity": {
-      const notifs = await fetchAllAddrNotifs();
-      let persistedData = await SnapStorageCheck();
-      const addresses: string[] = persistedData.addresses;
-      if (notifs.length == 0 || addresses.length == 0) {
-        await snap.request({
-          method: "snap_dialog",
-          params: {
-            type: "alert",
-            content: panel([
-              heading("Activity Alert"),
-              divider(),
-              text(
-                `Looks like it's been quiet since your last visit! Check out https://app.push.org/channels and opt-in to receive notifications.`
-              ),
-            ]),
-          },
-        });
-      }
-      break;
-    }
-    case 'pushproto_removesnooze':{
-      const persistedData = await SnapStorageCheck();
-      const snoozeFlag = persistedData.popuptoggle;
-      if(Number(snoozeFlag)>=41){
-        const data = {
-          addresses: persistedData.addresses,
-          popuptoggle: 0,
-        };
+    // case "checkActivity": {
+    //   const notifs = await fetchAllAddrNotifs();
+    //   let persistedData = await SnapStorageCheck();
+    //   const addresses: string[] = persistedData.addresses;
+    //   if (notifs.length == 0 || addresses.length == 0) {
+    //     await snap.request({
+    //       method: "snap_dialog",
+    //       params: {
+    //         type: "alert",
+    //         content: panel([
+    //           heading("Activity Alert"),
+    //           divider(),
+    //           text(
+    //             `Looks like it's been quiet since your last visit! Check out https://app.push.org/channels and opt-in to receive notifications.`
+    //           ),
+    //         ]),
+    //       },
+    //     });
+    //   }
+    //   break;
+    // }
+    // case 'pushproto_removesnooze':{
+    //   const persistedData = await SnapStorageCheck();
+    //   const snoozeFlag = persistedData.popuptoggle;
+    //   if(Number(snoozeFlag)>=41){
+    //     const data = {
+    //       addresses: persistedData.addresses,
+    //       popuptoggle: 0,
+    //     };
   
-        await snap.request({
-          method: "snap_manageState",
-          params: { operation: "update", newState: data },
-        });
+    //     await snap.request({
+    //       method: "snap_manageState",
+    //       params: { operation: "update", newState: data },
+    //     });
 
-        await snap.request({
-          method:"snap_dialog",
-          params:{
-            type:"alert",
-            content:panel([
-              heading("Snooze Alert"),
-              text("Notification snooze has been turned off, you will start getting popup notifications from now on.")
-            ])
-          }
-        })
-      }
-      break;
-    }
+    //     await snap.request({
+    //       method:"snap_dialog",
+    //       params:{
+    //         type:"alert",
+    //         content:panel([
+    //           heading("Snooze Alert"),
+    //           text("Notification snooze has been turned off, you will start getting popup notifications from now on.")
+    //         ])
+    //       }
+    //     })
+    //   }
+    //   break;
+    // }
     default:
       throw new Error("Method not found.");
   }
