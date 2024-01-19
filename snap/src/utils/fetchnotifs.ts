@@ -6,7 +6,8 @@ export const getNotifications = async (address: string) => {
     let addressValidation = ethers.utils.isAddress(address);
 
     if (addressValidation) {
-      const url = `https://backend-prod.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
+      const url = `https://backend-staging.epns.io/apis/v1/users/eip155:5:${address}/feeds`;
+      console.log(url);
       const response = await fetch(url, {
         method: "get",
         headers: {

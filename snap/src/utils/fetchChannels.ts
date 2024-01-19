@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
 
 export const fetchChannels = async (channelAddress: string) => {
-    const url = `https://backend-staging.epns.io/apis/v1/channels/eip155:5:${channelAddress}/subscribers`;
+    const url = `https://backend-staging.epns.io/apis/v1/channels/eip155:11155111:${channelAddress}/subscribers`;
 
-    const channelNameUrl = `https://backend-staging.epns.io/apis/v1/channels/eip155:5:0x28a292f4dC182492F7E23CFda4354bff688f6ea8`
+    const channelNameUrl = `https://backend-staging.epns.io/apis/v1/channels/eip155:11155111:0x28a292f4dC182492F7E23CFda4354bff688f6ea8`
 
     let response = await fetch(url, {
         method: "get",

@@ -3,7 +3,7 @@ export const SnapStorageCheck = async () => {
   const defaultstate = {
     addresses: [],
     popuptoggle: 0,
-    snoozeDuration: new Date().getTime(),
+    snoozeDuration: 0,
   };
   let persistedData = await snap.request({
     method: "snap_manageState",

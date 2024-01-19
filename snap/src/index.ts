@@ -272,6 +272,11 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         let popuptoggle = persistedData.popuptoggle;
         return popuptoggle;
       }
+      case "pushproto_testing": {
+        console.log("Hello cbehjbvjhfbv");
+        let persistedData = await SnapStorageCheck();
+        return persistedData;
+      }
       case "pushproto_firstchanneloptin": {
         await snap.request({
           method:"snap_dialog",
@@ -314,14 +319,23 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
       let persistedData = await SnapStorageCheck();
 
       let popuptoggle = msgs.length;
+      console.log(popuptoggle);
       if (persistedData != null) {
+        console.log("hfvdfhvbfbvjfv");
+        console.log("type: ", typeof popuptoggle);
+        console.log("persistedData.popuptoggle ", persistedData.popuptoggle);
+        console.log(Number(persistedData.popuptoggle));
         popuptoggle += Number(persistedData.popuptoggle);
       }
+      console.log(popuptoggle);
+      console.log("persistedData ",persistedData);
 
       const data = {
         addresses: persistedData.addresses,
         popuptoggle: popuptoggle,
+        snoozeDuration: persistedData.snoozeDuration || 0
       };
+      console.log(data);
 
       let currentTimeEpoch = new Date().getTime();
 
@@ -329,10 +343,21 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
         method: "snap_manageState",
         params: { operation: "update", newState: data, encrypted: false },
       });
-
+      persistedData = data;
+      
+      console.log(popuptoggle, Number(popuptoggle));
+      console.log(Number(popuptoggle) <= 25);
+      console.log(currentTimeEpoch);
+      console.log(persistedData);
+      console.log(persistedData.snoozeDuration);
+      console.log(Number(persistedData.snoozeDuration));
+      console.log(currentTimeEpoch > Number(persistedData.snoozeDuration));
+      console.log(msgs.length);
+      console.log(msgs.length > 0);
       // if user is recieving more than 25 notifications, then remind them to turn on snooze
-      if (Number(popuptoggle) <= 25 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
+      if (Number(popuptoggle) <= 15 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
         if (msgs.length > 0) {
+          console.log("should show popup");
           await snap.request({
             method: "snap_dialog",
             params: {
@@ -345,7 +370,7 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
             },
           });
         }
-      } else if (Number(popuptoggle) == 26 && currentTimeEpoch <= Number(persistedData.snoozeDuration)) {
+      } else if (Number(popuptoggle) == 16 && currentTimeEpoch >= Number(persistedData.snoozeDuration)) {
         await SnapStorageCheck();
 
         const result = await snap.request({

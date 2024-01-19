@@ -1,5 +1,6 @@
 
 export const popupHelper = (notifs: String[]) => {
+  console.log("notif: ", notifs);
   let msg = [] as String[];
   if (notifs.length > 0) {
     notifs.forEach((notif) => {
@@ -7,5 +8,6 @@ export const popupHelper = (notifs: String[]) => {
       msg.push(str);
     });
   }
+  console.log("msg: ", msg);
   return msg;
 };

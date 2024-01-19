@@ -20,7 +20,7 @@ const SnapOptInButton = ({ address, signer }: Props) => {
   }, [signer, address]);
 
   const checkSubscription = async () => {
-    const url = `https://backend-staging.epns.io/apis/v1/channels/eip155:5:${address}/subscribers`;
+    const url = `https://backend-staging.epns.io/apis/v1/channels/eip155:11155111:${address}/subscribers`;
 
     let response = await fetch(url, {
       method: "get",
