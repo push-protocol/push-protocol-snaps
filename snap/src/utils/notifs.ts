@@ -23,16 +23,28 @@ export const filterNotifications = async (address: string) => {
   let fetchedNotifications = await getNotifications(address);
   fetchedNotifications = fetchedNotifications?.feeds;
   let notiffeeds: String[] = [];
+
+  let msg;
   const currentepoch: number = Math.floor(Date.now() / 1000);
   if (fetchedNotifications.length > 0) {
     for (let i = 0; i < fetchedNotifications.length; i++) {
       let feedepoch = fetchedNotifications[i].payload.data.epoch;
+      let aimg = fetchedNotifications[i].payload.data.aimg;
+      let emoji;
       feedepoch = Number(feedepoch).toFixed(0);
       if (feedepoch > currentepoch - 60) {
-        let msg =
+        if (aimg) {
+          emoji = `📸`;
+        } else {
+          emoji = `🔔`;
+        }
+
+        msg =
+          emoji +
           fetchedNotifications[i].payload.data.app +
           " : " +
           convertText(fetchedNotifications[i].payload.data.amsg);
+
         notiffeeds.push(msg);
       }
     }
@@ -40,7 +52,6 @@ export const filterNotifications = async (address: string) => {
   notiffeeds = notiffeeds.reverse();
   return notiffeeds;
 };
-
 export const fetchAllAddrNotifs = async () => {
   const addresses = await fetchAddress();
   let notifs: String[] = [];

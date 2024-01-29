@@ -6,3 +6,4 @@ export const allowedSnapOrigins = [
 ];
 
 export const BASE_URL = 'https://backend.epns.io/apis/v1'; // Modify this as needed
+export const STAGING_URL = 'https://backend-staging.epns.io/apis/v1';

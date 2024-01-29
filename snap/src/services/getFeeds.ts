@@ -1,7 +1,7 @@
-import { BASE_URL } from "../config";
+import { BASE_URL,STAGING_URL} from "../config";
 import { fetchGet } from "../utils";
 
-const CHANNELS_BASE_URL = `${BASE_URL}/users`;
+const CHANNELS_BASE_URL = `${STAGING_URL}/users`;
 
 export const getFeeds = async (channelAddress: string): Promise<any> => {
   try {
