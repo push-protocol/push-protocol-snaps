@@ -1,13 +1,11 @@
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
-import { SnapStorageCheck } from "../helper/snapstoragecheck";
+import { SnapStorageCheck } from "./snapstoragecheck";
+import { getSnapState, updateSnapState } from "./snapStateUtils";
 
 const { ethers } = require("ethers");
 
-export const addAddress = async (address: string) => {
-  const persistedData = await snap.request({
-    method: "snap_manageState",
-    params: { operation: "get", encrypted: false },
-  });
+export const handleAddAddress = async (address: string) => {
+  const persistedData = await getSnapState({ encrypted: false});
 
   const isValidAddress = ethers.utils.isAddress(address);
 
@@ -17,9 +15,9 @@ export const addAddress = async (address: string) => {
         addresses: [address],
         popuptoggle: 0,
       };
-      await snap.request({
-        method: "snap_manageState",
-        params: { operation: "update", newState: data, encrypted: false },
+      await updateSnapState({
+        newState: data,
+        encrypted: false
       });
     } else {
       const addrlist = persistedData.addresses;
@@ -32,9 +30,9 @@ export const addAddress = async (address: string) => {
           addresses: addrlist,
           popuptoggle: popuptoggle,
         };
-        await snap.request({
-          method: "snap_manageState",
-          params: { operation: "update", newState: data, encrypted: false },
+        await updateSnapState({
+          newState: data,
+          encrypted: false
         });
       }
     }
@@ -52,11 +50,8 @@ export const addAddress = async (address: string) => {
   }
 };
 
-export const confirmAddress = async () => {
-  const persistedData = await snap.request({
-    method: "snap_manageState",
-    params: { operation: "get", encrypted: false },
-  });
+export const handleConfirmAddress = async () => {
+  const persistedData = await getSnapState({ encrypted: false});
   if (persistedData != null) {
     const data = persistedData.addresses;
     let msg = "";
@@ -102,7 +97,7 @@ export const confirmAddress = async () => {
   }
 };
 
-export const removeAddress = async (address: string) => {
+export const handleRemoveAddress = async (address: string) => {
   const persistedData = await SnapStorageCheck();
   let addresslist = persistedData.addresses;
   let popuptoggle = persistedData.popuptoggle;
@@ -119,17 +114,14 @@ export const removeAddress = async (address: string) => {
     popuptoggle: popuptoggle,
   };
 
-  await snap.request({
-    method: "snap_manageState",
-    params: { operation: "update", newState: newData, encrypted: false },
+  await updateSnapState({
+    newState: newData,
+    encrypted: false
   });
 };
 
 export const fetchAddress = async () => {
-  const persistedData = await snap.request({
-    method: "snap_manageState",
-    params: { operation: "get", encrypted: false },
-  });
+  const persistedData = await getSnapState({ encrypted: false});;
   if (persistedData != null) {
     const addresses = persistedData!.addresses;
     return addresses;

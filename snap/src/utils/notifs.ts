@@ -1,4 +1,5 @@
-import { fetchAddress } from "./fetchAddress";
+import { getFeeds } from "../services";
+import { fetchAddress } from "./address";
 import { ethers } from "ethers";
 
 export const getNotifications = async (address: string) => {
@@ -6,21 +7,14 @@ export const getNotifications = async (address: string) => {
     let addressValidation = ethers.utils.isAddress(address);
 
     if (addressValidation) {
-      const url = `https://backend.epns.io/apis/v1/users/eip155:1:${address}/feeds`;
-      console.log(url);
-      const response = await fetch(url, {
-        method: "get",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      return data;
+      // Use the service function to get feeds
+      const feeds = await getFeeds(address);
+      return feeds;
     } else {
       return { feeds: [] };
     }
   } catch (err) {
-    console.log(err);
+    console.error(`Error in getNotifications for ${address}:`, err);
     return { feeds: [] };
   }
 };
