@@ -1,3 +1,9 @@
+/**
+ * Performs a GET request to the specified URL and returns the response data.
+ * @param url The URL to fetch data from.
+ * @returns The response data from the GET request.
+ * @throws Error if there is an issue fetching data.
+ */
 export const fetchGet = async (url: string): Promise<any> => {
   try {
     const response = await fetch(url, {
@@ -18,6 +24,13 @@ export const fetchGet = async (url: string): Promise<any> => {
   }
 };
 
+/**
+ * Performs a POST request to the specified URL with the given body and returns the response data.
+ * @param url The URL to post data to.
+ * @param body The body of the POST request.
+ * @returns The response data from the POST request.
+ * @throws Error if there is an issue fetching data.
+ */
 export const fetchPost = async (url: string, body: any): Promise<any> => {
   try {
     const response = await fetch(url, {

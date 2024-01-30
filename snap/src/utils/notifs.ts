@@ -2,12 +2,17 @@ import { getFeeds } from "../services";
 import { fetchAddress } from "./address";
 import { ethers } from "ethers";
 
+/**
+ * Retrieves notifications for a specific address.
+ * @param address The Ethereum address to retrieve notifications for.
+ * @returns An array of notifications.
+ */
 export const getNotifications = async (address: string) => {
   try {
     let addressValidation = ethers.utils.isAddress(address);
 
     if (addressValidation) {
-      // Use the service function to get feeds
+      // Retrieve feeds using the service function
       const feeds = await getFeeds(address);
       return feeds;
     } else {
@@ -19,6 +24,11 @@ export const getNotifications = async (address: string) => {
   }
 };
 
+/**
+ * Filters notifications for a specific address.
+ * @param address The Ethereum address to filter notifications for.
+ * @returns An array of filtered notifications.
+ */
 export const filterNotifications = async (address: string) => {
   let fetchedNotifications = await getNotifications(address);
   fetchedNotifications = fetchedNotifications?.feeds;
@@ -41,6 +51,10 @@ export const filterNotifications = async (address: string) => {
   return notiffeeds;
 };
 
+/**
+ * Fetches notifications for all stored addresses.
+ * @returns An array of notifications.
+ */
 export const fetchAllAddrNotifs = async () => {
   const addresses = await fetchAddress();
   let notifs: String[] = [];
@@ -51,6 +65,11 @@ export const fetchAllAddrNotifs = async () => {
   return notifs;
 };
 
+/**
+ * Converts text by replacing tags and timestamps.
+ * @param text The text to be converted.
+ * @returns The converted text.
+ */
 function convertText(text:string) {
   let newText = text.replace(/\n/g, ' ');
 

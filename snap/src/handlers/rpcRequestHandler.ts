@@ -11,25 +11,36 @@ import {
 import { getSnapState, updateSnapState, SnapStorageCheck } from "../utils";
 import { allowedSnapOrigins } from "../config";
 
+/**
+ * Handles RPC requests from Snap-enabled dapps.
+ * @param {Object} params - The parameters object containing the origin and request.
+ * @param {string} params.origin - The origin of the request.
+ * @param {Object} params.request - The request object containing the method and parameters.
+ * @returns {Promise<any>} - The result of the RPC request.
+ */
 export const onRpcRequest: OnRpcRequestHandler = async ({
   origin,
   request,
 }) => {
+  // Check if the origin is allowed
   if (allowedSnapOrigins.includes(origin)) {
     const requestParams = request?.params as unknown as ApiRequestParams;
-
     // For non-encrypted state
     // ToDo: For encrypted state, when it's usecase comes
+
+    // Retrieve the current Snap state
     let state = await getSnapState({ encrypted: false });
+
+    // Initialize the state if empty
     if (!state) {
       state = {}; // ToDo: Use default snap state here from config
-      // initialize state if empty and set default data
+      // Initialize state if empty and set default data
       await updateSnapState({
         newState: state,
         encrypted: false,
       });
     } else {
-      // ToDo: update the snap state to latest version and modify it - to use getModifiedSnapState
+      // ToDo: Update the snap state to the latest version and modify it - to use getModifiedSnapState
       // await updateSnapState(state);
     }
 
@@ -38,17 +49,22 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       requestParams,
     };
 
+    // Handles different RPC methods
     switch (request.method as SnapRpcMethod) {
       case SnapRpcMethod.AddAddress: {
+        // Handles the addAddress RPC method
         return addAddress(apiParams);
       }
       case SnapRpcMethod.RemoveAddress: {
+        // Handles the removeAddress RPC method
         return removeAddress(apiParams);
       }
       case SnapRpcMethod.Welcome: {
+        // Handles the welcome RPC method
         return welcomeDialog();
       }
       case SnapRpcMethod.TogglePopup: {
+        // Handles the togglePopup RPC method
         return togglePopup(apiParams);
       }
       // case SnapRpcMethod.SnoozeDuration: {
@@ -56,9 +72,11 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       //   break;
       // }
       case SnapRpcMethod.OptIn: {
+        // Handles the optIn RPC method
         return channelOptin(apiParams);
       }
       case SnapRpcMethod.OptInComplete: {
+        // Displays a success message for OptInComplete RPC method
         await snap.request({
           method: "snap_dialog",
           params: {
@@ -75,16 +93,19 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         break;
       }
       case SnapRpcMethod.GetAddresses: {
+        // Retrieve and return addresses from Snap storage
         let persistedData = await SnapStorageCheck();
         let addresses = persistedData.addresses;
         return addresses;
       }
       case SnapRpcMethod.GetToggleStatus: {
+        // Retrieve and return the toggle status from Snap storage
         let persistedData = await SnapStorageCheck();
         let popuptoggle = persistedData.popuptoggle;
         return popuptoggle;
       }
       case SnapRpcMethod.FirstChannelOptIn: {
+        // Displays a congratulations message for FirstChannelOptIn RPC method
         await snap.request({
           method: "snap_dialog",
           params: {
@@ -100,9 +121,11 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         break;
       }
       default:
+        // Throw an error for unsupported RPC methods
         throw new Error("Method not found.");
     }
   } else {
+    // Display an error message if the dapp is not supported
     await snap.request({
       method: "snap_dialog",
       params: {

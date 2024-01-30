@@ -2,15 +2,23 @@ import { divider, heading, panel, text } from "@metamask/snaps-ui";
 import { ApiParams, ChannelOptinRequestParams } from "../../types";
 import { fetchChannels } from "../../utils";
 
+/**
+ * Handles the opt-in process for a channel.
+ * @param params The parameters for channel opt-in.
+ * @returns A string or boolean indicating the success of the opt-in process.
+ */
 export const channelOptin = async (
   params: ApiParams
 ): Promise<string | boolean> => {
   const { requestParams } = params;
   const requestParamsObj = requestParams as ChannelOptinRequestParams;
 
+  // Fetch channel details
   const res = await fetchChannels(requestParamsObj.channelAddress);
   const channelName = res.channelName;
   const unsubscribedAccounts = res.unsubscribedAccounts;
+
+  // Check if user is already subscribed to the channel
   if (unsubscribedAccounts.length == 0) {
     await snap.request({
       method: "snap_dialog",
@@ -25,6 +33,7 @@ export const channelOptin = async (
     });
     return false;
   } else {
+    // Prompt the user for channel subscription confirmation
     const res = await snap.request({
       method: "snap_dialog",
       params: {
