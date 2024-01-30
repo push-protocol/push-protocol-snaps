@@ -1,6 +1,11 @@
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
 
+/**
+ * Displays a welcome dialog to the user.
+ * @returns A boolean indicating the success of displaying the dialog.
+ */
 export const welcomeDialog = async (): Promise<boolean> => {
+  // Display the welcome dialog using snap.request
   await snap.request({
     method: "snap_dialog",
     params: {
@@ -12,5 +17,5 @@ export const welcomeDialog = async (): Promise<boolean> => {
       ]),
     },
   });
-  return true;
+  return true; // Return true indicating the dialog was displayed successfully
 };

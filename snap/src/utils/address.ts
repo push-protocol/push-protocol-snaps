@@ -4,22 +4,29 @@ import { getSnapState, updateSnapState } from "./snapStateUtils";
 
 const { ethers } = require("ethers");
 
+/**
+ * Handles the addition of an Ethereum address to the list of monitored addresses.
+ * @param address The Ethereum address to be added.
+ */
 export const handleAddAddress = async (address: string) => {
-  const persistedData = await getSnapState({ encrypted: false});
+  const persistedData = await getSnapState({ encrypted: false });
 
+  // Check if the provided address is valid
   const isValidAddress = ethers.utils.isAddress(address);
 
   if (isValidAddress) {
     if (persistedData == null) {
+      // Create new data if none exists
       const data = {
         addresses: [address],
         popuptoggle: 0,
       };
       await updateSnapState({
         newState: data,
-        encrypted: false
+        encrypted: false,
       });
     } else {
+      // Update existing data with the new address if it doesn't already exist
       const addrlist = persistedData.addresses;
       const popuptoggle = persistedData.popuptoggle;
       if (addrlist!.includes(address)) {
@@ -32,11 +39,12 @@ export const handleAddAddress = async (address: string) => {
         };
         await updateSnapState({
           newState: data,
-          encrypted: false
+          encrypted: false,
         });
       }
     }
   } else {
+    // Display an error alert for an invalid Ethereum address
     await snap.request({
       method: "snap_dialog",
       params: {
@@ -50,8 +58,11 @@ export const handleAddAddress = async (address: string) => {
   }
 };
 
+/**
+ * Handles the confirmation of added addresses, displaying a summary of active addresses.
+ */
 export const handleConfirmAddress = async () => {
-  const persistedData = await getSnapState({ encrypted: false});
+  const persistedData = await getSnapState({ encrypted: false });
   if (persistedData != null) {
     const data = persistedData.addresses;
     let msg = "";
@@ -59,6 +70,7 @@ export const handleConfirmAddress = async () => {
       msg = msg + "🔹" + data![i] + "\n\n";
     }
     if (msg.length > 0) {
+      // Display a success alert with a summary of added addresses
       return snap.request({
         method: "snap_dialog",
         params: {
@@ -66,7 +78,9 @@ export const handleConfirmAddress = async () => {
           content: panel([
             heading("Address added"),
             divider(),
-            text(`Congratulations, Your address is now all set to receive notifications. \n\n Opt-in to your favourite channels now.`),
+            text(
+              `Congratulations, Your address is now all set to receive notifications. \n\n Opt-in to your favourite channels now.`
+            ),
             text("Following addresses will receive notifications:"),
             divider(),
             text(`${msg}`),
@@ -74,6 +88,7 @@ export const handleConfirmAddress = async () => {
         },
       });
     } else {
+      // Display an alert for no active addresses
       await snap.request({
         method: "snap_dialog",
         params: {
@@ -87,6 +102,7 @@ export const handleConfirmAddress = async () => {
       });
     }
   } else {
+    // Display an error alert for no addresses added
     return snap.request({
       method: "snap_dialog",
       params: {
@@ -97,6 +113,10 @@ export const handleConfirmAddress = async () => {
   }
 };
 
+/**
+ * Handles the removal of an Ethereum address from the list of monitored addresses.
+ * @param address The Ethereum address to be removed.
+ */
 export const handleRemoveAddress = async (address: string) => {
   const persistedData = await SnapStorageCheck();
   let addresslist = persistedData.addresses;
@@ -114,14 +134,19 @@ export const handleRemoveAddress = async (address: string) => {
     popuptoggle: popuptoggle,
   };
 
+  // Update the state after removing the address
   await updateSnapState({
     newState: newData,
-    encrypted: false
+    encrypted: false,
   });
 };
 
+/**
+ * Fetches the list of monitored Ethereum addresses.
+ * @returns An array of Ethereum addresses.
+ */
 export const fetchAddress = async () => {
-  const persistedData = await getSnapState({ encrypted: false});;
+  const persistedData = await getSnapState({ encrypted: false });
   if (persistedData != null) {
     const addresses = persistedData!.addresses;
     return addresses;
@@ -130,8 +155,12 @@ export const fetchAddress = async () => {
   }
 };
 
-
+/**
+ * Sets the snooze duration for notifications.
+ * @returns The snooze duration in hours.
+ */
 export const snoozeNotifs = async () => {
+  // Prompt the user to set the snooze duration
   const snoozeDuration = await snap.request({
     method: "snap_dialog",
     params: {
@@ -148,12 +177,14 @@ export const snoozeNotifs = async () => {
   if (typeof snoozeDuration === 'string') {
     let snoozeDurationNumber = parseInt(snoozeDuration, 10);
     
+    // Ensure snooze duration is within valid range
     if (snoozeDurationNumber > 24) {
       snoozeDurationNumber = 24;
     } else if (snoozeDurationNumber === undefined) {
       snoozeDurationNumber = 0;
     }
 
+    // Display an alert confirming the snooze duration
     await snap.request({
       method:"snap_dialog",
       params:{
