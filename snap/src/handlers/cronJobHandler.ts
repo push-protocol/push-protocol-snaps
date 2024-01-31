@@ -10,17 +10,24 @@ import { SnapCronJobMethod } from "../types";
  * @throws {Error} Throws an error if the specified method is not found.
  */
 export const onCronjob: OnCronjobHandler = async ({ request }) => {
-  switch (request.method as SnapCronJobMethod) {
-    case SnapCronJobMethod.NotifCronJob:
-      await notifCronJob();
-      break;
-    // case SnapCronJobMethod.CheckActivityCronJob:
-    //   await checkActivityCronJob();
-    //   break;
-    // case SnapCronJobMethod.RemoveSnoozeCronJob:
-    //   await removeSnoozeCronJob();
-    //   break;
-    default:
-      throw new Error("Method not found.");
+  try {
+    switch (request.method as SnapCronJobMethod) {
+      case SnapCronJobMethod.NotifCronJob:
+        await notifCronJob();
+        break;
+      // case SnapCronJobMethod.CheckActivityCronJob:
+      //   await checkActivityCronJob();
+      //   break;
+      // case SnapCronJobMethod.RemoveSnoozeCronJob:
+      //   await removeSnoozeCronJob();
+      //   break;
+      default:
+        throw new Error("Method not found.");
+    }
+  } catch (error) {
+    // Handle or log the error as needed
+    console.error("Error in onCronjob:", error);
+    // Optionally rethrow the error if you want it to propagate further
+    throw error;
   }
 };

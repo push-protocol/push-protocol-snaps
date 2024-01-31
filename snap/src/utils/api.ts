@@ -24,7 +24,6 @@ export const fetchGet = async <T>(url: string): Promise<T> => {
   }
 };
 
-
 /**
  * Performs a POST request to the specified URL with the given body and returns the response data.
  * @param url The URL to post data to.

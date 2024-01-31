@@ -30,7 +30,7 @@
  * @param notifs An array of notifications.
  * @returns An array of formatted notification messages.
  */
-export const popupHelper = (notifs: string[]) => {
+export const popupHelper = (notifs: string[]): string[] => {
   console.log("notif: ", notifs);
   const msg = [] as string[];
 

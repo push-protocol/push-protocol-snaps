@@ -91,7 +91,7 @@ export const getModifiedSnapState = async (
         }
       } else {
         // Modify to the latest version from v0
-        state = await modifyS0ToLatest(state);
+        state = modifyS0ToLatest(state);
 
         await updateSnapState({
           newState: state,
@@ -101,7 +101,8 @@ export const getModifiedSnapState = async (
     }
     return state;
   } catch (err) {
-    throw new Error(`Error in getModifiedSnapState: ${err.message}`);
+    console.error("Error in getModifiedSnapState:", err);
+    throw err;
   }
 };
 
@@ -110,12 +111,9 @@ export const getModifiedSnapState = async (
  * @param state The SnapStateV0 to be modified.
  * @returns The modified SnapStateV0.
  */
-export const modifyS0ToLatest = async (
-  state: SnapStateV0
-): Promise<LatestSnapState> => {
+export const modifyS0ToLatest = (state: SnapStateV0): LatestSnapState => {
   const newAddresses: { [address: string]: AddressMetadata } = {};
 
-  // Transform each string in the array into an object with default metadata
   state.addresses.forEach((address) => {
     newAddresses[address] = {
       enabled: true,
