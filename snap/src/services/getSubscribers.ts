@@ -1,6 +1,11 @@
 import { BASE_URL } from "../config";
 import { fetchGet } from "../utils";
 
+interface Response {
+  itemcount: number;
+  subscribers: string[];
+}
+
 // Base URL for channels
 const CHANNELS_BASE_URL = `${BASE_URL}/channels`;
 
@@ -10,11 +15,13 @@ const CHANNELS_BASE_URL = `${BASE_URL}/channels`;
  * @returns An array of subscribers for the channel.
  * @throws Error if there is an issue fetching subscribers.
  */
-export const getSubscribers = async (channelAddress: string): Promise<string[]> => {
+export const getSubscribers = async (
+  channelAddress: string
+): Promise<string[]> => {
   try {
     const url = `${CHANNELS_BASE_URL}/eip155:1:${channelAddress}/subscribers`;
     // Fetch subscribers
-    const response = await fetchGet(url);
+    const response: Response = await fetchGet(url);
     // Extract and return subscribers from the response
     return response.subscribers;
   } catch (error) {

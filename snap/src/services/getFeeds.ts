@@ -1,6 +1,45 @@
 import { BASE_URL } from "../config";
 import { fetchGet } from "../utils";
 
+interface Payload {
+  data: {
+    app: string;
+    sid: string;
+    url: string;
+    acta: string;
+    aimg: string;
+    amsg: string;
+    asub: string;
+    icon: string;
+    type: number;
+    epoch: string;
+    etime: string | null;
+    hidden: string;
+    silent: string;
+    sectype: string | null;
+    additionalMeta: any | null;
+  };
+  recipients: string;
+  notification: {
+    body: string;
+    title: string;
+  };
+  verificationProof: string;
+}
+
+interface Feed {
+  payload_id: number;
+  sender: string;
+  epoch: string;
+  payload: Payload;
+  source: string;
+  etime: string | null;
+}
+
+interface Response {
+  feeds: Feed[];
+}
+
 // Base URL for users' feeds
 const CHANNELS_BASE_URL = `${BASE_URL}/users`;
 
@@ -14,7 +53,7 @@ export const getFeeds = async (channelAddress: string): Promise<any> => {
   try {
     const url = `${CHANNELS_BASE_URL}/eip155:1:${channelAddress}/feeds`;
     // Fetch feeds
-    const response = await fetchGet(url);
+    const response: Response = await fetchGet(url);
     return response;
   } catch (error) {
     // Log and rethrow error if encountered
