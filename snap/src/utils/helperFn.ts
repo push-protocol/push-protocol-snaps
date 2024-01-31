@@ -37,3 +37,21 @@ export const getEnabledAddresses = (state: LatestSnapState): string[] => {
    */
   return enabledAddresses;
 };
+
+/**
+ * Checks if a specific address is marked as enabled in the SnapStateV1.
+ * @param state - The SnapStateV1 object.
+ * @param address - The address to check.
+ * @returns True if the address is marked as enabled, otherwise false.
+ */
+export const isAddressEnabled = (state: LatestSnapState, address: string): boolean => {
+  /**
+   * Retrieve the metadata for the specified address.
+   */
+  const metadata = state.addresses[address];
+
+  /**
+   * Check if the metadata exists and the 'enabled' property is true.
+   */
+  return !!metadata && metadata.enabled;
+};
