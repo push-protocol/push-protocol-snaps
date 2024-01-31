@@ -16,13 +16,13 @@ export const fetchChannels = async (channelAddress: string) => {
     const channelName = channelDetails.name;
 
     // Request Ethereum accounts from the user
-    let res: string[] = await ethereum.request({ method: "eth_requestAccounts" });
+    const res: string[] = await ethereum.request({ method: "eth_requestAccounts" });
 
     // Retrieve channel subscribers
     const channelSubscribers = subscribers;
 
     // Find unsubscribed accounts
-    let unsubscribedAccounts = [];
+    const unsubscribedAccounts = [];
 
     // Check each Ethereum account if it is subscribed to the channel
     for (let i = 0; i < res.length; i++) {

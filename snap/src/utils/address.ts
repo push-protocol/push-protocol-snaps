@@ -2,7 +2,7 @@ import { divider, heading, panel, text } from "@metamask/snaps-ui";
 import { SnapStorageCheck } from "./snapstoragecheck";
 import { getSnapState, updateSnapState } from "./snapStateUtils";
 
-const { ethers } = require("ethers");
+import { ethers } from "ethers";
 
 /**
  * Handles the addition of an Ethereum address to the list of monitored addresses.
@@ -119,10 +119,10 @@ export const handleConfirmAddress = async () => {
  */
 export const handleRemoveAddress = async (address: string) => {
   const persistedData = await SnapStorageCheck();
-  let addresslist = persistedData.addresses;
-  let popuptoggle = persistedData.popuptoggle;
+  const addresslist = persistedData.addresses;
+  const popuptoggle = persistedData.popuptoggle;
   if (addresslist.includes(address)) {
-    for (var i = addresslist.length - 1; i >= 0; i--) {
+    for (let i = addresslist.length - 1; i >= 0; i--) {
       if (addresslist[i] === address) {
         addresslist.splice(i, 1);
       }

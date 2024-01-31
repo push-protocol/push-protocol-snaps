@@ -14,8 +14,8 @@ export const removeAddress = async (params: ApiParams): Promise<void> => {
   // Check if requestParamsObj is valid and contains an address
   if (requestParamsObj != null && requestParamsObj.address != null) {
     // Check if the address exists in Snap storage and is a valid Ethereum address
-    let addresscheck = await SnapStorageAddressCheck(requestParamsObj.address);
-    let isValidAddress = ethers.utils.isAddress(requestParamsObj.address);
+    const addresscheck = await SnapStorageAddressCheck(requestParamsObj.address);
+    const isValidAddress = ethers.utils.isAddress(requestParamsObj.address);
     if (addresscheck == true && isValidAddress == true) {
       // Prompt the user for confirmation to remove the address
       const res = await snap.request({

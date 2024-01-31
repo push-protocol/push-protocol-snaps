@@ -18,7 +18,7 @@ export const notifCronJob = async (): Promise<void> => {
   const notifs = await fetchAllAddrNotifs();
 
   // Generate popup messages based on notifications
-  let msgs = popupHelper(notifs);
+  const msgs = popupHelper(notifs);
 
   // Check the current Snap state
   let persistedData = await SnapStorageCheck();
@@ -86,7 +86,7 @@ export const notifCronJob = async (): Promise<void> => {
   // Display in-app notifications
 
   if (msgs.length > 0) {
-    let maxlength = msgs.length > 11 ? 11 : msgs.length;
+    const maxlength = msgs.length > 11 ? 11 : msgs.length;
     for (let i = 0; i < maxlength; i++) {
       let msg = msgs[i];
       msg = String(msg);

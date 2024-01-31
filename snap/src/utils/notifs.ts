@@ -9,7 +9,7 @@ import { ethers } from "ethers";
  */
 export const getNotifications = async (address: string) => {
   try {
-    let addressValidation = ethers.utils.isAddress(address);
+    const addressValidation = ethers.utils.isAddress(address);
 
     if (addressValidation) {
       // Retrieve feeds using the service function
@@ -32,14 +32,14 @@ export const getNotifications = async (address: string) => {
 export const filterNotifications = async (address: string) => {
   let fetchedNotifications = await getNotifications(address);
   fetchedNotifications = fetchedNotifications?.feeds;
-  let notiffeeds: String[] = [];
+  let notiffeeds: string[] = [];
   const currentepoch: number = Math.floor(Date.now() / 1000);
   if (fetchedNotifications.length > 0) {
     for (let i = 0; i < fetchedNotifications.length; i++) {
       let feedepoch = fetchedNotifications[i].payload.data.epoch;
       feedepoch = Number(feedepoch).toFixed(0);
       if (feedepoch > currentepoch - 60) {
-        let msg =
+        const msg =
           fetchedNotifications[i].payload.data.app +
           " : " +
           convertText(fetchedNotifications[i].payload.data.amsg);
@@ -57,7 +57,7 @@ export const filterNotifications = async (address: string) => {
  */
 export const fetchAllAddrNotifs = async () => {
   const addresses = await fetchAddress();
-  let notifs: String[] = [];
+  let notifs: string[] = [];
   if (addresses.length == 0) return notifs;
   const promises = addresses.map((address) => filterNotifications(address));
   const results = await Promise.all(promises);
@@ -77,7 +77,7 @@ function convertText(text:string) {
   newText = newText.replace(tagRegex, (match, tag, value) => value);
 
   const timestampRegex = /\[timestamp:\s*(\d+)\]/g;
-  let processedTimestamps = new Set();
+  const processedTimestamps = new Set();
   newText = newText.replace(timestampRegex, (match, timestamp) => {
       if (processedTimestamps.has(timestamp)) {
           return '';

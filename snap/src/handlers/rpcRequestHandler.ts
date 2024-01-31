@@ -5,10 +5,9 @@ import {
   addAddress,
   channelOptin,
   removeAddress,
-  togglePopup,
   welcomeDialog,
 } from "../methods";
-import { getSnapState, updateSnapState, SnapStorageCheck } from "../utils";
+import { getEnabledAddresses, getModifiedSnapState } from "../utils";
 import { allowedSnapOrigins } from "../config";
 
 /**
@@ -28,21 +27,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     // For non-encrypted state
     // ToDo: For encrypted state, when it's usecase comes
 
-    // Retrieve the current Snap state
-    let state = await getSnapState({ encrypted: false });
-
-    // Initialize the state if empty
-    if (!state) {
-      state = {}; // ToDo: Use default snap state here from config
-      // Initialize state if empty and set default data
-      await updateSnapState({
-        newState: state,
-        encrypted: false,
-      });
-    } else {
-      // ToDo: Update the snap state to the latest version and modify it - to use getModifiedSnapState
-      // await updateSnapState(state);
-    }
+    // Retrieve the current Snap state and modify it to latest version if necessary
+    const state = await getModifiedSnapState({ encrypted: false });
 
     const apiParams: ApiParams = {
       state,
@@ -63,10 +49,10 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         // Handles the welcome RPC method
         return welcomeDialog();
       }
-      case SnapRpcMethod.TogglePopup: {
-        // Handles the togglePopup RPC method
-        return togglePopup(apiParams);
-      }
+      // case SnapRpcMethod.TogglePopup: {
+      //   // Handles the togglePopup RPC method
+      //   return togglePopup(apiParams);
+      // }
       // case SnapRpcMethod.SnoozeDuration: {
       //   await snoozeDuration();
       //   break;
@@ -93,17 +79,15 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         break;
       }
       case SnapRpcMethod.GetAddresses: {
-        // Retrieve and return addresses from Snap storage
-        let persistedData = await SnapStorageCheck();
-        let addresses = persistedData.addresses;
+        const addresses = getEnabledAddresses(state);
         return addresses;
       }
-      case SnapRpcMethod.GetToggleStatus: {
-        // Retrieve and return the toggle status from Snap storage
-        let persistedData = await SnapStorageCheck();
-        let popuptoggle = persistedData.popuptoggle;
-        return popuptoggle;
-      }
+      // case SnapRpcMethod.GetToggleStatus: {
+      //   // Retrieve and return the toggle status from Snap storage
+      //   const persistedData = await SnapStorageCheck();
+      //   const popuptoggle = persistedData.popuptoggle;
+      //   return popuptoggle;
+      // }
       case SnapRpcMethod.FirstChannelOptIn: {
         // Displays a congratulations message for FirstChannelOptIn RPC method
         await snap.request({

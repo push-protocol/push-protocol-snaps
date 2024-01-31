@@ -14,8 +14,8 @@ export const addAddress = async (params: ApiParams): Promise<void> => {
   // Check if requestParamsObj is valid and contains an address
   if (requestParamsObj != null && requestParamsObj.address != null) {
     // Check if the address is not already added and is a valid Ethereum address
-    let addresscheck = await SnapStorageAddressCheck(requestParamsObj.address);
-    let isValidAddress = ethers.utils.isAddress(requestParamsObj.address);
+    const addresscheck = await SnapStorageAddressCheck(requestParamsObj.address);
+    const isValidAddress = ethers.utils.isAddress(requestParamsObj.address);
     
     if (addresscheck == false && isValidAddress == true) {
       // Prompt the user for confirmation to add the address
