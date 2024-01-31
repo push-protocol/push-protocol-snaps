@@ -1,10 +1,9 @@
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
 import {
-  SnapStorageCheck,
   fetchAllAddrNotifs,
+  getModifiedSnapState,
   popupHelper,
   sleep,
-  updateSnapState,
 } from "../../utils";
 
 /**
@@ -20,28 +19,8 @@ export const notifCronJob = async (): Promise<void> => {
   // Generate popup messages based on notifications
   const msgs = popupHelper(notifs);
 
-  // Check the current Snap state
-  let persistedData = await SnapStorageCheck();
-
-  // Calculate the total number of notifications to display
-  let popuptoggle = msgs.length;
-  if (persistedData != null) {
-    popuptoggle += Number(persistedData.popuptoggle);
-  }
-
-  // Update Snap state with the new notification count
-  const data = {
-    addresses: persistedData.addresses,
-    popuptoggle: popuptoggle,
-    snoozeDuration: persistedData.snoozeDuration || 0,
-  };
-  // let currentTimeEpoch = new Date().getTime();
-
-  await updateSnapState({
-    newState: data,
-    encrypted: false,
-  });
-  persistedData = data;
+  // Just modify the state version
+  await getModifiedSnapState({ encrypted: false });
 
   // if user is recieving more than 25 notifications, then remind them to turn on snooze
   // if (Number(popuptoggle) <= 15 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {

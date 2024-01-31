@@ -1,22 +1,26 @@
 import { ethers } from "ethers";
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
 import { ApiParams, RemoveAddressRequestParams } from "../../types";
-import { isAddressEnabled, handleConfirmAddress, handleRemoveAddress } from "../../utils";
+import {
+  isAddressEnabled,
+  handleConfirmAddress,
+  handleRemoveAddress,
+} from "../../utils";
 
 /**
  * Removes an address from the Snap.
  * @param params The parameters for removing an address.
  */
 export const removeAddress = async (params: ApiParams): Promise<void> => {
-  const { requestParams } = params;
+  const { state, requestParams } = params;
   const requestParamsObj = requestParams as RemoveAddressRequestParams;
-  const currentState = requestParams as ApiParams
 
   // Check if requestParamsObj is valid and contains an address
   if (requestParamsObj != null && requestParamsObj.address != null) {
     // Check if the address exists in Snap storage and is a valid Ethereum address
-    const addresscheck = await isAddressEnabled(currentState.state,requestParamsObj.address);
+    const addresscheck = isAddressEnabled(state, requestParamsObj.address);
     const isValidAddress = ethers.utils.isAddress(requestParamsObj.address);
+    
     if (addresscheck == true && isValidAddress == true) {
       // Prompt the user for confirmation to remove the address
       const res = await snap.request({

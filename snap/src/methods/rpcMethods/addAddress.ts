@@ -1,24 +1,26 @@
 import { ethers } from "ethers";
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
-import { AddAddressRequestParams, ApiParams, SnapStateV1 } from "../../types";
-import { isAddressEnabled, handleAddAddress, handleConfirmAddress } from "../../utils";
-
+import { AddAddressRequestParams, ApiParams } from "../../types";
+import {
+  isAddressEnabled,
+  handleAddAddress,
+  handleConfirmAddress,
+} from "../../utils";
 
 /**
  * Adds an address to the Snap.
  * @param params The parameters for adding an address.
  */
 export const addAddress = async (params: ApiParams): Promise<void> => {
-  const { requestParams } = params;
+  const { state, requestParams } = params;
   const requestParamsObj = requestParams as AddAddressRequestParams;
-  const currentState = requestParams as ApiParams
 
   // Check if requestParamsObj is valid and contains an address
   if (requestParamsObj != null && requestParamsObj.address != null) {
     // Check if the address is not already added and is a valid Ethereum address
-    const addresscheck = await isAddressEnabled(currentState.state,requestParamsObj.address);
+    const addresscheck = isAddressEnabled(state, requestParamsObj.address);
     const isValidAddress = ethers.utils.isAddress(requestParamsObj.address);
-    
+
     if (addresscheck == false && isValidAddress == true) {
       // Prompt the user for confirmation to add the address
       const res = await snap.request({
@@ -33,7 +35,7 @@ export const addAddress = async (params: ApiParams): Promise<void> => {
           ]),
         },
       });
-      
+
       if (res) {
         // Add the address to the Snap and confirm the addition
         await handleAddAddress(requestParamsObj.address);

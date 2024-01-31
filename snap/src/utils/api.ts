@@ -4,7 +4,7 @@
  * @returns The response data from the GET request.
  * @throws Error if there is an issue fetching data.
  */
-export const fetchGet = async (url: string): Promise<any> => {
+export const fetchGet = async <T>(url: string): Promise<T> => {
   try {
     const response = await fetch(url, {
       method: "get",
@@ -17,12 +17,13 @@ export const fetchGet = async (url: string): Promise<any> => {
       throw new Error(`Failed to fetch data from ${url}`);
     }
 
-    return response.json();
+    return response.json() as T;
   } catch (error) {
     console.error(`Error in fetchGet for ${url}:`, error);
     throw error;
   }
 };
+
 
 /**
  * Performs a POST request to the specified URL with the given body and returns the response data.
@@ -31,7 +32,7 @@ export const fetchGet = async (url: string): Promise<any> => {
  * @returns The response data from the POST request.
  * @throws Error if there is an issue fetching data.
  */
-export const fetchPost = async (url: string, body: any): Promise<any> => {
+export const fetchPost = async <T>(url: string, body: T): Promise<T> => {
   try {
     const response = await fetch(url, {
       method: "post",
@@ -45,7 +46,7 @@ export const fetchPost = async (url: string, body: any): Promise<any> => {
       throw new Error(`Failed to fetch data from ${url}`);
     }
 
-    return response.json();
+    return response.json() as T;
   } catch (error) {
     console.error(`Error in fetchPost for ${url}:`, error);
     throw error;
