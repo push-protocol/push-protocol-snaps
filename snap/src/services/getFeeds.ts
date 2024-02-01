@@ -17,7 +17,7 @@ interface Payload {
     hidden: string;
     silent: string;
     sectype: string | null;
-    additionalMeta: any | null;
+    additionalMeta: unknown | null;
   };
   recipients: string;
   notification: {
@@ -36,8 +36,9 @@ interface Feed {
   etime: string | null;
 }
 
-interface Response {
+interface IFeeds {
   feeds: Feed[];
+  itemCount: number;
 }
 
 // Base URL for users' feeds
@@ -49,11 +50,11 @@ const CHANNELS_BASE_URL = `${BASE_URL}/users`;
  * @returns Feeds associated with the user channel.
  * @throws Error if there is an issue fetching feeds.
  */
-export const getFeeds = async (channelAddress: string): Promise<any> => {
+export const getFeeds = async (channelAddress: string): Promise<IFeeds> => {
   try {
     const url = `${CHANNELS_BASE_URL}/eip155:1:${channelAddress}/feeds`;
     // Fetch feeds
-    const response: Response = await fetchGet(url);
+    const response = await fetchGet<IFeeds>(url);
     return response;
   } catch (error) {
     // Log and rethrow error if encountered

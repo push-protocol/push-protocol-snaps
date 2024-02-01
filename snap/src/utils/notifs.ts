@@ -14,14 +14,14 @@ export const getNotifications = async (address: string) => {
     if (addressValidation) {
       // Retrieve feeds using the service function
       const feeds = await getFeeds(address);
-      return feeds;
+      return feeds.feeds;
     } else {
       console.warn(`Invalid Ethereum address: ${address}`);
-      return { feeds: [] };
+      throw Error(`Error in getNotifications for ${address}: Invalid Ethereum address`);
     }
   } catch (err) {
     console.error(`Error in getNotifications for ${address}:`, err);
-    return { feeds: [] };
+    throw err;
   }
 };
 
@@ -34,15 +34,13 @@ export const filterNotifications = async (
   address: string
 ): Promise<string[]> => {
   try {
-    let fetchedNotifications = await getNotifications(address);
-    fetchedNotifications = fetchedNotifications?.feeds || [];
+    const fetchedNotifications = await getNotifications(address);
     let notiffeeds: string[] = [];
     const currentEpoch: number = Math.floor(Date.now() / 1000);
 
     if (fetchedNotifications.length > 0) {
       for (let i = 0; i < fetchedNotifications.length; i++) {
-        let feedEpoch = fetchedNotifications[i].payload.data.epoch;
-        feedEpoch = Number(feedEpoch).toFixed(0);
+        const feedEpoch = Number(fetchedNotifications[i].payload.data.epoch);
 
         if (feedEpoch > currentEpoch - 60) {
           const msg =

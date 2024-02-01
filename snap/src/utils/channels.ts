@@ -19,7 +19,7 @@ export const fetchChannels = async (channelAddress: string) => {
     const res: string[] = await ethereum.request({ method: "eth_requestAccounts" });
 
     // Retrieve channel subscribers
-    const channelSubscribers = subscribers;
+    const channelSubscribers = subscribers.subscribers;
 
     // Find unsubscribed accounts
     const unsubscribedAccounts = [];
