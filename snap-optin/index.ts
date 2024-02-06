@@ -12,7 +12,7 @@ import axios from 'axios';
 const snapOptIn = async (signer: PushAPI.SignerType, address: string, channelAddress: string, chainid: string) => {
 
     // Define the default Snap origin
-    const defaultSnapOrigin = 'local:http://localhost:8080'
+    const defaultSnapOrigin = 'npm:@pushprotocol/snap'
 
     // Request user opt-in using the wallet_invokeSnap method
     const res = await window.ethereum?.request({
