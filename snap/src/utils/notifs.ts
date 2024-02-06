@@ -17,7 +17,9 @@ export const getNotifications = async (address: string) => {
       return feeds.feeds;
     } else {
       console.warn(`Invalid Ethereum address: ${address}`);
-      throw Error(`Error in getNotifications for ${address}: Invalid Ethereum address`);
+      throw Error(
+        `Error in getNotifications for ${address}: Invalid Ethereum address`
+      );
     }
   } catch (err) {
     console.error(`Error in getNotifications for ${address}:`, err);
@@ -36,22 +38,32 @@ export const filterNotifications = async (
   try {
     const fetchedNotifications = await getNotifications(address);
     let notiffeeds: string[] = [];
+    let msg;
     const currentEpoch: number = Math.floor(Date.now() / 1000);
 
     if (fetchedNotifications.length > 0) {
       for (let i = 0; i < fetchedNotifications.length; i++) {
-        const feedEpoch = Number(fetchedNotifications[i].payload.data.epoch);
+        const feedepoch = Number(fetchedNotifications[i].payload.data.epoch);
+        const aimg = fetchedNotifications[i].payload.data.aimg;
+        let emoji;
 
-        if (feedEpoch > currentEpoch - 60) {
-          const msg =
+        if (feedepoch > currentEpoch - 60) {
+          if (aimg) {
+            emoji = `📸`;
+          } else {
+            emoji = `🔔`;
+          }
+
+          msg =
+            emoji +
             fetchedNotifications[i].payload.data.app +
             " : " +
             convertText(fetchedNotifications[i].payload.data.amsg);
+
           notiffeeds.push(msg);
         }
       }
     }
-
     notiffeeds = notiffeeds.reverse();
     return notiffeeds;
   } catch (error) {
@@ -116,4 +128,3 @@ const convertText = (text: string): string => {
     throw error;
   }
 };
-
