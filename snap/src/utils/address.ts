@@ -1,12 +1,10 @@
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
-import {
-  getModifiedSnapState,
-  updateSnapState,
-} from "./snapStateUtils";
+import { getModifiedSnapState, updateSnapState } from "./snapStateUtils";
 
 import { ethers } from "ethers";
 import { AddressMetadata, LatestSnapState } from "../types";
 import { getEnabledAddresses } from "./helperFn";
+import { getCurrentTimestamp } from "./time";
 
 /**
  * Handles the addition of an Ethereum address to the list of monitored addresses.
@@ -27,8 +25,12 @@ export const handleAddAddress = async (address: string) => {
        * Otherwise, create a new metadata object with 'enabled' set to true.
        */
       const updatedMetadata: AddressMetadata = metadata
-        ? { ...metadata, enabled: true }
-        : { enabled: true };
+        ? {
+            ...metadata,
+            enabled: true,
+            lastFeedsProcessedTimestamp: getCurrentTimestamp(),
+          }
+        : { enabled: true, lastFeedsProcessedTimestamp: getCurrentTimestamp() };
 
       // Create a new SnapStateV1 object with the updated metadata.
 
@@ -146,8 +148,8 @@ export const handleRemoveAddress = async (address: string) => {
        * Otherwise, create a new metadata object with 'enabled' set to false.
        */
       const updatedMetadata: AddressMetadata = metadata
-        ? { ...metadata, enabled: false }
-        : { enabled: false };
+        ? { ...metadata, enabled: false, lastFeedsProcessedTimestamp: 0 }
+        : { enabled: false, lastFeedsProcessedTimestamp: 0 };
 
       //Create a new SnapStateV1 object with the updated metadata.
 

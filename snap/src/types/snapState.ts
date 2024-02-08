@@ -18,8 +18,15 @@ export type SnapStateV1 = {
 };
 
 export type AddressMetadata = {
+  // @Purpose: Represents if the address is enabled to receive notifications.
+  // @Default: false
   enabled: boolean;
-  // Add any other metadata fields you may need in future
+
+  // @Purpose: Represents the timestamp when the last cron job ran and processed feeds for this address.
+  // @Default: timestamp when address was added in snap
+  lastFeedsProcessedTimestamp: number;
+
+  // Add any other metadata fields you may need in the future
 };
 
 export interface ISnapStateParam {

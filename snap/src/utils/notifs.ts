@@ -1,6 +1,8 @@
 import { getFeeds } from "../services";
 import { fetchAddress } from "./address";
 import { ethers } from "ethers";
+import { getModifiedSnapState } from "./snapStateUtils";
+import { convertEpochToMilliseconds } from "./time";
 
 /**
  * Retrieves notifications for a specific address.
@@ -34,19 +36,29 @@ export const filterNotifications = async (
   address: string
 ): Promise<string[]> => {
   try {
+    const state = await getModifiedSnapState({ encrypted: false });
     const fetchedNotifications = await getNotifications(address);
+    console.log(fetchedNotifications);
+    console.log(state);
+    console.log(address);
+    console.log(state.addresses[address]);
     let notiffeeds: string[] = [];
-    const currentEpoch: number = Math.floor(Date.now() / 1000);
+    const processedLastEpoch = state.addresses[address].lastFeedsProcessedTimestamp;
+    console.log("processedLastEpoch: ", processedLastEpoch);
 
     if (fetchedNotifications.length > 0) {
       for (let i = 0; i < fetchedNotifications.length; i++) {
-        const feedEpoch = Number(fetchedNotifications[i].payload.data.epoch);
+        const feedEpoch = convertEpochToMilliseconds(fetchedNotifications[i].payload.data.epoch);
+        console.log("feedEpoch: ", feedEpoch);
+        console.log("i: ", i);
+        console.log("");
 
-        if (feedEpoch > currentEpoch - 60) {
+        if (feedEpoch > processedLastEpoch) {
           const msg =
             fetchedNotifications[i].payload.data.app +
             " : " +
             convertText(fetchedNotifications[i].payload.data.amsg);
+          console.log(msg);
           notiffeeds.push(msg);
         }
       }

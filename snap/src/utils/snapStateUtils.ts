@@ -8,6 +8,7 @@ import {
   SnapStateV0,
   UnifiedSnapState,
 } from "../types";
+import { getCurrentTimestamp } from "./time";
 
 /**
  * Updates the state of the Snap.
@@ -117,6 +118,7 @@ export const modifyS0ToLatest = (state: SnapStateV0): LatestSnapState => {
   state.addresses.forEach((address) => {
     newAddresses[address] = {
       enabled: true,
+      lastFeedsProcessedTimestamp: getCurrentTimestamp()
     };
   });
 
