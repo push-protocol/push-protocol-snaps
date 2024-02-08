@@ -3,7 +3,7 @@ import {
   fetchAllAddrNotifs,
   getCurrentTimestamp,
   getModifiedSnapState,
-  popupHelper,
+  notifyInMetamaskApp,
   sleep,
   updateSnapState,
 } from "../../utils";
@@ -18,17 +18,9 @@ export const notifCronJob = async (): Promise<void> => {
   try {
     // Fetch notifications for all subscribed addresses
     const notifs = await fetchAllAddrNotifs();
-    console.log(notifs);
-
-    // Generate popup messages based on notifications
-    const msgs = popupHelper(notifs);
-    console.log(msgs);
-
-    // if user is receiving more than 25 notifications, then remind them to turn on snooze
-    // if (Number(popuptoggle) <= 15 && currentTimeEpoch > Number(persistedData.snoozeDuration)) {
 
     // Display an alert for new notifications
-    if (msgs.length > 0) {
+    if (notifs.length > 0) {
       await snap.request({
         method: "snap_dialog",
         params: {
@@ -36,54 +28,16 @@ export const notifCronJob = async (): Promise<void> => {
           content: panel([
             heading("You have a new notification!"),
             divider(),
-            ...msgs.map((msg) => text(msg)),
+            ...notifs.map((notif) => text(notif.popupMsg)),
           ]),
         },
       });
     }
 
-    // } else if (Number(popuptoggle) == 16 && currentTimeEpoch >= Number(persistedData.snoozeDuration)) {
-    //   await SnapStorageCheck();
-
-    //   const result = await snap.request({
-    //     method: 'snap_dialog',
-    //     params: {
-    //       type: 'confirmation',
-    //       content: panel([
-    //         heading('Snooze Notifications'),
-    //         divider(),
-    //         text('Too many notifications to keep up with? You can temporarily snooze them to take a break. Approving will enable notification snooze.'),
-    //       ]),
-    //     },
-    //   });
-
-    //   if (result) {
-    //     const snoozeDuration = await snoozeNotifs();
-    //     setSnoozeDuration(Number(snoozeDuration));
-    //   }
-    //   break;
-    // }
-
     // Display in-app notifications
-    if (msgs.length > 0) {
-      const maxlength = msgs.length > 11 ? 11 : msgs.length;
-      for (let i = 0; i < maxlength; i++) {
-        let msg = msgs[i];
-        msg = String(msg);
-        msg = msg.slice(0, 47);
-        await snap.request({
-          method: "snap_notify",
-          params: {
-            type: "inApp",
-            message: msg,
-          },
-        });
-        await sleep(5000); // Wait for 5 seconds between notifications
-      }
-    }
+    await notifyInMetamaskApp(notifs);
 
     const state = await getModifiedSnapState({ encrypted: false });
-    console.log(state);
     const currentTimeStamp = getCurrentTimestamp();
 
     // Iterate over addresses in state

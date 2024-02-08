@@ -1,8 +1,9 @@
-import { getFeeds } from "../services";
+import { Feed, getFeeds } from "../services";
 import { fetchAddress } from "./address";
 import { ethers } from "ethers";
-import { getModifiedSnapState } from "./snapStateUtils";
+import { getModifiedSnapState, updateSnapState } from "./snapStateUtils";
 import { convertEpochToMilliseconds } from "./time";
+import { INotification } from "../types";
 
 /**
  * Retrieves notifications for a specific address.
@@ -36,46 +37,26 @@ export const getNotifications = async (address: string) => {
  */
 export const filterNotifications = async (
   address: string
-): Promise<string[]> => {
+): Promise<INotification[]> => {
   try {
     const state = await getModifiedSnapState({ encrypted: false });
     const fetchedNotifications = await getNotifications(address);
-    console.log(fetchedNotifications);
-    console.log(state);
-    console.log(address);
-    console.log(state.addresses[address]);
-    let notiffeeds: string[] = [];
-    const processedLastEpoch = state.addresses[address].lastFeedsProcessedTimestamp;
-    console.log("processedLastEpoch: ", processedLastEpoch);
+    let notiffeeds: Feed[] = [];
+    const processedLastEpoch =
+      state.addresses[address].lastFeedsProcessedTimestamp;
 
-    if (fetchedNotifications.length > 0) {
-      for (let i = 0; i < fetchedNotifications.length; i++) {
-        const feedEpoch = convertEpochToMilliseconds(fetchedNotifications[i].payload.data.epoch);
-        console.log("feedEpoch: ", feedEpoch);
-        console.log("i: ", i);
-        console.log("");
-        let emoji;
-        const aimg = fetchedNotifications[i].payload.data.aimg;
+    for (let i = 0; i < fetchedNotifications.length; i++) {
+      const feedEpoch = convertEpochToMilliseconds(
+        fetchedNotifications[i].payload.data.epoch
+      );
 
-        if (feedEpoch > processedLastEpoch) {
-          if (aimg) {
-            emoji = `📸`;
-          } else {
-            emoji = `🔔`;
-          }
-
-          const msg = emoji +
-            fetchedNotifications[i].payload.data.app +
-            " : " +
-            convertText(fetchedNotifications[i].payload.data.amsg);
-          console.log(msg);
-
-          notiffeeds.push(msg);
-        }
+      if (feedEpoch > processedLastEpoch) {
+        notiffeeds.push(fetchedNotifications[i]);
       }
     }
     notiffeeds = notiffeeds.reverse();
-    return notiffeeds;
+    const formattedFeeds = getFormattedNotifList(notiffeeds, address);
+    return formattedFeeds;
   } catch (error) {
     console.error(`Error in filterNotifications for ${address}:`, error);
     throw error;
@@ -86,10 +67,10 @@ export const filterNotifications = async (
  * Fetches notifications for all stored addresses.
  * @returns An array of notifications for all stored addresses.
  */
-export const fetchAllAddrNotifs = async (): Promise<string[]> => {
+export const fetchAllAddrNotifs = async (): Promise<INotification[]> => {
   try {
     const addresses = await fetchAddress();
-    let notifs: string[] = [];
+    let notifs: INotification[] = [];
 
     if (addresses.length === 0) {
       return notifs;
@@ -104,6 +85,37 @@ export const fetchAllAddrNotifs = async (): Promise<string[]> => {
     console.error("Error in fetchAllAddrNotifs:", error);
     throw error;
   }
+};
+
+/**
+ * Formats the notifs from Feed format into INotification format to be used in snap
+ * @param address - The Ethereum address.
+ * @returns An array of formatted notifs.
+ */
+export const getFormattedNotifList = (
+  notifList: Feed[],
+  address: string
+): INotification[] => {
+  const formattedNotifList = notifList.map((notif) => {
+    const emoji = notif.payload.data.aimg ? `📸` : `🔔`;
+    const msg =
+      emoji +
+      notif.payload.data.app +
+      ": " +
+      convertText(notif.payload.data.amsg);
+
+    return {
+      address: address,
+      timestamp: convertEpochToMilliseconds(notif.payload.data.epoch),
+      notification: {
+        body: notif.payload.notification.body,
+        title: notif.payload.notification.title,
+      },
+      popupMsg: msg,
+      inAppNotifMsg: msg.slice(0, 47),
+    };
+  });
+  return formattedNotifList;
 };
 
 /**
@@ -135,6 +147,70 @@ const convertText = (text: string): string => {
   } catch (error) {
     console.error("Error in convertText:", error);
     // Handle the error or rethrow it if needed
+    throw error;
+  }
+};
+
+/**
+ * Adds in App notifications in Metamask.
+ * @param notifs Array of notifications to be in proper format.
+ */
+export const notifyInMetamaskApp = async (notifs: INotification[]) => {
+  try {
+    const state = await getModifiedSnapState({ encrypted: false });
+    const maxToAdd = 5;
+    const pendingNotifsCount = state.pendingInAppNotifs.length;
+
+    // Determine how many notifications to add from pendingInAppNotifs
+    const pendingNotifsToAdd = Math.min(pendingNotifsCount, maxToAdd);
+
+    // Add pending notifications from pendingInAppNotifs
+    for (let i = 0; i < pendingNotifsToAdd; i++) {
+      const msg = state.pendingInAppNotifs.shift(); // Remove the first pending notification
+      await snap.request({
+        method: "snap_notify",
+        params: {
+          type: "inApp",
+          message: msg.message,
+        },
+      });
+    }
+
+    // Calculate the remaining number of notifications to add
+    const remainingToAdd = maxToAdd - pendingNotifsToAdd;
+
+    // Add notifications from notifs array
+    for (let i = 0; i < remainingToAdd && i < notifs.length; i++) {
+      const msg = notifs[i].inAppNotifMsg;
+      await snap.request({
+        method: "snap_notify",
+        params: {
+          type: "inApp",
+          message: msg,
+        },
+      });
+    }
+
+    // Add remaining notifications to pendingInAppNotifs if any
+    if (notifs.length > remainingToAdd) {
+      const remainingNotifs = notifs.slice(remainingToAdd);
+      state.pendingInAppNotifs.push(
+        ...remainingNotifs.map((notif) => {
+          return {
+            address: notif.address,
+            message: notif.inAppNotifMsg,
+            timestamp: notif.timestamp,
+          };
+        })
+      );
+    }
+
+    await updateSnapState({
+      newState: state,
+      encrypted: false,
+    });
+  } catch (error) {
+    console.error("Error in notifyInMetamaskApp:", error);
     throw error;
   }
 };

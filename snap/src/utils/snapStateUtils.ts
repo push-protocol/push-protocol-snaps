@@ -91,6 +91,7 @@ export const getModifiedSnapState = async (
           // Note: This section may be needed when introducing a new version in the future
         }
       } else {
+        // if version doesn't exist in state, then it's surely state v0
         // Modify to the latest version from v0
         state = modifyS0ToLatest(state);
 
@@ -100,7 +101,7 @@ export const getModifiedSnapState = async (
         });
       }
     }
-    return state;
+    return {...defaultLatestSnapState ,...state};
   } catch (err) {
     console.error("Error in getModifiedSnapState:", err);
     throw err;

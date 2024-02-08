@@ -1,7 +1,7 @@
 import { BASE_URL } from "../config";
 import { fetchGet } from "../utils";
 
-interface Payload {
+export interface Payload {
   data: {
     app: string;
     sid: string;
@@ -27,7 +27,7 @@ interface Payload {
   verificationProof: string;
 }
 
-interface Feed {
+export interface Feed {
   payload_id: number;
   sender: string;
   epoch: string;
@@ -36,7 +36,7 @@ interface Feed {
   etime: string | null;
 }
 
-interface IFeeds {
+export interface IFeeds {
   feeds: Feed[];
   itemCount: number;
 }
