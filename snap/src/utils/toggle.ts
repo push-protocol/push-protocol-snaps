@@ -37,8 +37,7 @@ export const popupHelper = (notifs: string[]): string[] => {
   // Format each notification for display
   if (notifs.length > 0) {
     notifs.forEach((notif) => {
-      const str = `\n🔔` + notif + "\n";
-      msg.push(str);
+      msg.push(notif);
     });
   }
 

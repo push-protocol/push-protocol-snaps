@@ -19,7 +19,9 @@ export const getNotifications = async (address: string) => {
       return feeds.feeds;
     } else {
       console.warn(`Invalid Ethereum address: ${address}`);
-      throw Error(`Error in getNotifications for ${address}: Invalid Ethereum address`);
+      throw Error(
+        `Error in getNotifications for ${address}: Invalid Ethereum address`
+      );
     }
   } catch (err) {
     console.error(`Error in getNotifications for ${address}:`, err);
@@ -52,18 +54,26 @@ export const filterNotifications = async (
         console.log("feedEpoch: ", feedEpoch);
         console.log("i: ", i);
         console.log("");
+        let emoji;
+        const aimg = fetchedNotifications[i].payload.data.aimg;
 
         if (feedEpoch > processedLastEpoch) {
-          const msg =
+          if (aimg) {
+            emoji = `📸`;
+          } else {
+            emoji = `🔔`;
+          }
+
+          const msg = emoji +
             fetchedNotifications[i].payload.data.app +
             " : " +
             convertText(fetchedNotifications[i].payload.data.amsg);
           console.log(msg);
+
           notiffeeds.push(msg);
         }
       }
     }
-
     notiffeeds = notiffeeds.reverse();
     return notiffeeds;
   } catch (error) {
@@ -128,4 +138,3 @@ const convertText = (text: string): string => {
     throw error;
   }
 };
-
