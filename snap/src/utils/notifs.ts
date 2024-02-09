@@ -210,7 +210,18 @@ const convertText = (text: string): string => {
 export const notifyInMetamaskApp = async (notifs: INotification[]) => {
   try {
     const state = await getModifiedSnapState({ encrypted: false });
+
+    // if rate limit is 5, then why maxToAdd is 4?
+    // notifCronJob runs every minute, let's say it'd run at 1:00 AM and 1:01 AM
+    // first cron job that runs at 1:00 AM, runs and do some api calls in filterNotifications and few operations
+    // it takes few seconds and then it proceeds to notify, if more than 5 were there, then 5 notifs are added in metamask inApp
+    // now, 2nd cronjob runs at 1:01 AM, it also does few operations and then proceeds to notify
+    // due to timings mismatch of operations and number of feeds api calls, time between last call of notify in first cronjob and first call of notify in second cronjob 
+    // was throwing error sometimes, and sometimes it was working (tested with multiple instances and found out time difference in few milliseconds)
+    // to resolve this, a timestamp could've been added to monitor this time or a queue implementation but it's a overkill
+    // so, final way was to assign maxToAdd as 4 and a sleep of 2 seconds after a notify call
     const maxToAdd = 4; // snap_notify is rate-limited to max 5 per minute
+    
     const pendingNotifsCount = state.pendingInAppNotifs.length;
 
     // Determine how many notifications to add from pendingInAppNotifs
@@ -226,7 +237,7 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
           message: msg.message,
         },
       });
-      await sleep(5000);
+      await sleep(2000);
     }
 
     // Calculate the remaining number of notifications to add
@@ -242,7 +253,7 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
           message: msg,
         },
       });
-      await sleep(5000);
+      await sleep(2000);
     }
 
     // Add remaining notifications to pendingInAppNotifs if any
