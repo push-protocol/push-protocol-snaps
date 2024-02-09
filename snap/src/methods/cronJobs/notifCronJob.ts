@@ -4,7 +4,6 @@ import {
   getCurrentTimestamp,
   getModifiedSnapState,
   notifyInMetamaskApp,
-  sleep,
   updateSnapState,
 } from "../../utils";
 
