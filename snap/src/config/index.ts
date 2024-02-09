@@ -9,6 +9,8 @@ export const allowedSnapOrigins = [
 
 export const BASE_URL = 'https://backend.epns.io/apis/v1'; // Modify this as needed
 
+export const CHAIN_ID = 1; // For prod (change this while testing in diff env)
+
 export const defaultLatestSnapState: LatestSnapState = {
   version: 1,
   addresses: {},
