@@ -1,6 +1,7 @@
 import { OnCronjobHandler } from "@metamask/snaps-types";
 import { notifCronJob } from "../methods";
 import { SnapCronJobMethod } from "../types";
+import { getModifiedSnapState } from "../utils";
 
 /**
  * Handles cronjobs for the Snap, executing the appropriate method based on the request.
@@ -11,6 +12,9 @@ import { SnapCronJobMethod } from "../types";
  */
 export const onCronjob: OnCronjobHandler = async ({ request }) => {
   try {
+    // Just modify the state version
+    await getModifiedSnapState({ encrypted: false });
+
     switch (request.method as SnapCronJobMethod) {
       case SnapCronJobMethod.NotifCronJob:
         await notifCronJob();

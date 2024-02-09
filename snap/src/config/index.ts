@@ -11,5 +11,6 @@ export const BASE_URL = 'https://backend.epns.io/apis/v1'; // Modify this as nee
 
 export const defaultLatestSnapState: LatestSnapState = {
   version: 1,
-  addresses: {}
+  addresses: {},
+  pendingInAppNotifs: []
 }
