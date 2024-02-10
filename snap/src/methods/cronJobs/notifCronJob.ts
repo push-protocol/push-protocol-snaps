@@ -18,20 +18,53 @@ export const notifCronJob = async (): Promise<void> => {
     // Fetch notifications for all subscribed addresses
     const notifs = await fetchAllAddrNotifs();
 
+    console.log(notifs,"<= notifs")
+
     // Display an alert for new notifications
-    if (notifs.length > 0) {
-      await snap.request({
-        method: "snap_dialog",
-        params: {
-          type: "alert",
-          content: panel([
-            heading("You have a new notification!"),
-            divider(),
-            ...notifs.map((notif) => text(notif.popupMsg)),
-          ]),
-        },
-      });
+    let notif = "";
+    let notifsArray = [];
+    const key = Object.keys(notifs);
+    for (let i = 0; i < 2; i++) {
+      notifsArray = notifs[key[i]];
+      notif = notif + `**${notifsArray[i].address}**`;
+      for (let j = 0; j < 2; j++) {
+        notif = notif + `\n\n${notifsArray[i].address}\n\n${notifsArray[i].address}\n\n`;
+      }
+      notif = notif + "____________________________\n\n";
     }
+    console.log(notif);
+
+//     let notif = "";
+// let notifs = [];
+// let each_notif_array = [];
+// const key = Object.keys(obj);
+// for (let i = 0; i < 2; i++) {
+//   notifs = obj[key[i]];
+//   notif = notif + `${notifs[i].address}`;
+//   for (let j = 0; j < 2; j++) {
+//     notif = notif + `\n\n${notifs[i].sender}\n\n${notifs[i].notif_body}\n\n`;
+//   }
+//   each_notif_array.push(notif);
+//   notif = "";
+// }
+// console.log(each_notif_array);
+
+    await snap.request({
+            method: "snap_dialog",
+            params: {
+              type: "alert",
+              content: panel([
+                heading("notifs:"),
+                text(
+                  notif
+                ),
+              ]),
+            },
+          });
+        
+      
+
+  
 
     // Display in-app notifications
     await notifyInMetamaskApp(notifs);
