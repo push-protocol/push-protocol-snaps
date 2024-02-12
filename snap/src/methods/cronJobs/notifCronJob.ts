@@ -54,7 +54,7 @@ export const notifCronJob = async (): Promise<void> => {
       hour12: true,
     };
 
-    if (Object.keys(notifs).length) {
+    if (Object.keys(notifs).length>0) {
       await snap.request({
         method: "snap_dialog",
         params: {
@@ -64,7 +64,9 @@ export const notifCronJob = async (): Promise<void> => {
             divider(),
             ...Object.keys(notifs).map((notif) => {
               // notif is a key
+             
               return panel([
+                text(`**${notif}**`),
                 ...notifs[notif].map((n) => {
                   const date = new Date(n.timestamp);
                   const formattedDate = `${date.toLocaleDateString(
@@ -83,7 +85,7 @@ export const notifCronJob = async (): Promise<void> => {
                       .split(" ")[0]
                   }`;
                   return panel([
-                    text(`**${n.address}**`),
+                   
                     text(`**${n.popupMsg}**`),
                     text(n.notification.body),
                     text(`-` + `${formattedDate}`),
