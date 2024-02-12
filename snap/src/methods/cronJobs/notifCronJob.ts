@@ -48,6 +48,8 @@ export const notifCronJob = async (): Promise<void> => {
                 text(`**${notif}**`),
                 ...notifs[notif].map((n) => {
                   const date = new Date(n.timestamp);
+                  const hours = date.getHours();
+                  const amPm = hours >= 12 ? "PM" : "AM";
                   const formattedDate = `${date.toLocaleDateString(
                     "en-US",
                     options
@@ -64,7 +66,7 @@ export const notifCronJob = async (): Promise<void> => {
                   return panel([
                     text(`**${n.channelName}**`),
                     text(n.notification.body),
-                    text(`-` + `${formattedDate}`),
+                    text(`-` + `${formattedDate} ${amPm}`),
                   ]);
                 }),
                 divider(),
