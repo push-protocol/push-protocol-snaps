@@ -18,41 +18,51 @@ export const notifCronJob = async (): Promise<void> => {
     // Fetch notifications for all subscribed addresses
     const notifs = await fetchAllAddrNotifs();
 
-    console.log(notifs,"<= notifs")
+    console.log(notifs, "<= notifs");
 
     // Display an alert for new notifications
-    let notif = "";
-    let notifsArray = [];
-    const key = Object.keys(notifs);
-    for (let i = 0; i < key.length; i++) {
-      notifsArray = notifs[key[i]];
-      notif = notif + `**${notifsArray[i].address}**`;
-      const date = new Date(notifsArray[i].timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }); // Format the timestamp
-      for (let j = 0; j < notifsArray.length; j++) {
-        notif = notif + `\n\n${notifsArray[i].notification.title
-        }\n\n${notifsArray[i].notification.body}\n\n ${date} \n\n` ;
-      }
-      notif = notif + "____________________________\n\n";
+    // let notif = "";
+    // let notifsArray = [];
+    // const key = Object.keys(notifs);
+    // for (let i = 0; i < key.length; i++) {
+    //   notifsArray = notifs[key[i]];
+    //   notif = notif + `**${notifsArray[i].address}**`;
+    //   const date = new Date(notifsArray[i].timestamp).toLocaleString("en-US", {
+    //     hour: "numeric",
+    //     minute: "numeric",
+    //     hour12: true,
+    //   }); // Format the timestamp
+    //   for (let j = 0; j < notifsArray.length; j++) {
+    //     notif =
+    //       notif +
+    //       `\n\n${notifsArray[i].notification.title}\n\n${notifsArray[i].notification.body}\n\n ${date} \n\n`;
+    //   }
+    //   notif = notif + "____________________________\n\n";
+    // }
+    // console.log(notif);
+
+    if (Object.keys(notifs).length) {
+      await snap.request({
+        method: "snap_dialog",
+        params: {
+          type: "alert",
+          content: panel([
+            heading("notifs:"),
+            divider(),
+            ...Object.keys(notifs).map((notif) => {
+              // notif is a key
+              return panel([
+                text(notif),
+                ...notifs[notif].map((n) => {
+                  return panel([text(n.notification.title), text(n.popupMsg)]);
+                }),
+                divider(),
+              ]);
+            }),
+          ]),
+        },
+      });
     }
-    console.log(notif);
-
-
-    await snap.request({
-            method: "snap_dialog",
-            params: {
-              type: "alert",
-              content: panel([
-                heading("notifs:"),
-                text(
-                  notif
-                ),
-              ]),
-            },
-          });
-        
-      
-
-  
 
     // Display in-app notifications
     await notifyInMetamaskApp(notifs);
@@ -70,7 +80,7 @@ export const notifCronJob = async (): Promise<void> => {
     }
     await updateSnapState({
       newState: state,
-      encrypted: false
+      encrypted: false,
     });
   } catch (error) {
     // Handle or log the error as needed
