@@ -3,6 +3,7 @@ import {
   fetchAllAddrNotifs,
   getCurrentTimestamp,
   getModifiedSnapState,
+  groupNotifications,
   notifyInMetamaskApp,
   updateSnapState,
 } from "../../utils";
@@ -16,7 +17,9 @@ import {
 export const notifCronJob = async (): Promise<void> => {
   try {
     // Fetch notifications for all subscribed addresses
-    const notifs = await fetchAllAddrNotifs();
+    const notif = await fetchAllAddrNotifs();
+
+    const notifs = await groupNotifications(notif);
 
     console.log(notifs, "<= notifs");
 
@@ -41,24 +44,50 @@ export const notifCronJob = async (): Promise<void> => {
     // }
     // console.log(notif);
 
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    };
+
     if (Object.keys(notifs).length) {
       await snap.request({
         method: "snap_dialog",
         params: {
           type: "alert",
           content: panel([
-            heading("You have a notification!:"),
+            heading("You have a notification!"),
             divider(),
             ...Object.keys(notifs).map((notif) => {
               // notif is a key
               return panel([
-               
                 ...notifs[notif].map((n) => {
+                  const date = new Date(n.timestamp);
+                  const formattedDate = `${date.toLocaleDateString(
+                    "en-US",
+                    options
+                  )} at ${
+                    date
+                      .toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })
+                      .replace(/:\d+ /, " ")
+                      .replace("AM", "am")
+                      .replace("PM", "pm")
+                      .split(" ")[0]
+                  }`;
                   return panel([
                     text(`**${n.address}**`),
-                    text(`**${n.inAppNotifmsg}**`), 
+                    text(`**${n.popupMsg}**`),
                     text(n.notification.body),
-                    text(n.timestamp.toLocaleString())]);
+                    text(`-` + `${formattedDate}`),
+                  ]);
                 }),
                 divider(),
               ]);
