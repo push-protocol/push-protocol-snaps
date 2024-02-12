@@ -40,7 +40,7 @@ export const getNotifications = async ({
 };
 
 export const groupNotifications = async (notifs): Promise<INotification[]> => {
-  const grouped :INotification[] = notifs.reduce((acc, notif) => {
+  const grouped: INotification[] = notifs.reduce((acc, notif) => {
     const address = notif.address;
     if (!acc[address]) {
       acc[address] = [];
@@ -50,7 +50,7 @@ export const groupNotifications = async (notifs): Promise<INotification[]> => {
   }, {});
   console.log(grouped, "<= grouped");
   return grouped;
-}
+};
 
 /**
  * Filters notifications for a given address based on the last processed epoch timestamp.
@@ -104,7 +104,9 @@ export const filterNotifications = async (
         // Check if the notification passes the condition
         if (feedEpoch > processedLastEpoch) {
           // Add filtered notifications to the formatted list
-          formattedFeeds.push(...getFormattedNotifList([fetchedNotifications[i]], address));
+          formattedFeeds.push(
+            ...getFormattedNotifList([fetchedNotifications[i]], address)
+          );
         } else {
           // If any notification fails the condition, set the flag to false
           allNotificationsPassed = false;
@@ -169,8 +171,11 @@ export const getFormattedNotifList = (
       ": " +
       convertText(notif.payload.data.amsg);
 
+    const channel = emoji + notif.payload.data.app;
+
     return {
       address: address,
+      channelName: channel,
       timestamp: convertEpochToMilliseconds(notif.payload.data.epoch),
       notification: {
         body: notif.payload.notification.body,
@@ -229,12 +234,12 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
     // first cron job that runs at 1:00 AM, runs and do some api calls in filterNotifications and few operations
     // it takes few seconds and then it proceeds to notify, if more than 5 were there, then 5 notifs are added in metamask inApp
     // now, 2nd cronjob runs at 1:01 AM, it also does few operations and then proceeds to notify
-    // due to timings mismatch of operations and number of feeds api calls, time between last call of notify in first cronjob and first call of notify in second cronjob 
+    // due to timings mismatch of operations and number of feeds api calls, time between last call of notify in first cronjob and first call of notify in second cronjob
     // was throwing error sometimes, and sometimes it was working (tested with multiple instances and found out time difference in few milliseconds)
     // to resolve this, a timestamp could've been added to monitor this time or a queue implementation but it's a overkill
     // so, final way was to assign maxToAdd as 4 and a sleep of 2 seconds after a notify call
     const maxToAdd = 4; // snap_notify is rate-limited to max 5 per minute
-    
+
     const pendingNotifsCount = state.pendingInAppNotifs.length;
 
     // Determine how many notifications to add from pendingInAppNotifs

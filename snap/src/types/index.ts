@@ -6,6 +6,7 @@ export * from "./snapState";
  */
 export interface INotification {
   address: string; // Address associated with the notification
+  channelName: string; // Name of the channel
   timestamp: number; // Timestamp when the notification was received
   notification: {
     body: string; // Body content of the notification

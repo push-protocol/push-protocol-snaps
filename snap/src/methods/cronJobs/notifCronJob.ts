@@ -23,8 +23,6 @@ export const notifCronJob = async (): Promise<void> => {
 
     console.log(notifs, "<= notifs");
 
-   
-
     const options: Intl.DateTimeFormatOptions = {
       weekday: "short",
       day: "numeric",
@@ -61,12 +59,10 @@ export const notifCronJob = async (): Promise<void> => {
                         hour12: true,
                       })
                       .replace(/:\d+ /, " ")
-                      .replace("AM", "am")
-                      .replace("PM", "pm")
                       .split(" ")[0]
                   }`;
                   return panel([
-                    text(`**${n.popupMsg}**`),
+                    text(`**${n.channelName}**`),
                     text(n.notification.body),
                     text(`-` + `${formattedDate}`),
                   ]);
