@@ -39,15 +39,17 @@ export const getNotifications = async ({
   }
 };
 
-export const groupNotifications = async (notifs): Promise<INotification[]> => {
-  const grouped: INotification[] = notifs.reduce((acc, notif) => {
+export const groupNotifications = async (
+  notifs: INotification[]
+): Promise<INotification[]> => {
+  const grouped = notifs.reduce((acc, notif) => {
     const address = notif.address;
     if (!acc[address]) {
       acc[address] = [];
     }
     acc[address].push(notif);
     return acc;
-  }, {});
+  }, []);
   console.log(grouped, "<= grouped");
   return grouped;
 };
