@@ -15,3 +15,7 @@ export interface INotification {
   popupMsg: string; // Message for displaying in a popup
   inAppNotifMsg: string; // Message for displaying in an in-app notification of metamask
 }
+
+export interface INotificationGroup {
+  [address: string]: INotification[];
+}

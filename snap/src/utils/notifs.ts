@@ -3,7 +3,7 @@ import { fetchAddress } from "./address";
 import { ethers } from "ethers";
 import { getModifiedSnapState, updateSnapState } from "./snapStateUtils";
 import { convertEpochToMilliseconds } from "./time";
-import { INotification } from "../types";
+import { INotification, INotificationGroup } from "../types";
 import { sleep } from "./helperFn";
 
 /**
@@ -41,15 +41,15 @@ export const getNotifications = async ({
 
 export const groupNotifications = async (
   notifs: INotification[]
-): Promise<INotification[]> => {
-  const grouped = notifs.reduce((acc, notif) => {
+): Promise<INotificationGroup> => {
+  const grouped: INotificationGroup = notifs.reduce((acc, notif) => {
     const address = notif.address;
     if (!acc[address]) {
       acc[address] = [];
     }
     acc[address].push(notif);
     return acc;
-  }, []);
+  }, {});
   console.log(grouped, "<= grouped");
   return grouped;
 };
