@@ -47,14 +47,18 @@ export const notifCronJob = async (): Promise<void> => {
         params: {
           type: "alert",
           content: panel([
-            heading("notifs:"),
+            heading("You have a notification!:"),
             divider(),
             ...Object.keys(notifs).map((notif) => {
               // notif is a key
               return panel([
-                text(notif),
+               
                 ...notifs[notif].map((n) => {
-                  return panel([text(n.notification.title), text(n.popupMsg)]);
+                  return panel([
+                    text(`**${n.address}**`),
+                    text(`**${n.inAppNotifmsg}**`), 
+                    text(n.notification.body),
+                    text(n.timestamp.toLocaleString())]);
                 }),
                 divider(),
               ]);
