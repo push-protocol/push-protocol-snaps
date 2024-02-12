@@ -54,7 +54,7 @@ export const notifCronJob = async (): Promise<void> => {
       hour12: true,
     };
 
-    if (Object.keys(notifs).length>0) {
+    if (Object.keys(notifs).length > 0) {
       await snap.request({
         method: "snap_dialog",
         params: {
@@ -64,7 +64,7 @@ export const notifCronJob = async (): Promise<void> => {
             divider(),
             ...Object.keys(notifs).map((notif) => {
               // notif is a key
-             
+
               return panel([
                 text(`**${notif}**`),
                 ...notifs[notif].map((n) => {
@@ -85,7 +85,6 @@ export const notifCronJob = async (): Promise<void> => {
                       .split(" ")[0]
                   }`;
                   return panel([
-                   
                     text(`**${n.popupMsg}**`),
                     text(n.notification.body),
                     text(`-` + `${formattedDate}`),
@@ -100,7 +99,7 @@ export const notifCronJob = async (): Promise<void> => {
     }
 
     // Display in-app notifications
-    await notifyInMetamaskApp(notifs);
+    await notifyInMetamaskApp(notif);
 
     const state = await getModifiedSnapState({ encrypted: false });
     const currentTimeStamp = getCurrentTimestamp();

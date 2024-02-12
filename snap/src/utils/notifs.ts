@@ -40,7 +40,7 @@ export const getNotifications = async ({
 };
 
 export const groupNotifications = async (notifs): Promise<INotification[]> => {
-  const grouped: any = notifs.reduce((acc, notif) => {
+  const grouped :INotification[] = notifs.reduce((acc, notif) => {
     const address = notif.address;
     if (!acc[address]) {
       acc[address] = [];
@@ -145,14 +145,12 @@ export const fetchAllAddrNotifs = async (): Promise<INotification[]> => {
     const results = await Promise.all(promises);
     notifs = results.reduce((acc, curr) => acc.concat(curr), []);
 
-   
     return notifs;
   } catch (error) {
     console.error("Error in fetchAllAddrNotifs:", error);
     throw error;
   }
 };
-
 
 /**
  * Formats the notifs from Feed format into INotification format to be used in snap
