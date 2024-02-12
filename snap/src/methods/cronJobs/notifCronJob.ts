@@ -23,26 +23,7 @@ export const notifCronJob = async (): Promise<void> => {
 
     console.log(notifs, "<= notifs");
 
-    // Display an alert for new notifications
-    // let notif = "";
-    // let notifsArray = [];
-    // const key = Object.keys(notifs);
-    // for (let i = 0; i < key.length; i++) {
-    //   notifsArray = notifs[key[i]];
-    //   notif = notif + `**${notifsArray[i].address}**`;
-    //   const date = new Date(notifsArray[i].timestamp).toLocaleString("en-US", {
-    //     hour: "numeric",
-    //     minute: "numeric",
-    //     hour12: true,
-    //   }); // Format the timestamp
-    //   for (let j = 0; j < notifsArray.length; j++) {
-    //     notif =
-    //       notif +
-    //       `\n\n${notifsArray[i].notification.title}\n\n${notifsArray[i].notification.body}\n\n ${date} \n\n`;
-    //   }
-    //   notif = notif + "____________________________\n\n";
-    // }
-    // console.log(notif);
+   
 
     const options: Intl.DateTimeFormatOptions = {
       weekday: "short",
