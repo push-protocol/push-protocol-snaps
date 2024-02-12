@@ -24,30 +24,18 @@ export const notifCronJob = async (): Promise<void> => {
     let notif = "";
     let notifsArray = [];
     const key = Object.keys(notifs);
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < key.length; i++) {
       notifsArray = notifs[key[i]];
       notif = notif + `**${notifsArray[i].address}**`;
-      for (let j = 0; j < 2; j++) {
-        notif = notif + `\n\n${notifsArray[i].address}\n\n${notifsArray[i].address}\n\n`;
+      const date = new Date(notifsArray[i].timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }); // Format the timestamp
+      for (let j = 0; j < notifsArray.length; j++) {
+        notif = notif + `\n\n${notifsArray[i].notification.title
+        }\n\n${notifsArray[i].notification.body}\n\n ${date} \n\n` ;
       }
       notif = notif + "____________________________\n\n";
     }
     console.log(notif);
 
-//     let notif = "";
-// let notifs = [];
-// let each_notif_array = [];
-// const key = Object.keys(obj);
-// for (let i = 0; i < 2; i++) {
-//   notifs = obj[key[i]];
-//   notif = notif + `${notifs[i].address}`;
-//   for (let j = 0; j < 2; j++) {
-//     notif = notif + `\n\n${notifs[i].sender}\n\n${notifs[i].notif_body}\n\n`;
-//   }
-//   each_notif_array.push(notif);
-//   notif = "";
-// }
-// console.log(each_notif_array);
 
     await snap.request({
             method: "snap_dialog",
