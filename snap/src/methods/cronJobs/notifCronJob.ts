@@ -42,12 +42,13 @@ export const notifCronJob = async (): Promise<void> => {
             heading("You have a notification!"),
             divider(),
             ...Object.keys(notifs).map((notif) => {
+              const addr = `${notif.slice(0, 6)}...${notif.slice(-6)}`;
               // notif is a key
 
               return panel([
-                text(`**${notif}**`),
+                text(`**${addr}**`),
                 ...notifs[notif].map((n) => {
-                  const date = new Date(n.timestamp);
+                  const date = new Date(n.epoch);
                   const hours = date.getHours();
                   const amPm = hours >= 12 ? "PM" : "AM";
                   const formattedDate = `${date.toLocaleDateString(

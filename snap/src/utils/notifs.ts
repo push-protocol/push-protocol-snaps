@@ -39,14 +39,23 @@ export const getNotifications = async ({
   }
 };
 
+/**
+ * Groups notifications by their address.
+ *
+ * @param {INotification[]} notifs - The array of notifications to be grouped.
+ * @returns {Promise<INotificationGroup>} - A promise that resolves to an object where each key is an address
+ *                                          with its corresponding array of notifications.
+ */
 export const groupNotifications = async (
   notifs: INotification[]
 ): Promise<INotificationGroup> => {
   const grouped: INotificationGroup = notifs.reduce((acc, notif) => {
     const address = notif.address;
+    // If the accumulator doesn't have an array for this address, create one
     if (!acc[address]) {
       acc[address] = [];
     }
+    // Push the current notification onto the array for this address
     acc[address].push(notif);
     return acc;
   }, {});
@@ -173,18 +182,23 @@ export const getFormattedNotifList = (
       ": " +
       convertText(notif.payload.data.amsg);
 
-    const channel = emoji + notif.payload.data.app;
+    const notificationBody = notif.payload.data.aimg
+      ? `📸 ${notif.payload.notification.body}`
+      : notif.payload.notification.body;
 
     return {
       address: address,
-      channelName: channel,
-      timestamp: convertEpochToMilliseconds(notif.payload.data.epoch),
+      channelName: notif.payload.data.app,
+      epoch: convertEpochToMilliseconds(notif.payload.data.epoch),
       notification: {
-        body: notif.payload.notification.body,
+        body: notificationBody,
         title: notif.payload.notification.title,
       },
-      popupMsg: msg,
-      inAppNotifMsg: msg.slice(0, 47),
+      msgData: {
+        timestamp: convertEpochToMilliseconds(notif.payload.data.epoch),
+        popupMsg: convertText(notif.payload.data.amsg),
+        inAppNotifMsg: msg.slice(0, 47),
+      },
     };
   });
   return formattedNotifList;
@@ -265,7 +279,7 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
 
     // Add notifications from notifs array
     for (let i = 0; i < remainingToAdd && i < notifs.length; i++) {
-      const msg = notifs[i].inAppNotifMsg;
+      const msg = notifs[i].msgData.inAppNotifMsg;
       await snap.request({
         method: "snap_notify",
         params: {
@@ -283,8 +297,8 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
         ...remainingNotifs.map((notif) => {
           return {
             address: notif.address,
-            message: notif.inAppNotifMsg,
-            timestamp: notif.timestamp,
+            message: notif.msgData.inAppNotifMsg,
+            timestamp: notif.epoch,
           };
         })
       );
