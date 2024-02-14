@@ -223,7 +223,7 @@ const convertText = (text: string): string => {
       if (!isNaN(timestampValue) && !processedTimestamps.has(timestampValue)) {
         const date = new Date(timestampValue * 1000);
         processedTimestamps.add(timestampValue);
-        return `- ${date.toLocaleString()}`;
+        return `\n- ${date.toLocaleString()}`;
       } else {
         return "";
       }
