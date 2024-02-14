@@ -183,8 +183,8 @@ export const getFormattedNotifList = (
       convertText(notif.payload.data.amsg);
 
     const notificationBody = notif.payload.data.aimg
-      ? `📸 ${notif.payload.notification.body}`
-      : notif.payload.notification.body;
+      ? `📸 ${convertText(notif.payload.data.amsg)}`
+      : convertText(notif.payload.data.amsg);
 
     return {
       address: address,

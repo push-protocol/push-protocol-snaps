@@ -48,26 +48,25 @@ export const notifCronJob = async (): Promise<void> => {
               return panel([
                 text(`**${addr}**`),
                 ...notifs[notif].map((n) => {
-                  const date = new Date(n.epoch);
-                  const hours = date.getHours();
-                  const amPm = hours >= 12 ? "PM" : "AM";
-                  const formattedDate = `${date.toLocaleDateString(
-                    "en-US",
-                    options
-                  )} at ${
-                    date
-                      .toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })
-                      .replace(/:\d+ /, " ")
-                      .split(" ")[0]
-                  }`;
+                  // const date = new Date(n.epoch);
+                  // const hours = date.getHours();
+                  // const amPm = hours >= 12 ? "PM" : "AM";
+                  // const formattedDate = `${date.toLocaleDateString(
+                  //   "en-US",
+                  //   options
+                  // )} at ${
+                  //   date
+                  //     .toLocaleTimeString("en-US", {
+                  //       hour: "numeric",
+                  //       minute: "2-digit",
+                  //       hour12: true,
+                  //     })
+                  //     .replace(/:\d+ /, " ")
+                  //     .split(" ")[0]
+                  // }`;
                   return panel([
                     text(`**${n.channelName}**`),
                     text(n.notification.body),
-                    text(`-` + `${formattedDate} ${amPm}`),
                   ]);
                 }),
                 divider(),
