@@ -247,8 +247,7 @@ const convertText = (
       if (!isNaN(timestampValue) && extractedTimestamp === null) {
         extractedTimestamp = timestampValue * 1000;
         const date = new Date(timestampValue * 1000);
-
-        return `\n- ${date.toLocaleString()}`;
+        return `- ${date.toLocaleString()}`;
       } else {
         return "";
       }
