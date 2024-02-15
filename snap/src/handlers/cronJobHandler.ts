@@ -13,11 +13,11 @@ import { getModifiedSnapState } from "../utils";
 export const onCronjob: OnCronjobHandler = async ({ request }) => {
   try {
     // Just modify the state version
-    await getModifiedSnapState({ encrypted: false });
+    const state = await getModifiedSnapState({ encrypted: false });
 
     switch (request.method as SnapCronJobMethod) {
       case SnapCronJobMethod.NotifCronJob:
-        await notifCronJob();
+        await notifCronJob(state);
         break;
       // case SnapCronJobMethod.CheckActivityCronJob:
       //   await checkActivityCronJob();

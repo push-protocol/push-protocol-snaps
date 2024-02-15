@@ -1,29 +1,100 @@
-// import { updateSnapState } from "./snapStateUtils";
-// import { SnapStorageCheck } from "./snapstoragecheck";
+import { divider, heading, panel, text } from "@metamask/snaps-ui";
+import { getModifiedSnapState, updateSnapState } from "./snapStateUtils";
+import { getCurrentTimestamp } from "./time";
+import { SNOOZE_DISABLE_DURATION } from "../config";
 
 /**
  * Sets the snooze duration for notifications.
- * @param snoozeDur The snooze duration in hours.
+ * @returns The snooze duration in hours.
  */
-// export const setSnoozeDuration = async (snoozeDur: number) => {
-//     const snoozeInHours = snoozeDur;
-//     // Retrieve current Snap storage data
-//     const persistedData = await SnapStorageCheck();
+export const snoozeNotifs = async () => {
+  // Prompt the user to set the snooze duration
+  try {
+    const state = await getModifiedSnapState({ encrypted: false });
 
-//     // Get the local time in epoch
-//     const currentTimeEpoch = new Date().getTime();
+    const snoozeDuration = await snap.request({
+      method: "snap_dialog",
+      params: {
+        type: "prompt",
+        content: panel([
+          heading("Set snooze duration"),
+          divider(),
+          text("Customize your snooze from 1 to 72 hours and stay focused."),
+        ]),
+        placeholder: "Snooze duration in Hours (e.g. 6)",
+      },
+    });
 
-//     // Prepare updated data with the new snooze duration
-//     const data = {
-//         addresses: persistedData.addresses,
-//         popuptoggle: persistedData.popuptoggle,
-//         // Store the timestamp until which snooze will be enabled
-//         snoozeDuration: currentTimeEpoch + snoozeInHours * 60 * 60 * 1000,
-//     };
+    // Sanitize snoozeDuration
+    let snoozeDurationNumber: number | null;
+    if (typeof snoozeDuration === "string") {
+      snoozeDurationNumber = parseInt(snoozeDuration.trim(), 10);
+      // Ensure snooze duration is within valid range
+      if (
+        isNaN(snoozeDurationNumber) ||
+        snoozeDurationNumber < 1 ||
+        snoozeDurationNumber > 72
+      ) {
+        await snap.request({
+          method: "snap_dialog",
+          params: {
+            type: "alert",
+            content: panel([
+              heading("Error"),
+              divider(),
+              text(`Invalid input. Please enter a number between 1 and 72`),
+            ]),
+          },
+        });
+        return;
+      }
+    } else {
+      // disable snooze popup for next 24 hrs
+      const next24HrsTimestamp =
+        getCurrentTimestamp() + SNOOZE_DISABLE_DURATION * 60 * 60 * 1000;
+      const newState = {
+        ...state,
+        snoozeInfo: {
+          ...state.snoozeInfo,
+          disabledDuration: next24HrsTimestamp,
+        },
+      };
+      await updateSnapState({
+        newState: newState,
+        encrypted: false,
+      });
+      return;
+    }
 
-//     // Update Snap state with the new data
-//     await updateSnapState({
-//         newState: data,
-//         encrypted: false
-//     });
-// }
+    const nextSnoozeTimestamp =
+      getCurrentTimestamp() + snoozeDurationNumber * 60 * 60 * 1000;
+    const newState = {
+      ...state,
+      snoozeInfo: {
+        ...state.snoozeInfo,
+        enabledDuration: nextSnoozeTimestamp,
+      },
+    };
+    await updateSnapState({
+      newState: newState,
+      encrypted: false,
+    });
+
+    // Display an alert confirming the snooze duration
+    await snap.request({
+      method: "snap_dialog",
+      params: {
+        type: "alert",
+        content: panel([
+          heading("Notification Snooze"),
+          divider(),
+          text(
+            `Your notifications have been snoozed for the next ${snoozeDurationNumber} hours`
+          ),
+        ]),
+      },
+    });
+  } catch (err) {
+    console.error('Error in snooze functionality', err);
+  }
+};
