@@ -176,16 +176,43 @@ export const getFormattedNotifList = (
 ): INotification[] => {
   const formattedNotifList = notifList.map((notif) => {
     const emoji = notif.payload.data.aimg ? `📸` : `🔔`;
-    const msg =
-      emoji +
-      notif.payload.data.app +
-      ": " +
-      convertText(notif.payload.data.amsg);
+    const { newText, timestamp } = convertText(notif.payload.data.amsg);
+    const msg = emoji + notif.payload.data.app + ": " + newText;
 
     const notificationBody = notif.payload.data.aimg
-      ? `📸 ${convertText(notif.payload.data.amsg)}`
-      : convertText(notif.payload.data.amsg);
+      ? `📸 ${newText}`
+      : newText;
 
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    };
+
+    let amPm = " ";
+    let formattedDate = " ";
+    if (timestamp != null) {
+      const date = new Date(timestamp);
+      const hours = date.getHours();
+      amPm = hours >= 12 ? "PM" : "AM";
+      formattedDate =
+        `-` +
+        `${date.toLocaleDateString("en-US", options)} at ${
+          date
+            .toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            })
+            .replace(/:\d+ /, " ")
+            .split(" ")[0]
+        }`;
+    }
+    const timeStamp = `${formattedDate}` + ` ` + `${amPm}`;
     return {
       address: address,
       channelName: notif.payload.data.app,
@@ -195,8 +222,8 @@ export const getFormattedNotifList = (
         title: notif.payload.notification.title,
       },
       msgData: {
-        timestamp: convertEpochToMilliseconds(notif.payload.data.epoch),
-        popupMsg: convertText(notif.payload.data.amsg),
+        timestamp: timeStamp,
+        popupMsg: newText,
         inAppNotifMsg: msg.slice(0, 47),
       },
     };
@@ -204,35 +231,32 @@ export const getFormattedNotifList = (
   return formattedNotifList;
 };
 
-/**
- * Converts text by replacing tags and timestamps.
- * @param text The text to be converted.
- * @returns The converted text.
- */
-const convertText = (text: string): string => {
+const convertText = (
+  text: string
+): { newText: string; timestamp: number | null } => {
   try {
     let newText = text.replace(/\n/g, " ");
+    let extractedTimestamp: number | null = null;
 
     const tagRegex = /\[(d|s|t):([^\]]+)\]/g;
     newText = newText.replace(tagRegex, (match, tag, value) => value);
 
     const timestampRegex = /\[timestamp:\s*(\d+)\]/g;
-    const processedTimestamps = new Set<number>();
     newText = newText.replace(timestampRegex, (match, timestamp) => {
       const timestampValue = parseInt(timestamp);
-      if (!isNaN(timestampValue) && !processedTimestamps.has(timestampValue)) {
+      if (!isNaN(timestampValue) && extractedTimestamp === null) {
+        extractedTimestamp = timestampValue * 1000;
         const date = new Date(timestampValue * 1000);
-        processedTimestamps.add(timestampValue);
+
         return `\n- ${date.toLocaleString()}`;
       } else {
         return "";
       }
     });
 
-    return newText;
+    return { newText, timestamp: extractedTimestamp };
   } catch (error) {
     console.error("Error in convertText:", error);
-    // Handle the error or rethrow it if needed
     throw error;
   }
 };

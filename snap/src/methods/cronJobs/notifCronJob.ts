@@ -23,23 +23,13 @@ export const notifCronJob = async (): Promise<void> => {
 
     console.log(notifs, "<= notifs");
 
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    };
-
     if (Object.keys(notifs).length > 0) {
       await snap.request({
         method: "snap_dialog",
         params: {
           type: "alert",
           content: panel([
-            heading("You have a notification!"),
+            heading("You have a new notification!"),
             divider(),
             ...Object.keys(notifs).map((notif) => {
               const addr = `${notif.slice(0, 6)}...${notif.slice(-6)}`;
@@ -48,25 +38,10 @@ export const notifCronJob = async (): Promise<void> => {
               return panel([
                 text(`**${addr}**`),
                 ...notifs[notif].map((n) => {
-                  // const date = new Date(n.epoch);
-                  // const hours = date.getHours();
-                  // const amPm = hours >= 12 ? "PM" : "AM";
-                  // const formattedDate = `${date.toLocaleDateString(
-                  //   "en-US",
-                  //   options
-                  // )} at ${
-                  //   date
-                  //     .toLocaleTimeString("en-US", {
-                  //       hour: "numeric",
-                  //       minute: "2-digit",
-                  //       hour12: true,
-                  //     })
-                  //     .replace(/:\d+ /, " ")
-                  //     .split(" ")[0]
-                  // }`;
                   return panel([
                     text(`**${n.channelName}**`),
-                    text(n.notification.body),
+                    text(n.msgData.popupMsg),
+                    text(`${n.msgData.timestamp}`),
                   ]);
                 }),
                 divider(),
