@@ -15,7 +15,10 @@ export type SnapStateV0 = {
 export type SnapStateV1 = {
   version: 1; // Represents version of state
   addresses: { [address: string]: AddressMetadata }; // Map of addresses to their metadata
-  pendingInAppNotifs: NotificationMetaData[]; // Array of pending in-app notifications (notifs that are not added in metamask inApp notifs tab)
+  pendingInAppNotifs: NotificationMetadata[]; // Array of pending in-app notifications (notifs that are not added in metamask inApp notifs tab)
+
+  popupsTimestamp: Array<number> // Array of popups timestamp when they are received
+  snoozeInfo: SnoozeMetadata; // Snooze info metadata
 };
 
 export type AddressMetadata = {
@@ -30,11 +33,21 @@ export type AddressMetadata = {
   // Add any other metadata fields you may need in the future
 };
 
-export type NotificationMetaData = {
+export type NotificationMetadata = {
   address: string; // Unique identifier for the notification
   message: string; // Message content of the notification
   timestamp: number; // Timestamp when the notification was created
   // Add more properties as needed
+};
+
+export type SnoozeMetadata = {
+  // @Purpose: Represents the timestamp till when pop-ups are snoozed
+  // @Default: 0
+  enabledDuration: number; 
+
+  // @Purpose: Represents the timestamp till when snooze functionality is disabled 
+  // @Default: 0
+  disabledDuration: number;
 };
 
 export interface ISnapStateParam {
