@@ -4,9 +4,15 @@ import {
   getCurrentTimestamp,
   getModifiedSnapState,
   groupNotifications,
+  getPopupsCountInLastHour,
+  isSnoozeEnabled,
+  isSnoozeAlertDisabled,
   notifyInMetamaskApp,
+  snoozeNotifs,
   updateSnapState,
 } from "../../utils";
+import { LatestSnapState } from "../../types";
+import { SNOOZE_ALERT_THRESHOLD } from "../../config";
 
 /**
  * Executes a cron job to handle notifications.
@@ -14,62 +20,84 @@ import {
  * updates the Snap state, and displays alerts or in-app notifications as needed.
  * @returns {Promise<void>} - Resolves once the cron job is completed.
  */
-export const notifCronJob = async (): Promise<void> => {
+export const notifCronJob = async (state: LatestSnapState): Promise<void> => {
   try {
     // Fetch notifications for all subscribed addresses
-    const notif = await fetchAllAddrNotifs();
+    const allNotifs = await fetchAllAddrNotifs();
 
-    const notifs = await groupNotifications(notif);
+    // Display an alert for new notifications
+    if (allNotifs.length > 0) {
+      // if popups are already snoozed, then don't show popup
+      if (isSnoozeEnabled(state)) {
+      } else {
+        const groupedNotifs = await groupNotifications(allNotifs);
+        const snoozeAlertDisabledStatus = isSnoozeAlertDisabled(state);
+        const popupsCountInLastHour = getPopupsCountInLastHour(state);
 
-    console.log(notifs, "<= notifs");
+        // show popup
+        await snap.request({
+          method: "snap_dialog",
+          params: {
+            type: "alert",
+            content: panel([
+              heading("You have a new notification!"),
+              divider(),
+              ...Object.keys(groupedNotifs).map((notif) => {
+                const addr = `${notif.slice(0, 6)}...${notif.slice(-6)}`;
+                // notif is a key
+  
+                return panel([
+                  text(`**${addr}**`),
+                  ...groupedNotifs[notif].map((n) => {
+                    return panel([
+                      text(`**${n.channelName}**`),
+                      text(n.msgData.popupMsg),
+                      text(`${n.msgData.timestamp}`),
+                    ]);
+                  }),
+                  divider(),
+                ]);
+              }),
+            ]),
+          },
+        });
 
-    if (Object.keys(notifs).length > 0) {
-      await snap.request({
-        method: "snap_dialog",
-        params: {
-          type: "alert",
-          content: panel([
-            heading("You have a new notification!"),
-            divider(),
-            ...Object.keys(notifs).map((notif) => {
-              const addr = `${notif.slice(0, 6)}...${notif.slice(-6)}`;
-              // notif is a key
+        const newState = {
+          ...state,
+          popupsTimestamp: [...state.popupsTimestamp, getCurrentTimestamp()],
+        };
+        await updateSnapState({
+          newState: newState,
+          encrypted: false,
+        });
 
-              return panel([
-                text(`**${addr}**`),
-                ...notifs[notif].map((n) => {
-                  return panel([
-                    text(`**${n.channelName}**`),
-                    text(n.msgData.popupMsg),
-                    text(`${n.msgData.timestamp}`),
-                  ]);
-                }),
-                divider(),
-              ]);
-            }),
-          ]),
-        },
-      });
+        // show snooze alert when snooze alert isn't disabled and popups count in last hour is more than 6
+        if (!snoozeAlertDisabledStatus && popupsCountInLastHour > SNOOZE_ALERT_THRESHOLD) {
+          // show snooze popup
+          await snoozeNotifs();
+        }
+      }
     }
 
-    // Display in-app notifications
-    await notifyInMetamaskApp(notif);
-
-    const state = await getModifiedSnapState({ encrypted: false });
+    const snapState = await getModifiedSnapState({ encrypted: false });
     const currentTimeStamp = getCurrentTimestamp();
 
     // Iterate over addresses in state
-    for (const address in state.addresses) {
+    for (const address in snapState.addresses) {
       // Check if the address is enabled
-      if (state.addresses[address].enabled) {
+      if (snapState.addresses[address].enabled) {
         // Update the lastFeedsProcessedTimestamp for enabled addresses
-        state.addresses[address].lastFeedsProcessedTimestamp = currentTimeStamp;
+        snapState.addresses[address].lastFeedsProcessedTimestamp =
+          currentTimeStamp;
       }
     }
     await updateSnapState({
-      newState: state,
+      newState: snapState,
       encrypted: false,
     });
+
+    // Display in-app notifications
+    await notifyInMetamaskApp(allNotifs);
   } catch (error) {
     // Handle or log the error as needed
     console.error("Error in notifCronJob:", error);
