@@ -52,7 +52,7 @@ export const notifCronJob = async (state: LatestSnapState): Promise<void> => {
                     return panel([
                       text(`**${n.channelName}**`),
                       text(n.msgData.popupMsg),
-                      text(`${n.msgData.timestamp}`),
+                      text(`${n.msgData.timestamp ?? ''}`),
                     ]);
                   }),
                   divider(),
