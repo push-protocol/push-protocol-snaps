@@ -22,5 +22,5 @@ export const defaultLatestSnapState: LatestSnapState = {
   }
 };
 
-export const SNOOZE_ALERT_THRESHOLD = 1; // show snooze alert after these many popups appear in an hour
+export const SNOOZE_ALERT_THRESHOLD = 6; // show snooze alert after these many popups appear in an hour
 export const SNOOZE_DISABLE_DURATION = 24; // disable snooze alert for these many hrs once user rejects the alert
