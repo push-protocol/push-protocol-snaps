@@ -4,7 +4,10 @@ import { ApiParams, ApiRequestParams, SnapRpcMethod } from "../types";
 import {
   addAddress,
   channelOptin,
+  disableSnoozeNotifs,
+  getSnoozeInfo,
   removeAddress,
+  setSnoozeEnabledDuration,
   welcomeDialog,
 } from "../methods";
 import { getEnabledAddresses, getModifiedSnapState } from "../utils";
@@ -55,10 +58,19 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         //   // Handles the togglePopup RPC method
         //   return togglePopup(apiParams);
         // }
-        // case SnapRpcMethod.SnoozeDuration: {
-        //   await snoozeDuration();
-        //   break;
-        // }
+        case SnapRpcMethod.SetSnoozeDuration: {
+          // Handles the set snooze duration RPC method
+          await setSnoozeEnabledDuration(apiParams);
+          break;
+        }
+        case SnapRpcMethod.GetSnoozeInfo: {
+          return getSnoozeInfo(apiParams);
+        }
+        case SnapRpcMethod.DisableSnoozeNotifs: {
+          // Handles the disable snooze duration RPC method
+          await disableSnoozeNotifs(apiParams);
+          break;
+        }
         case SnapRpcMethod.OptIn: {
           // Handles the optIn RPC method
           return channelOptin(apiParams);

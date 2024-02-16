@@ -12,6 +12,10 @@ export interface AddAddressRequestParams extends BaseRequestParams {
   address: string;
 }
 
+export interface SnoozeDurationRequestParams extends BaseRequestParams {
+  snoozeDuration: string;
+}
+
 export interface RemoveAddressRequestParams extends BaseRequestParams {
   address: string;
 }
@@ -32,7 +36,9 @@ export enum SnapRpcMethod {
   RemoveAddress = "pushproto_removeaddress",
   Welcome = "pushproto_welcome",
   TogglePopup = "pushproto_togglepopup",
-  SnoozeDuration = "pushproto_snoozeduration",
+  SetSnoozeDuration = "pushproto_setsnoozeduration",
+  GetSnoozeInfo = "pushproto_getsnoozeinfo",
+  DisableSnoozeNotifs = "pushproto_disablesnooze",
   OptIn = "pushproto_optin",
   OptInComplete = "pushproto_optincomplete",
   GetAddresses = "pushproto_getaddresses",

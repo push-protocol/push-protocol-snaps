@@ -2,6 +2,7 @@ import { divider, heading, panel, text } from "@metamask/snaps-ui";
 import { getModifiedSnapState, updateSnapState } from "./snapStateUtils";
 import { getCurrentTimestamp } from "./time";
 import { SNOOZE_DISABLE_DURATION } from "../config";
+import { LatestSnapState } from "../types";
 
 /**
  * Sets the snooze duration for notifications.
@@ -18,14 +19,29 @@ export const snoozeNotifs = async () => {
         type: "prompt",
         content: panel([
           heading("Notification Snooze"),
-          text("**Hey there! 🔔 It seems like you're receiving a lot of notifications. Would you like to enable snooze to take a break?**"),
+          text(
+            "**Hey there! 🔔 It seems like you're receiving a lot of notifications. Would you like to enable snooze to take a break?**"
+          ),
           divider(),
-          text("How long would you like to snooze notifications? You can snooze for 1 to 72 hours."),
+          text(
+            "How long would you like to snooze notifications? You can snooze for 1 to 72 hours."
+          ),
         ]),
         placeholder: "Snooze duration in Hours (e.g. 6)",
       },
     });
 
+    await setSnoozeDuration(state, snoozeDuration as string | null); // prompt return type is string | null
+  } catch (err) {
+    console.error("Error in snooze functionality", err);
+  }
+};
+
+export const setSnoozeDuration = async (
+  state: LatestSnapState,
+  snoozeDuration: string | null
+) => {
+  try {
     // Sanitize snoozeDuration
     let snoozeDurationNumber: number | null;
     if (typeof snoozeDuration === "string") {
@@ -43,7 +59,9 @@ export const snoozeNotifs = async () => {
             content: panel([
               heading("Invalid Duration"),
               divider(),
-              text(`Please enter a valid snooze duration between 1 and 72 hours.`),
+              text(
+                `Please enter a valid snooze duration between 1 and 72 hours.`
+              ),
             ]),
           },
         });
@@ -90,12 +108,12 @@ export const snoozeNotifs = async () => {
           heading("Snooze Enabled"),
           divider(),
           text(
-            `Notifications will be snoozed for ${snoozeDurationNumber} hours. You can manage snooze settings on app.push.org/snap/settings`
+            `Notifications will be snoozed for ${snoozeDurationNumber} hours. You can manage snooze settings on **app.push.org/snap**`
           ),
         ]),
       },
     });
   } catch (err) {
-    console.error('Error in snooze functionality', err);
+    console.error("Error in snooze functionality", err);
   }
 };
