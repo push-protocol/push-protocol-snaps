@@ -3,6 +3,7 @@ import {
   fetchAllAddrNotifs,
   getCurrentTimestamp,
   getModifiedSnapState,
+  groupNotifications,
   getPopupsCountInLastHour,
   isSnoozeEnabled,
   isSnoozeAlertDisabled,
@@ -22,13 +23,14 @@ import { SNOOZE_ALERT_THRESHOLD } from "../../config";
 export const notifCronJob = async (state: LatestSnapState): Promise<void> => {
   try {
     // Fetch notifications for all subscribed addresses
-    const notifs = await fetchAllAddrNotifs();
+    const allNotifs = await fetchAllAddrNotifs();
 
     // Display an alert for new notifications
-    if (notifs.length > 0) {
+    if (allNotifs.length > 0) {
       // if popups are already snoozed, then don't show popup
       if (isSnoozeEnabled(state)) {
       } else {
+        const groupedNotifs = await groupNotifications(allNotifs);
         const snoozeAlertDisabledStatus = isSnoozeAlertDisabled(state);
         const popupsCountInLastHour = getPopupsCountInLastHour(state);
 
@@ -40,7 +42,22 @@ export const notifCronJob = async (state: LatestSnapState): Promise<void> => {
             content: panel([
               heading("You have a new notification!"),
               divider(),
-              ...notifs.map((notif) => text(notif.popupMsg)),
+              ...Object.keys(groupedNotifs).map((notif) => {
+                const addr = `${notif.slice(0, 6)}...${notif.slice(-6)}`;
+                // notif is a key
+  
+                return panel([
+                  text(`**${addr}**`),
+                  ...groupedNotifs[notif].map((n) => {
+                    return panel([
+                      text(`**${n.channelName}**`),
+                      text(n.msgData.popupMsg),
+                      text(`${n.msgData.timestamp ?? ''}`),
+                    ]);
+                  }),
+                  divider(),
+                ]);
+              }),
             ]),
           },
         });
@@ -80,7 +97,7 @@ export const notifCronJob = async (state: LatestSnapState): Promise<void> => {
     });
 
     // Display in-app notifications
-    await notifyInMetamaskApp(notifs);
+    await notifyInMetamaskApp(allNotifs);
   } catch (error) {
     // Handle or log the error as needed
     console.error("Error in notifCronJob:", error);

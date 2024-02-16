@@ -2,8 +2,8 @@ import { Feed, getFeeds } from "../services";
 import { fetchAddress } from "./address";
 import { ethers } from "ethers";
 import { getModifiedSnapState, updateSnapState } from "./snapStateUtils";
-import { convertEpochToMilliseconds } from "./time";
-import { INotification } from "../types";
+import { convertEpochToMilliseconds, formatTimestamp } from "./time";
+import { INotification, INotificationGroup } from "../types";
 import { sleep } from "./helperFn";
 
 /**
@@ -37,6 +37,30 @@ export const getNotifications = async ({
     console.error(`Error in getNotifications for ${userAddress}:`, err);
     throw err;
   }
+};
+
+/**
+ * Groups notifications by their address.
+ *
+ * @param {INotification[]} notifs - The array of notifications to be grouped.
+ * @returns {Promise<INotificationGroup>} - A promise that resolves to an object where each key is an address
+ *                                          with its corresponding array of notifications.
+ */
+export const groupNotifications = async (
+  notifs: INotification[]
+): Promise<INotificationGroup> => {
+  const grouped: INotificationGroup = notifs.reduce((acc, notif) => {
+    const address = notif.address;
+    // If the accumulator doesn't have an array for this address, create one
+    if (!acc[address]) {
+      acc[address] = [];
+    }
+    // Push the current notification onto the array for this address
+    acc[address].push(notif);
+    return acc;
+  }, {});
+  console.log(grouped, "<= grouped");
+  return grouped;
 };
 
 /**
@@ -91,7 +115,9 @@ export const filterNotifications = async (
         // Check if the notification passes the condition
         if (feedEpoch > processedLastEpoch) {
           // Add filtered notifications to the formatted list
-          formattedFeeds.push(...getFormattedNotifList([fetchedNotifications[i]], address));
+          formattedFeeds.push(
+            ...getFormattedNotifList([fetchedNotifications[i]], address)
+          );
         } else {
           // If any notification fails the condition, set the flag to false
           allNotificationsPassed = false;
@@ -150,55 +176,71 @@ export const getFormattedNotifList = (
 ): INotification[] => {
   const formattedNotifList = notifList.map((notif) => {
     const emoji = notif.payload.data.aimg ? `📸` : `🔔`;
-    const msg =
-      emoji +
-      notif.payload.data.app +
-      ": " +
-      convertText(notif.payload.data.amsg);
+    const { newText, timestamp } = convertText(notif.payload.data.amsg);
+    const msg = emoji + notif.payload.data.app + ": " + newText;
+
+    const notificationBody = notif.payload.data.aimg
+      ? `📸 ${newText}`
+      : newText;
 
     return {
       address: address,
-      timestamp: convertEpochToMilliseconds(notif.payload.data.epoch),
+      channelName: notif.payload.data.app,
+      epoch: convertEpochToMilliseconds(notif.payload.data.epoch),
       notification: {
-        body: notif.payload.notification.body,
+        body: notificationBody,
         title: notif.payload.notification.title,
       },
-      popupMsg: msg,
-      inAppNotifMsg: msg.slice(0, 47),
+      msgData: {
+        timestamp: timestamp,
+        popupMsg: newText,
+        inAppNotifMsg: msg.slice(0, 47),
+      },
     };
   });
   return formattedNotifList;
 };
 
 /**
- * Converts text by replacing tags and timestamps.
- * @param text The text to be converted.
- * @returns The converted text.
+ * Converts text by removing special formatted tags and extracts a timestamp if present.
+ * It returns the cleaned text and the first extracted timestamp in a formatted string.
+ * 
+ * @param {string} text - The input text containing special tags and a timestamp.
+ * @returns {{ newText: string; timestamp: number | null }} An object containing:
+ *           - `newText`: The text with all special formatted tags removed.
+ *           - `timestamp`: The first extracted timestamp formatted as a string, or null if not present.
+ * @throws Will throw an error if the function encounters an unexpected issue.
  */
-const convertText = (text: string): string => {
+const convertText = (
+  text: string
+): { newText: string; timestamp: number | null } => {
   try {
-    let newText = text.replace(/\n/g, " ");
+    let newText = text;
+    let extractedTimestamp: number | null = null;
 
+    // Remove special formatted tags like [d:...], [s:...], [t:...]
     const tagRegex = /\[(d|s|t):([^\]]+)\]/g;
     newText = newText.replace(tagRegex, (match, tag, value) => value);
 
+    // Extract and remove the timestamp, if present
     const timestampRegex = /\[timestamp:\s*(\d+)\]/g;
-    const processedTimestamps = new Set<number>();
+    let timeStamp;
     newText = newText.replace(timestampRegex, (match, timestamp) => {
       const timestampValue = parseInt(timestamp);
-      if (!isNaN(timestampValue) && !processedTimestamps.has(timestampValue)) {
-        const date = new Date(timestampValue * 1000);
-        processedTimestamps.add(timestampValue);
-        return `- ${date.toLocaleString()}`;
+      // If the timestamp is valid and hasn't been extracted yet, format and save it
+      if (!isNaN(timestampValue) && extractedTimestamp === null) {
+        extractedTimestamp = timestampValue * 1000; // Convert to milliseconds
+        timeStamp = formatTimestamp(extractedTimestamp); // Format using a separate function
+        return "";
       } else {
         return "";
       }
     });
 
-    return newText;
+    // Return the cleaned text and the formatted timestamp
+    return { newText, timestamp: timeStamp };
   } catch (error) {
     console.error("Error in convertText:", error);
-    // Handle the error or rethrow it if needed
     throw error;
   }
 };
@@ -216,12 +258,12 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
     // first cron job that runs at 1:00 AM, runs and do some api calls in filterNotifications and few operations
     // it takes few seconds and then it proceeds to notify, if more than 5 were there, then 5 notifs are added in metamask inApp
     // now, 2nd cronjob runs at 1:01 AM, it also does few operations and then proceeds to notify
-    // due to timings mismatch of operations and number of feeds api calls, time between last call of notify in first cronjob and first call of notify in second cronjob 
+    // due to timings mismatch of operations and number of feeds api calls, time between last call of notify in first cronjob and first call of notify in second cronjob
     // was throwing error sometimes, and sometimes it was working (tested with multiple instances and found out time difference in few milliseconds)
     // to resolve this, a timestamp could've been added to monitor this time or a queue implementation but it's a overkill
     // so, final way was to assign maxToAdd as 4 and a sleep of 2 seconds after a notify call
     const maxToAdd = 4; // snap_notify is rate-limited to max 5 per minute
-    
+
     const pendingNotifsCount = state.pendingInAppNotifs.length;
 
     // Determine how many notifications to add from pendingInAppNotifs
@@ -245,7 +287,7 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
 
     // Add notifications from notifs array
     for (let i = 0; i < remainingToAdd && i < notifs.length; i++) {
-      const msg = notifs[i].inAppNotifMsg;
+      const msg = notifs[i].msgData.inAppNotifMsg;
       await snap.request({
         method: "snap_notify",
         params: {
@@ -263,8 +305,8 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
         ...remainingNotifs.map((notif) => {
           return {
             address: notif.address,
-            message: notif.inAppNotifMsg,
-            timestamp: notif.timestamp,
+            message: notif.msgData.inAppNotifMsg,
+            timestamp: notif.epoch,
           };
         })
       );
