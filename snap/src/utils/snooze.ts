@@ -17,9 +17,10 @@ export const snoozeNotifs = async () => {
       params: {
         type: "prompt",
         content: panel([
-          heading("Set snooze duration"),
+          heading("Notification Snooze"),
+          text("**Hey there! 🔔 It seems like you're receiving a lot of notifications. Would you like to enable snooze to take a break?**"),
           divider(),
-          text("Customize your snooze from 1 to 72 hours and stay focused."),
+          text("How long would you like to snooze notifications? You can snooze for 1 to 72 hours."),
         ]),
         placeholder: "Snooze duration in Hours (e.g. 6)",
       },
@@ -40,9 +41,9 @@ export const snoozeNotifs = async () => {
           params: {
             type: "alert",
             content: panel([
-              heading("Error"),
+              heading("Invalid Duration"),
               divider(),
-              text(`Invalid input. Please enter a number between 1 and 72`),
+              text(`Please enter a valid snooze duration between 1 and 72 hours.`),
             ]),
           },
         });
@@ -86,10 +87,10 @@ export const snoozeNotifs = async () => {
       params: {
         type: "alert",
         content: panel([
-          heading("Notification Snooze"),
+          heading("Snooze Enabled"),
           divider(),
           text(
-            `Your notifications have been snoozed for the next ${snoozeDurationNumber} hours`
+            `Notifications will be snoozed for ${snoozeDurationNumber} hours. You can manage snooze settings on app.push.org/snap/settings`
           ),
         ]),
       },

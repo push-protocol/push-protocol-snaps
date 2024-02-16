@@ -7,7 +7,7 @@
     "url": "https://github.com/ethereum-push-notification-service/push-protocol-snaps"
   },
   "source": {
-    "shasum": "u9KeIyxjQiRH0GolA7VeBIftiHKA9i1MwsC1V+jPaow=",
+    "shasum": "Mc7+foF0fNTY0kE0x/mx3W3g9u4iX6bUDBbs9fUEUvo=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -30,6 +30,12 @@
           "expression": "* * * * *",
           "request": {
             "method": "notifCronJob"
+          }
+        },
+        {
+          "expression": "0 * * * *",
+          "request": {
+            "method": "garbageCollectCronJob"
           }
         }
       ]

@@ -1,5 +1,5 @@
 import { OnCronjobHandler } from "@metamask/snaps-types";
-import { notifCronJob } from "../methods";
+import { garbageCollectCronJob, notifCronJob } from "../methods";
 import { SnapCronJobMethod } from "../types";
 import { getModifiedSnapState } from "../utils";
 
@@ -18,6 +18,9 @@ export const onCronjob: OnCronjobHandler = async ({ request }) => {
     switch (request.method as SnapCronJobMethod) {
       case SnapCronJobMethod.NotifCronJob:
         await notifCronJob(state);
+        break;
+      case SnapCronJobMethod.GarbageCollectCronJob:
+        await garbageCollectCronJob(state);
         break;
       // case SnapCronJobMethod.CheckActivityCronJob:
       //   await checkActivityCronJob();

@@ -41,7 +41,8 @@ export enum SnapRpcMethod {
 }
 
 export enum SnapCronJobMethod {
-  NotifCronJob = "notifCronJob",
+  NotifCronJob = "notifCronJob", // for polling notifs every minute
+  GarbageCollectCronJob = "garbageCollectCronJob", // to remove extra things in persisted state every hour
   CheckActivityCronJob = "checkActivityCronJob",
   RemoveSnoozeCronJob = "removeSnoozeCronJob",
 }

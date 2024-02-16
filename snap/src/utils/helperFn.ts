@@ -67,21 +67,33 @@ export const isSnoozeAlertDisabled = (state: LatestSnapState): boolean => {
  * @returns The number of popups shown in the last hour.
  */
 export const getPopupsCountInLastHour = (state: LatestSnapState): number => {
+  const lastHourTimestamp = Date.now() - 60 * 60 * 1000; // Timestamp of one hour ago
+  const count = getPopupsCountSinceTimestamp(state, lastHourTimestamp);
+  return count;
+};
+
+/**
+ * Counts the number of popups shown in the last hour.
+ * @param state - The latest snapshot state.
+ * @param time - The timestamp to count popups since.
+ * @returns The number of popups shown in the last hour.
+ */
+export const getPopupsCountSinceTimestamp = (state: LatestSnapState, time: number): number => {
   if (state.popupsTimestamp.length === 0) {
     return 0;
   }
 
-  const lastHourTimestamp = Date.now() - 60 * 60 * 1000; // Timestamp of one hour ago
+  const timestampToProcess = time; // Timestamp of one hour ago
 
-  // Binary search to find the index of the timestamp that's less than last hour timestamp
+  // Binary search to find the index of the timestamp that's less than timestampToProcess
   let left = 0;
   let right = state.popupsTimestamp.length - 1;
   let firstIndexInLastHour = -1;
 
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
-    if (state.popupsTimestamp[mid] < lastHourTimestamp) {
-      firstIndexInLastHour = mid; // Update the index if current element is less than lastHourTimestamp
+    if (state.popupsTimestamp[mid] < timestampToProcess) {
+      firstIndexInLastHour = mid; // Update the index if current element is less than timestampToProcess
       left = mid + 1; // Move to the right side to search for larger elements
     } else {
       right = mid - 1; // Move to the left side to search for smaller elements
