@@ -2,7 +2,7 @@ import { Feed, getFeeds } from "../services";
 import { fetchAddress } from "./address";
 import { ethers } from "ethers";
 import { getModifiedSnapState, updateSnapState } from "./snapStateUtils";
-import { convertEpochToMilliseconds } from "./time";
+import { convertEpochToMilliseconds, formatTimestamp } from "./time";
 import { INotification, INotificationGroup } from "../types";
 import { sleep } from "./helperFn";
 
@@ -183,36 +183,6 @@ export const getFormattedNotifList = (
       ? `📸 ${newText}`
       : newText;
 
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    };
-
-    let amPm = " ";
-    let formattedDate = " ";
-    if (timestamp != null) {
-      const date = new Date(timestamp);
-      const hours = date.getHours();
-      amPm = hours >= 12 ? "PM" : "AM";
-      formattedDate =
-        `-` +
-        `${date.toLocaleDateString("en-US", options)} at ${
-          date
-            .toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-            })
-            .replace(/:\d+ /, " ")
-            .split(" ")[0]
-        }`;
-    }
-    const timeStamp = `${formattedDate}` + ` ` + `${amPm}`;
     return {
       address: address,
       channelName: notif.payload.data.app,
@@ -222,7 +192,7 @@ export const getFormattedNotifList = (
         title: notif.payload.notification.title,
       },
       msgData: {
-        timestamp: timeStamp,
+        timestamp: timestamp,
         popupMsg: newText,
         inAppNotifMsg: msg.slice(0, 47),
       },
@@ -231,29 +201,44 @@ export const getFormattedNotifList = (
   return formattedNotifList;
 };
 
+/**
+ * Converts text by removing special formatted tags and extracts a timestamp if present.
+ * It returns the cleaned text and the first extracted timestamp in a formatted string.
+ * 
+ * @param {string} text - The input text containing special tags and a timestamp.
+ * @returns {{ newText: string; timestamp: number | null }} An object containing:
+ *           - `newText`: The text with all special formatted tags removed.
+ *           - `timestamp`: The first extracted timestamp formatted as a string, or null if not present.
+ * @throws Will throw an error if the function encounters an unexpected issue.
+ */
 const convertText = (
   text: string
 ): { newText: string; timestamp: number | null } => {
   try {
-    let newText = text.replace(/\n/g, " ");
+    let newText = text;
     let extractedTimestamp: number | null = null;
 
+    // Remove special formatted tags like [d:...], [s:...], [t:...]
     const tagRegex = /\[(d|s|t):([^\]]+)\]/g;
     newText = newText.replace(tagRegex, (match, tag, value) => value);
 
+    // Extract and remove the timestamp, if present
     const timestampRegex = /\[timestamp:\s*(\d+)\]/g;
+    let timeStamp;
     newText = newText.replace(timestampRegex, (match, timestamp) => {
       const timestampValue = parseInt(timestamp);
+      // If the timestamp is valid and hasn't been extracted yet, format and save it
       if (!isNaN(timestampValue) && extractedTimestamp === null) {
-        extractedTimestamp = timestampValue * 1000;
-        const date = new Date(timestampValue * 1000);
-        return `- ${date.toLocaleString()}`;
+        extractedTimestamp = timestampValue * 1000; // Convert to milliseconds
+        timeStamp = formatTimestamp(extractedTimestamp); // Format using a separate function
+        return "";
       } else {
         return "";
       }
     });
 
-    return { newText, timestamp: extractedTimestamp };
+    // Return the cleaned text and the formatted timestamp
+    return { newText, timestamp: timeStamp };
   } catch (error) {
     console.error("Error in convertText:", error);
     throw error;
