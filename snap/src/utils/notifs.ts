@@ -59,7 +59,6 @@ export const groupNotifications = async (
     acc[address].push(notif);
     return acc;
   }, {});
-  console.log(grouped, "<= grouped");
   return grouped;
 };
 
@@ -195,6 +194,7 @@ export const getFormattedNotifList = (
         timestamp: timestamp,
         popupMsg: newText,
         inAppNotifMsg: msg.slice(0, 47),
+        cta: notif.payload.data.acta,
       },
     };
   });
@@ -213,7 +213,7 @@ export const getFormattedNotifList = (
  */
 const convertText = (
   text: string
-): { newText: string; timestamp: number | null } => {
+): { newText: string; timestamp: string } => {
   try {
     let newText = text;
     let extractedTimestamp: number | null = null;
@@ -224,7 +224,7 @@ const convertText = (
 
     // Extract and remove the timestamp, if present
     const timestampRegex = /\[timestamp:\s*(\d+)\]/g;
-    let timeStamp;
+    let timeStamp: string;
     newText = newText.replace(timestampRegex, (match, timestamp) => {
       const timestampValue = parseInt(timestamp);
       // If the timestamp is valid and hasn't been extracted yet, format and save it

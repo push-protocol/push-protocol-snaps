@@ -1,4 +1,4 @@
-import { divider, heading, panel, text } from "@metamask/snaps-ui";
+import { copyable, divider, heading, panel, text } from "@metamask/snaps-ui";
 import {
   fetchAllAddrNotifs,
   getCurrentTimestamp,
@@ -45,14 +45,14 @@ export const notifCronJob = async (state: LatestSnapState): Promise<void> => {
               ...Object.keys(groupedNotifs).map((notif) => {
                 const addr = `${notif.slice(0, 6)}...${notif.slice(-6)}`;
                 // notif is a key
-  
                 return panel([
                   text(`**${addr}**`),
                   ...groupedNotifs[notif].map((n) => {
                     return panel([
                       text(`**${n.channelName}**`),
                       text(n.msgData.popupMsg),
-                      text(`${n.msgData.timestamp ?? ''}`),
+                      copyable(`${n.msgData.cta ?? ""}`),
+                      text(`${n.msgData.timestamp ?? ""}`),
                     ]);
                   }),
                   divider(),
@@ -72,7 +72,10 @@ export const notifCronJob = async (state: LatestSnapState): Promise<void> => {
         });
 
         // show snooze alert when snooze alert isn't disabled and popups count in last hour is more than 6
-        if (!snoozeAlertDisabledStatus && popupsCountInLastHour > SNOOZE_ALERT_THRESHOLD) {
+        if (
+          !snoozeAlertDisabledStatus &&
+          popupsCountInLastHour > SNOOZE_ALERT_THRESHOLD
+        ) {
           // show snooze popup
           await snoozeNotifs();
         }

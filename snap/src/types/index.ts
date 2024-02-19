@@ -15,7 +15,8 @@ export interface INotification {
   msgData: {
     popupMsg: string; // Message for displaying in a popup
     inAppNotifMsg: string; // Message for displaying in an in-app notification of metamask}
-    timestamp: null | number; // Timestamp when the notification was received
+    timestamp: string; // Timestamp when the notification was received
+    cta: string; // CTA url that notification direct to
   };
 }
 
