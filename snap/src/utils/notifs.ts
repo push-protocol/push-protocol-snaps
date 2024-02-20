@@ -192,7 +192,7 @@ export const getFormattedNotifList = (
       },
       msgData: {
         timestamp: timestamp,
-        popupMsg: newText,
+        popupMsg: notificationBody,
         inAppNotifMsg: msg.slice(0, 47),
         cta: notif.payload.data.acta,
       },
@@ -223,7 +223,7 @@ const convertText = (
     newText = newText.replace(tagRegex, (match, tag, value) => value);
 
     // Extract and remove the timestamp, if present
-    const timestampRegex = /\[timestamp:\s*(\d+)\]/g;
+    const timestampRegex = /\[timestamp:(.*?)\]/;
     let timeStamp: string;
     newText = newText.replace(timestampRegex, (match, timestamp) => {
       const timestampValue = parseInt(timestamp);
@@ -262,7 +262,7 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
     // was throwing error sometimes, and sometimes it was working (tested with multiple instances and found out time difference in few milliseconds)
     // to resolve this, a timestamp could've been added to monitor this time or a queue implementation but it's a overkill
     // so, final way was to assign maxToAdd as 4 and a sleep of 2 seconds after a notify call
-    const maxToAdd = 4; // snap_notify is rate-limited to max 5 per minute
+    const maxToAdd = 3; // snap_notify is rate-limited to max 5 per minute
 
     const pendingNotifsCount = state.pendingInAppNotifs.length;
 
@@ -279,7 +279,7 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
           message: msg.message,
         },
       });
-      await sleep(2000);
+      await sleep(3000);
     }
 
     // Calculate the remaining number of notifications to add
@@ -295,7 +295,7 @@ export const notifyInMetamaskApp = async (notifs: INotification[]) => {
           message: msg,
         },
       });
-      await sleep(2000);
+      await sleep(3000);
     }
 
     // Add remaining notifications to pendingInAppNotifs if any

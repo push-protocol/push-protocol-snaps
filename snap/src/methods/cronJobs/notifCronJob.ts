@@ -48,12 +48,17 @@ export const notifCronJob = async (state: LatestSnapState): Promise<void> => {
                 return panel([
                   text(`**${addr}**`),
                   ...groupedNotifs[notif].map((n) => {
-                    return panel([
-                      text(`**${n.channelName}**`),
-                      text(n.msgData.popupMsg),
-                      copyable(`${n.msgData.cta ?? ""}`),
-                      text(`${n.msgData.timestamp ?? ""}`),
-                    ]);
+
+                    // panel in design format
+                    const panelComponent = [];
+                    panelComponent.push(text(`**${n.channelName}**`));
+                    panelComponent.push(text(n.msgData.popupMsg));
+                    if (n.msgData.cta)
+                      panelComponent.push(copyable(n.msgData.cta));
+                    if (n.msgData.timestamp)
+                      panelComponent.push(text(n.msgData.timestamp));
+
+                    return panel(panelComponent);
                   }),
                   divider(),
                 ]);
