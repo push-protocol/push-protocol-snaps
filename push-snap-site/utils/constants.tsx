@@ -10,7 +10,8 @@ export const INSTALL_SNAP = {
 
 export const NOTIFICATION_TESTS = {
     HEAD_1: "Notification Tests",
-    PARA_1: "Check all the channels opted in and new notification will be delivered directly to your MetaMask Wallet."
+    PARA_1: "Set Snooze Duration (between 1 to 72 hrs)",
+    PARA_2: "Disable Snooze"
 }
 
 export const NOTE = {

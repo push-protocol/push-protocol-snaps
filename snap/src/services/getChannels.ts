@@ -1,4 +1,4 @@
-import { BASE_URL } from "../config";
+import { BASE_URL, CHAIN_ID } from "../config";
 import { fetchGet } from "../utils";
 
 interface IChannelInfo {
@@ -40,7 +40,7 @@ export const getChannelDetails = async (
   channelAddress: string
 ): Promise<IChannelInfo> => {
   try {
-    const url = `${CHANNELS_BASE_URL}/eip155:1:${channelAddress}`;
+    const url = `${CHANNELS_BASE_URL}/eip155:${CHAIN_ID}:${channelAddress}`;
     // Fetch channel details
     const response = await fetchGet<IChannelInfo>(url);
     return response;

@@ -24,24 +24,3 @@
 //     encrypted: false,
 //   });
 // };
-
-/**
- * Formats notifications for display in the popup.
- * @param notifs An array of notifications.
- * @returns An array of formatted notification messages.
- */
-export const popupHelper = (notifs: string[]): string[] => {
-  console.log("notif: ", notifs);
-  const msg = [] as string[];
-
-  // Format each notification for display
-  if (notifs.length > 0) {
-    notifs.forEach((notif) => {
-      const str = `\n🔔` + notif + "\n";
-      msg.push(str);
-    });
-  }
-
-  console.log("msg: ", msg);
-  return msg;
-};

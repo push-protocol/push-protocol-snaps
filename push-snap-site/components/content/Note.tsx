@@ -1,4 +1,4 @@
-import SendMessageButton from "../buttons/SendMessageButton"
+import SendMessageButton from "../buttons/SnoozeButton"
 import { NOTE } from "@/utils/constants"
 
 export default function Note() {

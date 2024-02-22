@@ -1,12 +1,10 @@
 import { divider, heading, panel, text } from "@metamask/snaps-ui";
-import {
-  getModifiedSnapState,
-  updateSnapState,
-} from "./snapStateUtils";
+import { getModifiedSnapState, updateSnapState } from "./snapStateUtils";
 
 import { ethers } from "ethers";
 import { AddressMetadata, LatestSnapState } from "../types";
 import { getEnabledAddresses } from "./helperFn";
+import { getCurrentTimestamp } from "./time";
 
 /**
  * Handles the addition of an Ethereum address to the list of monitored addresses.
@@ -27,8 +25,12 @@ export const handleAddAddress = async (address: string) => {
        * Otherwise, create a new metadata object with 'enabled' set to true.
        */
       const updatedMetadata: AddressMetadata = metadata
-        ? { ...metadata, enabled: true }
-        : { enabled: true };
+        ? {
+            ...metadata,
+            enabled: true,
+            lastFeedsProcessedTimestamp: getCurrentTimestamp(),
+          }
+        : { enabled: true, lastFeedsProcessedTimestamp: getCurrentTimestamp() };
 
       // Create a new SnapStateV1 object with the updated metadata.
 
@@ -146,8 +148,8 @@ export const handleRemoveAddress = async (address: string) => {
        * Otherwise, create a new metadata object with 'enabled' set to false.
        */
       const updatedMetadata: AddressMetadata = metadata
-        ? { ...metadata, enabled: false }
-        : { enabled: false };
+        ? { ...metadata, enabled: false, lastFeedsProcessedTimestamp: 0 }
+        : { enabled: false, lastFeedsProcessedTimestamp: 0 };
 
       //Create a new SnapStateV1 object with the updated metadata.
 
@@ -202,49 +204,3 @@ export const fetchAddress = async (): Promise<string[]> => {
     throw error;
   }
 };
-
-/**
- * Sets the snooze duration for notifications.
- * @returns The snooze duration in hours.
- */
-// export const snoozeNotifs = async () => {
-//   // Prompt the user to set the snooze duration
-//   const snoozeDuration = await snap.request({
-//     method: "snap_dialog",
-//     params: {
-//       type: "prompt",
-//       content: panel([
-//         heading("Set snooze duration"),
-//         divider(),
-//         text("Customize your snooze from 1 to 24 hours and stay focused."),
-//       ]),
-//       placeholder: 'Snooze duration in Hours (e.g. 6)',
-//     },
-//   });
-
-//   if (typeof snoozeDuration === 'string') {
-//     let snoozeDurationNumber = parseInt(snoozeDuration, 10);
-
-//     // Ensure snooze duration is within valid range
-//     if (snoozeDurationNumber > 24) {
-//       snoozeDurationNumber = 24;
-//     } else if (snoozeDurationNumber === undefined) {
-//       snoozeDurationNumber = 0;
-//     }
-
-//     // Display an alert confirming the snooze duration
-//     await snap.request({
-//       method:"snap_dialog",
-//       params:{
-//         type:"alert",
-//         content:panel([
-//           heading("Notification Snooze"),
-//           divider(),
-//           text(`Your notifications have been snoozed for the next ${snoozeDurationNumber} hours`)
-//         ])
-//       }
-//     })
-
-//     return snoozeDuration;
-//   }
-// }
