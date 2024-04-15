@@ -7,9 +7,9 @@ export const allowedSnapOrigins = [
   "http://localhost:3000", // Remove localhost port before production deployment
 ];
 
-export const BASE_URL = 'https://backend.epns.io/apis/v1'; // Modify this as needed
+export const BASE_URL = 'https://backend-staging.epns.io/apis/v1'; // Modify this as needed
 
-export const CHAIN_ID = 1; // For prod (change this while testing in diff env)
+export const CHAIN_ID = 11155111; // For prod (change this while testing in diff env)
 
 export const defaultLatestSnapState: LatestSnapState = {
   version: 1,
